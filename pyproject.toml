@@ -1,0 +1,22 @@
+[project]
+name = "AceStep15-gradio2comfy"
+version = "0.1.0"
+description = "Advanced ACE-Step 1.5 music generation nodes for ComfyUI"
+authors = [
+    { name = "scruffynerf" }
+]
+dependencies = [
+    "torch",
+    "torchaudio",
+    "numpy",
+    "librosa"
+]
+readme = "README.md"
+keywords = ["comfyui", "custom-nodes", "music-generation", "ace-step"]
+
+[project.urls]
+Repository = "https://github.com/scruffynerf/AceStep15-gradio2comfy"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
