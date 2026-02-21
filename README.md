@@ -22,7 +22,7 @@ This repository allows you to use the powerful ACE-Step 1.5 music generation mod
    ```
 
 ## Usage
-Look for nodes under the `Scromfy/Ace-Step` category in the ComfyUI node menu.
+Look for nodes under the `Scromfy/Ace-Step` category in the ComfyUI node menu. The repository uses a dynamic scanning system that automatically loads all nodes from the `nodes/` directory.
 
 ## Progress & Specs
 - [PROGRESS.md](docs/PROGRESS.md) - Current implementation status.

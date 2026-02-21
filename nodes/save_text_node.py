@@ -1,12 +1,7 @@
-"""
-Utility nodes for ACE-Step (text saving, etc.)
-Ported from JK-AceStep-Nodes
-"""
-
+"""SaveText node for ACE-Step"""
 import os
 import re
 import folder_paths
-
 
 class SaveText:
     """Save text content to file with automatic numbering"""

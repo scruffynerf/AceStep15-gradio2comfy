@@ -2,52 +2,33 @@
 ACE-Step Custom Nodes for ComfyUI
 Complete self-contained node package for ACE-Step 1.5 music generation
 """
+import os
+import importlib
+import logging
 
-from .nodes import audio_io, lyrics_gen, prompts, util, sampling, audio_analysis, text_encode, advanced
+logger = logging.getLogger(__name__)
 
-# Collect all node mappings
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
 
-# Register audio I/O nodes
-NODE_CLASS_MAPPINGS.update(audio_io.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(audio_io.NODE_DISPLAY_NAME_MAPPINGS)
+def load_nodes():
+    nodes_dir = os.path.join(os.path.dirname(__file__), "nodes")
+    if not os.path.exists(nodes_dir):
+        return
 
-# Register lyrics generation nodes
-NODE_CLASS_MAPPINGS.update(lyrics_gen.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(lyrics_gen.NODE_DISPLAY_NAME_MAPPINGS)
+    for file in os.listdir(nodes_dir):
+        if file.endswith("_node.py"):
+            node_name = file[:-3]
+            try:
+                module = importlib.import_module(f".nodes.{node_name}", package=__name__)
+                if hasattr(module, "NODE_CLASS_MAPPINGS"):
+                    NODE_CLASS_MAPPINGS.update(module.NODE_CLASS_MAPPINGS)
+                if hasattr(module, "NODE_DISPLAY_NAME_MAPPINGS"):
+                    NODE_DISPLAY_NAME_MAPPINGS.update(module.NODE_DISPLAY_NAME_MAPPINGS)
+            except Exception as e:
+                logger.error(f"Failed to load node module {node_name}: {e}")
 
-# Register prompt/post-processing nodes
-NODE_CLASS_MAPPINGS.update(prompts.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(prompts.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register utility nodes
-NODE_CLASS_MAPPINGS.update(util.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(util.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register sampling nodes (ADAPT)
-NODE_CLASS_MAPPINGS.update(sampling.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(sampling.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register audio analysis nodes (ADAPT)
-NODE_CLASS_MAPPINGS.update(audio_analysis.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(audio_analysis.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register text encoding nodes (NEW)
-NODE_CLASS_MAPPINGS.update(text_encode.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(text_encode.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register advanced nodes (NEW)
-NODE_CLASS_MAPPINGS.update(advanced.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(advanced.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register prompt/post-processing nodes
-NODE_CLASS_MAPPINGS.update(prompts.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(prompts.NODE_DISPLAY_NAME_MAPPINGS)
-
-# Register utility nodes
-NODE_CLASS_MAPPINGS.update(util.NODE_CLASS_MAPPINGS)
-NODE_DISPLAY_NAME_MAPPINGS.update(util.NODE_DISPLAY_NAME_MAPPINGS)
+load_nodes()
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 

@@ -292,33 +292,22 @@ Every node should have:
 
 ## Project File Structure
 
-```
-/Users/scohn/code/AceStep15-gradio2comfy/
-├── referencecode/           # Reference implementations (read-only)
-│   ├── Ace-Step-v1.5 gradio/
-│   ├── existing comfy code/
-│   │   ├── ComfyUICode/     # ComfyUI core (has native ACE support!)
-│   │   ├── JK-AceStep-Nodes/
-│   │   ├── acestep_tweaked/
-│   │   └── patched-text_encoder/
-│   └── [other references]/
-├── nodes/                   # NEW - Our custom nodes go here
-│   ├── __init__.py
-│   ├── metadata.py          # AceStepMetadataBuilder, etc.
-│   ├── random_gen.py        # AceStepRandomPrompt
-│   ├── audio_codec.py       # AceStepAudioToCodec, AceStepAudioAnalyzer
-│   ├── inpainting.py        # AceStepAudioMask, AceStepInpaintSampler
-│   └── lm_config.py         # AceStep5HzLMConfig
-├── workflows/               # NEW - Example workflows
-│   ├── simple_mode.json
-│   ├── custom_mode.json
-│   ├── cover_mode.json
-│   └── repaint_mode.json
-├── docs/                    # NEW - Documentation
-│   ├── README.md
-│   ├── node_reference.md
-│   └── gradio_to_comfy.md
-└── Agents.md               # THIS FILE - Project strategy
+```text
+AceStep15-gradio2comfy/
+├── __init__.py           # Dynamic node scanner
+├── nodes/
+│   ├── includes/         # Shared utility modules
+│   │   ├── analysis_utils.py
+│   │   ├── audio_utils.py
+│   │   ├── lyrics_utils.py
+│   │   ├── prompt_utils.py
+│   │   └── sampling_utils.py
+│   ├── *_node.py         # 30 individual node files
+├── workflows/            # Example workflows (.json)
+├── docs/                 # Documentation
+│   ├── NODE_SPECS.md     # Technical reference
+│   └── PROGRESS.md       # Implementation tracker
+└── Agents.md             # This file
 ```
 
 ---
