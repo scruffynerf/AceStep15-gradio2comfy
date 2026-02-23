@@ -20,7 +20,7 @@ class AceStepConditioningMixerLoader:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "main_tensor_file": (get_conditioning_files("_main.safetensors"),),
+                "tune_tensor_file": (get_conditioning_files("_tune.safetensors"),),
                 "pooled_output_file": (get_conditioning_files("_pooled.safetensors"),),
                 "lyrics_file": (get_conditioning_files("_lyrics.safetensors"),),
                 "audio_codes_file": (get_conditioning_files("_codes.json"),),
@@ -34,10 +34,10 @@ class AceStepConditioningMixerLoader:
     CATEGORY = "Scromfy/Ace-Step/advanced"
 
     @classmethod
-    def IS_CHANGED(s, main_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, seed):
-        return f"{main_tensor_file}_{pooled_output_file}_{lyrics_file}_{audio_codes_file}_{seed}"
+    def IS_CHANGED(s, tune_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, seed):
+        return f"{tune_tensor_file}_{pooled_output_file}_{lyrics_file}_{audio_codes_file}_{seed}"
 
-    def load_and_mix(self, main_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, seed):
+    def load_and_mix(self, tune_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, seed):
         base_path = "output/conditioning"
         rng = random.Random(seed)
         
@@ -50,17 +50,17 @@ class AceStepConditioningMixerLoader:
             return selected
 
         # Resolve randoms
-        main_tensor_file = pick_file(main_tensor_file, "_main.safetensors")
+        tune_tensor_file = pick_file(tune_tensor_file, "_tune.safetensors")
         pooled_output_file = pick_file(pooled_output_file, "_pooled.safetensors")
         lyrics_file = pick_file(lyrics_file, "_lyrics.safetensors")
         audio_codes_file = pick_file(audio_codes_file, "_codes.json")
 
-        # 1. Main Tensor (Required base)
-        if main_tensor_file == "none":
-            raise ValueError("Mixer Loader requires at least a Main Tensor file to establish the base conditioning.")
+        # 1. Tune Tensor (Required base)
+        if tune_tensor_file == "none":
+            raise ValueError("Mixer Loader requires at least a Tune Tensor file to establish the base conditioning.")
             
-        main_path = os.path.join(base_path, main_tensor_file)
-        main_tensor = load_file(main_path).get("main")
+        tune_path = os.path.join(base_path, tune_tensor_file)
+        tune_tensor = load_file(tune_path).get("tune")
         
         metadata = {}
         
@@ -79,24 +79,24 @@ class AceStepConditioningMixerLoader:
             with open(os.path.join(base_path, audio_codes_file), "r") as f:
                 metadata["audio_codes"] = json.load(f)
             
-        # Construct filename-safe info string: main_pool(if any)_lyrics_codes
+        # Construct filename-safe info string: tune_pool(if any)_lyrics_codes
         def get_base(filename, suffix):
             if filename == "none": return None
             return filename.replace(suffix, "")
 
-        base_main = get_base(main_tensor_file, "_main.safetensors")
+        base_tune = get_base(tune_tensor_file, "_tune.safetensors")
         base_pool = get_base(pooled_output_file, "_pooled.safetensors")
         base_lyrics = get_base(lyrics_file, "_lyrics.safetensors")
         base_codes = get_base(audio_codes_file, "_codes.json")
         
-        parts = [base_main]
+        parts = [base_tune]
         if base_pool: parts.append(base_pool)
         parts.append(base_lyrics if base_lyrics else "nolyrics")
         parts.append(base_codes if base_codes else "noaudiocodes")
         
         filename_info = "_".join(parts)
             
-        return ([[main_tensor, metadata]], filename_info)
+        return ([[tune_tensor, metadata]], filename_info)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepConditioningMixerLoader": AceStepConditioningMixerLoader,

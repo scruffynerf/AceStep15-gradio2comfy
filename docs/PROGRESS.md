@@ -60,12 +60,18 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepConditioningSave` - `conditioning_save_node.py`
 - [x] `AceStepConditioningLoad` - `conditioning_load_node.py`
 - [x] `AceStepConditioningMixerLoader` - `conditioning_mixer_loader_node.py`
+- [x] `AceStepTuneTensorLoader` - `tune_tensor_loader_node.py`
+- [x] `AceStepLyricsTensorLoader` - `lyrics_loader_node.py`
+- [x] `AceStepAudioCodesLoader` - `audio_codes_loader_node.py`
+- [x] `AceStepTensorMixer` - `tensor_mixer_node.py`
+- [x] `AceStepConditioningCombine` - `conditioning_combine_node.py`
+- [x] `AceStepTensorSave` - `tensor_save_node.py`
 
 ---
 
 ## Progress Statistics
 
-- **Total Nodes: 36/36 complete (100%)** ✅
+- **Total Nodes: 42/42 complete (100%)** ✅
 - **Refactoring: Complete** ✅
 - **Dynamic Loading: Functional** ✅
 
@@ -83,7 +89,7 @@ scromfyUI-AceStep/
 │   │   ├── lyrics_utils.py
 │   │   ├── prompt_utils.py
 │   │   └── sampling_utils.py
-│    ├── *_node.py         # Individual node implementation (36 files)
+│    ├── *_node.py         # Individual node implementation (42 files)
 ├── docs/
 │   ├── NODE_SPECS.md     # Technical specifications
 │   └── PROGRESS.md       # This file

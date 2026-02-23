@@ -4,7 +4,7 @@ All nodes have been implemented and refactored into individual files within the 
 
 ## Implementation Overview
 
-- **Nodes**: 36 custom nodes implemented.
+- **Nodes**: 41 custom nodes implemented.
 - **Shared Logic**: Isolated in `nodes/includes/`.
 - **Dynamic Loading**: `__init__.py` automatically registers all `*_node.py` files.
 
@@ -66,6 +66,11 @@ All nodes have been implemented and refactored into individual files within the 
 34. **AceStepConditioningSave** (`conditioning_save_node.py`): Save individual conditioning components to separate files on disk.
 35. **AceStepConditioningLoad** (`conditioning_load_node.py`): Load and reconstruct conditioning from saved component files.
 36. **AceStepConditioningMixerLoader** (`conditioning_mixer_loader_node.py`): Granularly mix saved components from different files via dropdown selections. Supports "random" selection per component, repeatable seeds, and outputs a string summary of the chosen files.
+37. **AceStepTuneTensorLoader** (`tune_tensor_loader_node.py`): Load a tune conditioning tensor from disk with random/seed support.
+38. **AceStepLyricsTensorLoader** (`lyrics_loader_node.py`): Load a lyrics conditioning tensor from disk with random/seed support.
+39. **AceStepAudioCodesLoader** (`audio_codes_loader_node.py`): Load audio codes from disk with random/seed support.
+40. **AceStepTensorMixer** (`tensor_mixer_node.py`): Advanced tensor processing node. Supports linear blending (with ratio), concatenation, and arithmetic operations (add, multiply, etc.). Includes sophisticated scaling/interpolation to handle sequence length mismatches.
+41. **AceStepConditioningCombine** (`conditioning_combine_node.py`): Assemble individual tensors and code lists into a full ACE-Step conditioning object.
 
 ---
 

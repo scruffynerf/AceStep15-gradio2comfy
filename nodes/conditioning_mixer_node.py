@@ -2,7 +2,7 @@
 import torch
 
 class AceStepConditioningMixer:
-    """Mix components (main tensor, pooled output, lyrics, audio codes) from two conditioning inputs"""
+    """Mix components (tune tensor, pooled output, lyrics, audio codes) from two conditioning inputs"""
     
     @classmethod
     def INPUT_TYPES(s):
@@ -11,7 +11,7 @@ class AceStepConditioningMixer:
             "required": {
                 "conditioning_A": ("CONDITIONING",),
                 "conditioning_B": ("CONDITIONING",),
-                "main_tensor_source": (source_options, {"default": "A"}),
+                "tune_tensor_source": (source_options, {"default": "A"}),
                 "pooled_output_source": (source_options, {"default": "A"}),
                 "lyrics_source": (source_options, {"default": "A"}),
                 "audio_codes_source": (source_options, {"default": "A"}),
@@ -22,7 +22,7 @@ class AceStepConditioningMixer:
     FUNCTION = "mix"
     CATEGORY = "Scromfy/Ace-Step/advanced"
 
-    def mix(self, conditioning_A, conditioning_B, main_tensor_source, pooled_output_source, lyrics_source, audio_codes_source):
+    def mix(self, conditioning_A, conditioning_B, tune_tensor_source, pooled_output_source, lyrics_source, audio_codes_source):
         result = []
         max_len = max(len(conditioning_A), len(conditioning_B))
         
@@ -31,18 +31,18 @@ class AceStepConditioningMixer:
             item_A = conditioning_A[i] if i < len(conditioning_A) else conditioning_A[-1]
             item_B = conditioning_B[i] if i < len(conditioning_B) else conditioning_B[-1]
             
-            # Determine base metadata and main tensor
-            if main_tensor_source == "A":
+            # Determine base metadata and tune tensor
+            if tune_tensor_source == "A":
                 base_tensor = item_A[0]
                 new_meta = item_A[1].copy()
-            elif main_tensor_source == "B":
+            elif tune_tensor_source == "B":
                 base_tensor = item_B[0]
                 new_meta = item_B[1].copy()
             else: # none
                 # Use a zero tensor of the same shape as A or B
                 shape_ref = item_A[0] if item_A is not None else item_B[0]
                 base_tensor = torch.zeros_like(shape_ref)
-                new_meta = {} # Start fresh if no main source
+                new_meta = {} # Start fresh if no tune source
             
             # Override specific metadata items
             

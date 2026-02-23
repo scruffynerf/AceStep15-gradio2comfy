@@ -25,11 +25,11 @@ class AceStepConditioningLoad:
         return f"{load_path}_{filename_prefix}"
 
     def load(self, load_path, filename_prefix):
-        main_file = os.path.join(load_path, f"{filename_prefix}_main.safetensors")
-        if not os.path.exists(main_file):
-            raise FileNotFoundError(f"Main conditioning file not found: {main_file}")
+        tune_file = os.path.join(load_path, f"{filename_prefix}_tune.safetensors")
+        if not os.path.exists(tune_file):
+            raise FileNotFoundError(f"Tune conditioning file not found: {tune_file}")
             
-        main_tensor = load_file(main_file).get("main")
+        tune_tensor = load_file(tune_file).get("tune")
         metadata = {}
         
         # 1. Pooled Output
@@ -50,7 +50,7 @@ class AceStepConditioningLoad:
             with open(codes_file, "r") as f:
                 metadata["audio_codes"] = json.load(f)
             
-        return ([[main_tensor, metadata]],)
+        return ([[tune_tensor, metadata]],)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepConditioningLoad": AceStepConditioningLoad,

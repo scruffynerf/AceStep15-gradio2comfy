@@ -27,15 +27,15 @@ class AceStepConditioningSave:
 
         for i, item in enumerate(conditioning):
             # Handle list of conditionings (batch)
-            main_tensor = item[0]
+            tune_tensor = item[0]
             metadata = item[1]
             
             # Use suffix for batch if more than 1
             suffix = f"_{i}" if len(conditioning) > 1 else ""
             base_name = f"{filename_prefix}{suffix}"
             
-            # 1. Main Tensor (safetensors)
-            save_file({"main": main_tensor}, os.path.join(save_path, f"{base_name}_main.safetensors"))
+            # 1. Tune Tensor (safetensors)
+            save_file({"tune": tune_tensor}, os.path.join(save_path, f"{base_name}_tune.safetensors"))
             
             # 2. Pooled Output (safetensors if tensor)
             pooled = metadata.get("pooled_output")
