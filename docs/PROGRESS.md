@@ -56,12 +56,13 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepLoRAStatus` - `lora_status_node.py`
 - [x] `AceStepLoRALoader` - `lora_loader_node.py`
 - [x] `AceStepConditioningExplore` - `conditioning_explore_node.py`
+- [x] `AceStepConditioningMixer` - `conditioning_mixer_node.py`
 
 ---
 
 ## Progress Statistics
 
-- **Total Nodes: 32/32 complete (100%)** ✅
+- **Total Nodes: 33/33 complete (100%)** ✅
 - **Refactoring: Complete** ✅
 - **Dynamic Loading: Functional** ✅
 

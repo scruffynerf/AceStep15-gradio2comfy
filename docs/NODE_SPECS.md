@@ -4,7 +4,7 @@ All nodes have been implemented and refactored into individual files within the 
 
 ## Implementation Overview
 
-- **Nodes**: 32 custom nodes implemented.
+- **Nodes**: 33 custom nodes implemented.
 - **Shared Logic**: Isolated in `nodes/includes/`.
 - **Dynamic Loading**: `__init__.py` automatically registers all `*_node.py` files.
 
@@ -62,6 +62,7 @@ All nodes have been implemented and refactored into individual files within the 
 30. **AceStepLoRAStatus** (`lora_status_node.py`): Display LoRA loading info.
 31. **AceStepLoRALoader** (`lora_loader_node.py`): Specialized LoRA loader for the ACE-Step 1.5 LoRA using additional json files.
 32. **AceStepConditioningExplore** (`conditioning_explore_node.py`): Debug node to explore conditioning data structure with pretty JSON and tensor summaries.
+33. **AceStepConditioningMixer** (`conditioning_mixer_node.py`): Selectively mix components (main tensor, pooled output, lyrics, audio codes) from two conditioning sources.
 
 ---
 
