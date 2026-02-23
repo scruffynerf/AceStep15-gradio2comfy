@@ -42,7 +42,7 @@ class AceStepTuneTensorLoader:
             tune_tensor_file = rng.choice(options)
             
         if tune_tensor_file == "none":
-            raise ValueError("No tune tensor file selected.")
+            return (None, "none")
             
         path = os.path.join(base_path, tune_tensor_file)
         tensor = load_file(path).get("tune")

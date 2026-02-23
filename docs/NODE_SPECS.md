@@ -65,12 +65,20 @@ All nodes have been implemented and refactored into individual files within the 
 33. **AceStepConditioningMixer** (`conditioning_mixer_node.py`): Selectively mix components (main tensor, pooled output, lyrics, audio codes) from two conditioning sources.
 34. **AceStepConditioningSave** (`conditioning_save_node.py`): Save individual conditioning components to separate files on disk.
 35. **AceStepConditioningLoad** (`conditioning_load_node.py`): Load and reconstruct conditioning from saved component files.
-36. **AceStepConditioningMixerLoader** (`conditioning_mixer_loader_node.py`): Granularly mix saved components from different files via dropdown selections. Supports "random" selection per component, repeatable seeds, and outputs a string summary of the chosen files.
-37. **AceStepTuneTensorLoader** (`tune_tensor_loader_node.py`): Load a tune conditioning tensor from disk with random/seed support.
+36. **AceStepConditioningMixerLoader** (`conditioning_mixer_loader_node.py`): Granularly mix saved components from different files.
+    - **Optional Base**: `tune_tensor_file` can be set to "none", generating a zero/ones/random fallback.
+    - **Fallback Modes**: `empty_mode` (zeros, ones, random) for missing tensors.
+    - **Explicit Lyrics Fallback**: Prioritizes `nodes/includes/emptytensors/empty_lyrics.safetensors` for missing lyrics, with sequence length synchronization.
+    - **Automation**: Supports "random" selection, seeds, and outputs a string summary.
+37. **AceStepTuneTensorLoader** (`tune_tensor_loader_node.py`): Load a tune conditioning tensor (formerly "main") from disk with random/seed support.
 38. **AceStepLyricsTensorLoader** (`lyrics_loader_node.py`): Load a lyrics conditioning tensor from disk with random/seed support.
 39. **AceStepAudioCodesLoader** (`audio_codes_loader_node.py`): Load audio codes from disk with random/seed support.
 40. **AceStepTensorMixer** (`tensor_mixer_node.py`): Advanced tensor processing node. Supports linear blending (with ratio), concatenation, and arithmetic operations (add, multiply, etc.). Includes sophisticated scaling/interpolation to handle sequence length mismatches.
-41. **AceStepConditioningCombine** (`conditioning_combine_node.py`): Assemble individual tensors and code lists into a full ACE-Step conditioning object.
+41. **AceStepConditioningCombine** (`conditioning_combine_node.py`): Assemble individual tensors and codes into a full conditioning object.
+    - **Optional Inputs**: All inputs are optional.
+    - **Dimensions**: Intelligently infers batch size and device from any provided component.
+    - **Length Sync**: Fallback tensors (zeros/ones/random) automatically synchronize their sequence length to match other provided components.
+    - **Explicit Fallback**: Inherits the `empty_lyrics.safetensors` prioritization logic.
 
 ---
 

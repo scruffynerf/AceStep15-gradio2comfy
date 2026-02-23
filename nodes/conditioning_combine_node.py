@@ -49,7 +49,33 @@ class AceStepConditioningCombine:
             device = pooled_output.device
 
         # 2. Backfill missing tensors with matching dimensions and mode
-        def create_empty(b, l, d, dev, mode, s):
+        def create_empty(b, l, d, dev, mode, s, is_lyrics=False):
+            # Check for explicit empty lyrics file if requested or as primary fallback for lyrics
+            if is_lyrics:
+                try:
+                    # Resolve path relative to this file
+                    base_dir = os.path.dirname(__file__)
+                    empty_path = os.path.join(base_dir, "includes", "emptytensors", "empty_lyrics.safetensors")
+                    if os.path.exists(empty_path):
+                        from safetensors.torch import load_file
+                        loaded = load_file(empty_path).get("lyrics")
+                        if loaded is not None:
+                            # Ensure it has batch dim
+                            if loaded.dim() == 2:
+                                loaded = loaded.unsqueeze(0)
+                            
+                            # Interpolate to match target sequence length if different
+                            if loaded.shape[0] != b or loaded.shape[1] != l:
+                                # [B, L, D] -> [B, D, L] for interpolate
+                                loaded = loaded.permute(0, 2, 1)
+                                loaded = torch.nn.functional.interpolate(loaded, size=l, mode='linear', align_corners=False)
+                                # [B, D, L] -> [B, L, D]
+                                loaded = loaded.permute(0, 2, 1)
+                                
+                            return loaded.to(dev)
+                except Exception as e:
+                    print(f"AceStepCombine: Failed to load empty_lyrics.safetensors: {e}")
+
             if mode == "zeros":
                 return torch.zeros((b, l, d), device=dev)
             elif mode == "ones":
@@ -64,7 +90,7 @@ class AceStepConditioningCombine:
             tune_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
             
         if lyrics_tensor is None:
-            lyrics_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed + 1) # slightly different seed for variation
+            lyrics_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed + 1, is_lyrics=True)
 
         metadata = {
             "pooled_output": pooled_output,
