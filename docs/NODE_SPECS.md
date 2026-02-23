@@ -4,7 +4,7 @@ All nodes have been implemented and refactored into individual files within the 
 
 ## Implementation Overview
 
-- **Nodes**: 41 custom nodes implemented.
+- **Nodes**: 42 custom nodes implemented.
 - **Shared Logic**: Isolated in `nodes/includes/`.
 - **Dynamic Loading**: `__init__.py` automatically registers all `*_node.py` files.
 
@@ -79,6 +79,7 @@ All nodes have been implemented and refactored into individual files within the 
     - **Dimensions**: Intelligently infers batch size and device from any provided component.
     - **Length Sync**: Fallback tensors (zeros/ones/random) automatically synchronize their sequence length to match other provided components.
     - **Explicit Fallback**: Inherits the `empty_lyrics.safetensors` prioritization logic.
+42. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Inverse of the Combiner. Splits a `CONDITIONING` object into Tune Tensor, Pooled Output, Lyrics Tensor, and Audio Codes list for individual processing.
 
 ---
 

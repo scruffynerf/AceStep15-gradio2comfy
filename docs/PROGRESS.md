@@ -65,13 +65,14 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepAudioCodesLoader` - `audio_codes_loader_node.py`
 - [x] `AceStepTensorMixer` - `tensor_mixer_node.py`
 - [x] `AceStepConditioningCombine` - `conditioning_combine_node.py`
+- [x] `AceStepConditioningSplitter` - `conditioning_split_node.py`
 - [x] `AceStepTensorSave` - `tensor_save_node.py`
 
 ---
 
 ## Progress Statistics
 
-- **Total Nodes: 42/42 complete (100%)** ✅
+- **Total Nodes: 43/43 complete (100%)** ✅
 - **Refactoring: Complete** ✅
 - **Dynamic Loading: Functional** ✅
 
