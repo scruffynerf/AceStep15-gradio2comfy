@@ -28,7 +28,13 @@ class AceStepAudioCodesUnderstand:
     FUNCTION = "understand"
     CATEGORY = "Scromfy/Ace-Step/text"
 
-    def understand(self, llm, audio_codes, temperature, top_k, top_p, max_new_tokens):
+    def understand(self, audio_codes, temperature, top_k, top_p, max_new_tokens, llm=None, clip=None):
+        if llm is None and clip is not None:
+            llm = clip
+            
+        if llm is None:
+            return ("Error: No LLM/CLIP model provided. Please ensure the node is connected.", "", {})
+            
         if not audio_codes:
             return ("No audio codes provided.", "", {})
 
