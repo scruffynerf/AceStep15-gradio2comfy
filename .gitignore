@@ -209,3 +209,4 @@ __marimo__/
 # ACE-Step specific
 referencecode/
 .DS_Store
+keys/*.txt

@@ -4,3 +4,4 @@ numpy
 librosa
 lovely-tensors
 safetensors
+lyricsgenius

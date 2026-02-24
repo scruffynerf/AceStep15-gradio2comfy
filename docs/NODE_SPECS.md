@@ -4,7 +4,7 @@ All nodes have been implemented and refactored into individual files within the 
 
 ## Implementation Overview
 
-- **Nodes**: 44 custom nodes implemented.
+- **Nodes**: 45 custom nodes implemented.
 - **Shared Logic**: Isolated in `nodes/includes/`.
 - **Dynamic Loading**: `__init__.py` automatically registers all `*_node.py` files.
 
@@ -82,7 +82,8 @@ All nodes have been implemented and refactored into individual files within the 
 42. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Inverse of the Combiner. Splits a `CONDITIONING` object into Tune Tensor, Pooled Output, Lyrics Tensor, and Audio Codes list for individual processing.
 43. **AceStepTensorMaskGenerator** (`tensor_mask_nodes.py`): Generates a `[1, N, 1]` mask using various modes (`all`, `none`, `fraction`, `range`, `ramp`, `window`). Supports soft edges and reversals.
 44. **AceStepTensorUnaryOp** (`tensor_unary_op_node.py`): Transforms a single input tensor `A` with an optional mask. Modes: `gate`, `scale_masked`, `noise_masked`, `fade_out`.
-45. **AceStepTensorMixer** (`tensor_mixer_node.py`): Consolidated Binary Toolbox for mixing two tensors `A` and `B`. Features 12+ modes (blend, inject, lerp, average, concat, etc.), universal masking, and silent sequence length synchronization.
+45. **AceStepGeniusLyricsSearch** (`genius_lyrics_node.py`): Fetches song lyrics from Genius.com using their official API. Requires a personal access token in `keys/genius_api_key.txt`.
+46. **AceStepTensorMixer** (`tensor_mixer_node.py`): Consolidated Binary Toolbox for mixing two tensors `A` and `B`. Features 12+ modes (blend, inject, lerp, average, concat, etc.), universal masking, and silent sequence length synchronization.
 
 ---
 

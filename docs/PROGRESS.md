@@ -27,6 +27,7 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepGroqLyrics` - `groq_lyrics_node.py`
 - [x] `AceStepOpenAILyrics` - `openai_lyrics_node.py`
 - [x] `AceStepClaudeLyrics` - `claude_lyrics_node.py`
+- [x] `AceStepGeniusLyricsSearch` - `genius_lyrics_node.py`
 - [x] `AceStepPerplexityLyrics` - `perplexity_lyrics_node.py`
 - [x] `AceStepLyricsFormatter` - `lyrics_formatter_node.py`
 - [x] `SaveText` - `save_text_node.py`
@@ -75,7 +76,7 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 
 ## Progress Statistics
 
-- **Total Nodes: 44/44 complete (100%)** ✅
+- **Total Nodes: 45/45 complete (100%)** ✅
 - **Refactoring: Complete** ✅
 - **Dynamic Loading: Functional** ✅
 
