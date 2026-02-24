@@ -57,7 +57,7 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepLoRAStatus` - `lora_status_node.py`
 - [x] `AceStepLoRALoader` - `lora_loader_node.py`
 - [x] `AceStepConditioningExplore` - `conditioning_explore_node.py`
-- [x] `AceStepAudioCodesDecoder` - `audio_codes_decode_node.py`
+- [x] `AceStepAudioCodesUnderstand` - `audio_codes_decode_node.py`
 - [x] `AceStepConditioningMixer` - `conditioning_mixer_node.py`
 - [x] `AceStepConditioningSave` - `conditioning_save_node.py`
 - [x] `AceStepConditioningLoad` - `conditioning_load_node.py`
