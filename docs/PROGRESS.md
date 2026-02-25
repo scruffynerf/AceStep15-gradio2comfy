@@ -72,6 +72,7 @@ All 30 planned nodes are implemented and refactored into a scalable project stru
 - [x] `AceStepTensorUnaryOp` - `tensor_unary_op_node.py`
 - [x] `AceStepTensorMixer` - `tensor_mixer_node.py`
 - [x] `AceStepTensorSave` - `tensor_save_node.py`
+- [x] `AceStepAudioCodesToLatent` - `audio_codes_to_latent_node.py`
 
 ---
 

@@ -84,6 +84,7 @@ All nodes have been implemented and refactored into individual files within the 
 44. **AceStepTensorMixer** (`tensor_mixer_node.py`): Consolidated Binary Toolbox for mixing two tensors `A` and `B`. Features 12+ modes (blend, inject, lerp, average, concat, etc.), universal masking, and silent sequence length synchronization.
 45. **AceStepGeniusLyricsSearch** (`genius_lyrics_node.py`): Fetches song lyrics from Genius.com using their official API. Requires a personal access token in `keys/genius_api_key.txt`.
 46. **AceStepAudioCodesUnderstand** (`audio_codes_decode_node.py`): Generatively reconstructs metadata and lyrics from token IDs (Audio Codes). Uses the Qwen LLM (via the CLIP port) in "understand" mode to interpret the latent semantics.
+47. **AceStepAudioCodesToLatent** (`audio_codes_to_latent_node.py`): Converts 5Hz audio codes into 25Hz latents. Reverses the tokenization process using the model's detokenizer, with robust OOB clamping and flexible input handling (List or String).
 
 ---
 
