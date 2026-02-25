@@ -27,10 +27,15 @@ class AceStepLatentToAudioCodes:
     
     @classmethod
     def IS_CHANGED(s, semantic_hints, model, latent_scaling):
-        # semantic_hints is a raw tensor
-        if semantic_hints is not None:
-            return f"{semantic_hints.shape}_{semantic_hints.abs().mean().item()}_{latent_scaling}"
-        return f"none_{latent_scaling}"
+        # Efficiently hash the tensor state
+        if semantic_hints is None: return "none"
+        import hashlib
+        # Hash based on: Shape, absolute mean, and scaling
+        try:
+            info = f"{semantic_hints.shape}_{semantic_hints.abs().mean().item()}_{latent_scaling}"
+            return hashlib.md5(info.encode()).hexdigest()
+        except:
+            return f"fallback_{latent_scaling}"
 
     def convert(self, semantic_hints, model, latent_scaling):
         # 1. Access the model and components
