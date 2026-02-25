@@ -29,6 +29,17 @@ class AceStepTuneTensorLoader:
 
     @classmethod
     def IS_CHANGED(s, tune_tensor_file, seed):
+        if tune_tensor_file == "none":
+            return "none"
+            
+        base_path = "output/conditioning"
+        if tune_tensor_file == "random":
+            return f"random_{seed}"
+            
+        path = os.path.join(base_path, tune_tensor_file)
+        if os.path.exists(path):
+            return f"{tune_tensor_file}_{os.path.getmtime(path)}"
+            
         return f"{tune_tensor_file}_{seed}"
 
     def load(self, tune_tensor_file, seed):

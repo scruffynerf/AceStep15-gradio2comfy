@@ -24,6 +24,14 @@ class AceStepLatentToAudioCodes:
     RETURN_NAMES = ("audio_codes",)
     FUNCTION = "convert"
     CATEGORY = "Scromfy/Ace-Step/audio"
+    
+    @classmethod
+    def IS_CHANGED(s, latent, model, latent_scaling):
+        # Latents are tensors; hash by shape and absolute mean to detect changes efficiently
+        samples = latent.get("samples")
+        if samples is not None:
+            return f"{samples.shape}_{samples.abs().mean().item()}_{latent_scaling}"
+        return f"none_{latent_scaling}"
 
     def convert(self, latent, model, latent_scaling):
         # 1. Access the model and components

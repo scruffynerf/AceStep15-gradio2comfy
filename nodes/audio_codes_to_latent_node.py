@@ -26,6 +26,13 @@ class AceStepAudioCodesToLatent:
     RETURN_NAMES = ("latent",)
     FUNCTION = "convert"
     CATEGORY = "Scromfy/Ace-Step/audio"
+    
+    @classmethod
+    def IS_CHANGED(s, audio_codes, model, latent_scaling):
+        # Audio codes are nested lists; use string hashing to detect any change in the sequence
+        import hashlib
+        code_str = str(audio_codes)
+        return hashlib.sha256(code_str.encode()).hexdigest() + f"_{latent_scaling}"
 
     def convert(self, audio_codes, model, latent_scaling):
         # 1. Parse input to flat int list

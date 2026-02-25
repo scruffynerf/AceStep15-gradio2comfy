@@ -29,6 +29,17 @@ class AceStepLyricsTensorLoader:
 
     @classmethod
     def IS_CHANGED(s, lyrics_file, seed):
+        if lyrics_file == "none":
+            return "none"
+            
+        base_path = "output/conditioning"
+        if lyrics_file == "random":
+            return f"random_{seed}"
+            
+        path = os.path.join(base_path, lyrics_file)
+        if os.path.exists(path):
+            return f"{lyrics_file}_{os.path.getmtime(path)}"
+            
         return f"{lyrics_file}_{seed}"
 
     def load(self, lyrics_file, seed):
