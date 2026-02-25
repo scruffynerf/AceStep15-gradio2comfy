@@ -1,6 +1,7 @@
 """AceStepLatentToAudioCodes node for ACE-Step"""
 import torch
 import logging
+import comfy.model_management
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class AceStepLatentToAudioCodes:
         device = comfy.model_management.get_torch_device()
         dtype = model.model.get_dtype()
         
-        samples = semantic_hints.to(device=device, dtype=dtype)
+        samples = semantic_hints.to(device=device, dtype=model_dtype) # Use model_dtype
         
         # Apply inverse scaling
         if latent_scaling != 1.0:
@@ -75,8 +76,7 @@ class AceStepLatentToAudioCodes:
             _, indices = tokenizer.tokenize(x)
             
             # Return as nested list [Batch, Time*Quantizers]
-            # This handles both combined (Q=1) and split (Q>1) codes consistently 
-            # while matching the user's loader format.
+            # Form: [[idx1, idx2, ...]] for B=1
             B = indices.shape[0]
             audio_codes = indices.reshape(B, -1).detach().cpu().tolist()
 

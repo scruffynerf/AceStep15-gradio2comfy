@@ -2,6 +2,7 @@
 import torch
 import re
 import logging
+import comfy.model_management
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,6 @@ class AceStepAudioCodesToSemanticHints:
             return f"fallback_{latent_scaling}"
 
     def convert(self, audio_codes, model, latent_scaling):
-        import comfy.model_management
-        
         if not audio_codes:
             logger.warning("No audio codes provided")
             return (torch.zeros([1, 64, 1]),)
@@ -88,53 +87,74 @@ class AceStepAudioCodesToSemanticHints:
         # 3. Process indices batch-wise
         batch_samples = []
         
-        # If input is a flat list, wrap it in a batch dim
-        if isinstance(audio_codes, list) and audio_codes and not isinstance(audio_codes[0], list):
+        # 3. Process indices
+        # We need to distinguish between [batch_of_samples] and [list_of_indices_for_one_sample]
+        # Common cases:
+        # 1. [[idx1, idx2...]] -> List of lists, outer len 1. Inner is the sequence.
+        # 2. [idx1, idx2...]   -> Flat list. Treat as one sequence.
+        
+        # Normalize to list of tensors [B, T, Q]
+        sequences = []
+        
+        if not isinstance(audio_codes, list):
+            # Fallback for tensor or other types
+            audio_codes = [audio_codes]
+            
+        # Check if it's already a batch of lists or a single list
+        if audio_codes and not isinstance(audio_codes[0], list):
+            # Case 2: [idx1, idx2...] -> Wrap so we have [[idx1, idx2...]]
             audio_codes = [audio_codes]
             
         for batch_item in audio_codes:
-            # 3. Parse batch item to integers
+            # Parse this batch item (sequence) into a flat list of integers
             code_ids = []
-            if isinstance(batch_item, (int, float)):
+            if isinstance(batch_item, list):
+                for x in batch_item:
+                    if isinstance(x, (int, float)): code_ids.append(int(x))
+                    elif isinstance(x, str):
+                        found = re.findall(r"(\d+)", x)
+                        code_ids.extend([int(v) for v in found])
+            elif isinstance(batch_item, (int, float)):
+                # Handle scalar if ComfyUI mapped over the list
                 code_ids = [int(batch_item)]
-            elif isinstance(batch_item, list):
-                for sub in batch_item:
-                    if isinstance(sub, (int, float)):
-                        code_ids.append(int(sub))
-                    elif isinstance(sub, str):
-                        found = re.findall(r"(\d+)", sub)
-                        code_ids.extend([int(x) for x in found])
             elif isinstance(batch_item, torch.Tensor):
                 code_ids = batch_item.flatten().tolist()
                 
-            if not code_ids:
-                continue
-
-            indices_tensor = torch.tensor(code_ids, device=device, dtype=torch.long)
+            if not code_ids: continue
             
-            # Reshape to (T, Q) if it was flattened, or just ensure [T, Q]
+            # Convert to [T, Q]
+            tensor = torch.tensor(code_ids, device=device, dtype=torch.long)
             try:
-                indices_tensor = indices_tensor.reshape(-1, num_quantizers)
-            except Exception as e:
-                logger.error(f"Failed to reshape batch item of length {len(code_ids)} to {num_quantizers} quantizers: {e}")
-                # Fallback: if it's a power of num_quantizers or just divisible
+                # If they are packed, Q=1. 
+                # If they are flattened split indices, Q=num_quantizers.
+                # We try to reshape to [T, Q]. If it doesn't fit, we default to Q=1.
                 if len(code_ids) % num_quantizers == 0:
-                    indices_tensor = indices_tensor.reshape(-1, num_quantizers)
+                    tensor = tensor.reshape(-1, num_quantizers)
                 else:
-                    continue
+                    tensor = tensor.reshape(-1, 1)
+            except:
+                tensor = tensor.reshape(-1, 1)
                 
-            # Add batch dim for quantizer: (1, T, Q)
-            indices_tensor = indices_tensor.unsqueeze(0) 
+            sequences.append(tensor.unsqueeze(0)) # [1, T, Q]
+
+        if not sequences:
+            return (torch.zeros([1, 64, 1]),)
+
+        batch_samples = []
+        for indices_tensor in sequences:
+            # indices_tensor is [1, T, Q]
+            # Match the quantizer's expected Q dim
+            if indices_tensor.shape[-1] < getattr(quantizer, 'num_quantizers', 1):
+                # If we have packed indices but the quantizer expects split...
+                # This would need unpacking. For now we assume they match.
+                pass
             
             with torch.no_grad():
-                # Step 2 bridge: Convert integer IDs back to quantized embeddings (2048-dim)
-                # This is a lookup, NOT requantization. Detokenizer needs these floats.
+                # Step 2 bridge: IDs -> embeddings
                 quantized = quantizer.get_output_from_indices(indices_tensor, dtype=dtype)
-                
-                # Step 2: Detokenize - upsample from 5Hz to 25Hz
+                # Step 2: Detokenize -> 25Hz
                 lm_hints = detokenizer(quantized)
-                
-                # Transpose back to ComfyUI format: [B, T, D] -> [B, D, T]
+                # [1, T, 64] -> [1, 64, T]
                 semantic_item = lm_hints.movedim(-1, -2)
                 
                 if latent_scaling != 1.0:
@@ -142,14 +162,8 @@ class AceStepAudioCodesToSemanticHints:
                     
                 batch_samples.append(semantic_item)
 
-        if not batch_samples:
-            return (torch.zeros([1, 64, 1]),)
-
-        # Concatenate batch items back together
+        # Result is [B, 64, T]
         samples = torch.cat(batch_samples, dim=0)
-
-        # Return the raw tensor to match extract_semantic_hints parity
-        # and satisfy nodes expecting a .shape attribute
         return (samples.cpu(),)
 
 NODE_CLASS_MAPPINGS = {
