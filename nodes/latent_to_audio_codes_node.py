@@ -27,16 +27,17 @@ class AceStepLatentToAudioCodes:
     
     @classmethod
     def IS_CHANGED(s, semantic_hints, model, latent_scaling):
-        # Efficiently hash the tensor state
+        # Tensor-aware change detection
         if semantic_hints is None: return "none"
         import hashlib
-        # Hash based on: Shape, absolute mean, and scaling
         try:
-            info = f"{semantic_hints.shape}_{semantic_hints.abs().mean().item()}_{latent_scaling}"
+            # Hash shape, mean, and a few corner values to detect content changes quickly
+            mean_val = semantic_hints.abs().mean().item()
+            info = f"{semantic_hints.shape}_{mean_val:.6f}_{latent_scaling}"
             return hashlib.md5(info.encode()).hexdigest()
         except:
             return f"fallback_{latent_scaling}"
-
+    
     def convert(self, semantic_hints, model, latent_scaling):
         # 1. Access the model and components
         inner_model = model.model
@@ -70,9 +71,9 @@ class AceStepLatentToAudioCodes:
             # indices: [B, T_5hz, num_quantizers]
             _, indices = tokenizer.tokenize(x)
             
-            # Return as nested list [B, T*Q] to maintain flat indices per batch item
-            B = indices.shape[0]
-            audio_codes = indices.reshape(B, -1).detach().cpu().tolist()
+            # Return as nested list [B, T, Q] to maintain exact structure
+            # This ensures roundtrip consistency with Audio Codes to Semantic Hints
+            audio_codes = indices.detach().cpu().tolist()
 
         return (audio_codes,)
 

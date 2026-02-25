@@ -29,14 +29,23 @@ class AceStepAudioCodesToSemanticHints:
     
     @classmethod
     def IS_CHANGED(s, audio_codes, model, latent_scaling):
-        # Efficiently hash the input structure without full string conversion
+        # Content-aware change detection
         if not audio_codes: return "none"
         import hashlib
-        # Hash based on: Outer list length, Inner list length (of first item), Item count (of first item)
-        # and a slice of the first 10 values to detect selection changes
         try:
-            sample = str(audio_codes[0][:10]) if audio_codes and audio_codes[0] else "empty"
-            info = f"{len(audio_codes)}_{len(audio_codes[0]) if audio_codes[0] else 0}_{sample}_{latent_scaling}"
+            # Hash samples from the lists to detect value changes
+            # Includes length and a few samples from start/mid/end
+            if isinstance(audio_codes[0], list):
+                item = audio_codes[0]
+                L = len(item)
+                # Sample values at start, middle and end
+                s1 = str(item[0]) if L > 0 else "e"
+                s2 = str(item[L//2]) if L > 1 else "m"
+                s3 = str(item[-1]) if L > 2 else "l"
+                info = f"{len(audio_codes)}_{L}_{s1}_{s2}_{s3}_{latent_scaling}"
+            else:
+                # Flat list
+                info = f"{len(audio_codes)}_{str(audio_codes[:5])}_{latent_scaling}"
             return hashlib.md5(info.encode()).hexdigest()
         except:
             return f"fallback_{latent_scaling}"
@@ -67,10 +76,13 @@ class AceStepAudioCodesToSemanticHints:
         dtype = model.model.get_dtype()
         
         # 2. Determine quantizer structure
-        # In Ace-Step 1.5, the 'audio_codes' are stored as COMBINED indices (one per timestep).
-        # Therefore, we always reshape to (-1, 1) when feeding back into the quantizer
-        # if using combined indices.
         num_quantizers = 1
+        if hasattr(quantizer, "layers"):
+            num_quantizers = len(quantizer.layers)
+        elif hasattr(quantizer, "_levels"):
+            num_quantizers = 1 # FSQ usually outputs one scalar index
+        elif hasattr(quantizer, "num_quantizers"):
+            num_quantizers = quantizer.num_quantizers
         
         # 3. Process indices batch-wise
         batch_samples = []
@@ -99,25 +111,29 @@ class AceStepAudioCodesToSemanticHints:
 
             indices_tensor = torch.tensor(code_ids, device=device, dtype=torch.long)
             
-            # Reshape to (T, Q)
+            # Reshape to (T, Q) if it was flattened, or just ensure [T, Q]
             try:
                 indices_tensor = indices_tensor.reshape(-1, num_quantizers)
             except Exception as e:
                 logger.error(f"Failed to reshape batch item of length {len(code_ids)} to {num_quantizers} quantizers: {e}")
-                continue
+                # Fallback: if it's a power of num_quantizers or just divisible
+                if len(code_ids) % num_quantizers == 0:
+                    indices_tensor = indices_tensor.reshape(-1, num_quantizers)
+                else:
+                    continue
                 
-            # Add batch dim for quantizer
-            indices_tensor = indices_tensor.unsqueeze(0) # (1, T, 1)
+            # Add batch dim for quantizer: (1, T, Q)
+            indices_tensor = indices_tensor.unsqueeze(0) 
             
             with torch.no_grad():
-                # get_output_from_indices returns (1, T, 2048)
-                # It handles the mapping from one integer to the multi-level FSQ vector
-                # quantized = quantizer.get_output_from_indices(indices_tensor, dtype=dtype)
-
-                # detokenizer: (1, T_5hz, 2048) -> (1, T_25hz, 64)
-                lm_hints = detokenizer(indices_tensor)
+                # Step 2 bridge: Convert integer IDs back to quantized embeddings (2048-dim)
+                # This is a lookup, NOT requantization. Detokenizer needs these floats.
+                quantized = quantizer.get_output_from_indices(indices_tensor, dtype=dtype)
                 
-                # Convert to ComfyUI format: [1, T, 64] -> [1, 64, T]
+                # Step 2: Detokenize - upsample from 5Hz to 25Hz
+                lm_hints = detokenizer(quantized)
+                
+                # Transpose back to ComfyUI format: [B, T, D] -> [B, D, T]
                 semantic_item = lm_hints.movedim(-1, -2)
                 
                 if latent_scaling != 1.0:
