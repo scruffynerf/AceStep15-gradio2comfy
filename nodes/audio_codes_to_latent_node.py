@@ -97,6 +97,9 @@ class AceStepAudioCodesToLatent:
             # ComfyUI audio latent format: [B, C, T]
             samples = latents.transpose(1, 2) # [1, 64, T_25hz]
             
+            # Log stats to debug silent audio (range check)
+            logger.info(f"AudioCode Latents Stats - min: {samples.min().item():.4f}, max: {samples.max().item():.4f}, abs mean: {samples.abs().mean().item():.6f}")
+
         return ({"samples": samples.cpu()},)
 
 NODE_CLASS_MAPPINGS = {
