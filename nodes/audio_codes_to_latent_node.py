@@ -7,8 +7,9 @@ logger = logging.getLogger(__name__)
 
 class AceStepAudioCodesToLatent:
     """
-    Convert ACE-Step audio codes (5Hz) to 25Hz latents.
-    Reverses the tokenization process using the model's detokenizer.
+    Convert ACE-Step audio codes (5Hz) to LM-hint latents (25Hz).
+    These latents describe the structural acoustic features and are used 
+    for conditioning the DiT, as well as for structural manipulation.
     """
     
     @classmethod
@@ -102,11 +103,9 @@ class AceStepAudioCodesToLatent:
             if latent_scaling != 1.0:
                 samples = samples * latent_scaling
 
-            # ACE-Step VAE (Oobleck) prefers float32 according to user
-            samples = samples.to(torch.float32)
 
-            # Log stats to debug silent audio (range check)
-            logger.info(f"AudioCode Latents Stats - min: {samples.min().item():.4f}, max: {samples.max().item():.4f}, abs mean: {samples.abs().mean().item():.6f}")
+            # Log stats
+            logger.info(f"AudioCode Latents Stats - min: {samples.min().item():.4f}, max: {samples.max().item():.4f}, abs mean: {samples.abs().mean().item():.6f}, std: {samples.std().item():.6f}")
 
         return ({"samples": samples.cpu()},)
 
