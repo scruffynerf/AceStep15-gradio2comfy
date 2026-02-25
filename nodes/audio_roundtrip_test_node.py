@@ -78,8 +78,10 @@ class AceStepAudioCodesToSemanticHints_Test:
             
             with torch.no_grad():
                 # Get embeddings from indices
+                # get_output_from_indices does a float32 codebook lookup then feeds
+                # project_out which has bfloat16 weights — cast quantizer to match
+                tokenizer.quantizer.to(dtype=dtype)
                 quantized = tokenizer.quantizer.get_output_from_indices(indices)
-                quantized = quantized.to(dtype=dtype)
                 # Detokenize to 25Hz
                 lm_hints = detokenizer(quantized)
                 # [1, T, 64] -> [1, 64, T]
