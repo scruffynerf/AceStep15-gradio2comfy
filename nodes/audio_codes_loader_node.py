@@ -29,6 +29,18 @@ class AceStepAudioCodesLoader:
 
     @classmethod
     def IS_CHANGED(s, audio_codes_file, seed):
+        if audio_codes_file == "none":
+            return "none"
+        
+        base_path = "output/conditioning"
+        if audio_codes_file == "random":
+            # For random, the seed is the determinant
+            return f"random_{seed}"
+            
+        path = os.path.join(base_path, audio_codes_file)
+        if os.path.exists(path):
+            return f"{audio_codes_file}_{os.path.getmtime(path)}"
+        
         return f"{audio_codes_file}_{seed}"
 
     def load(self, audio_codes_file, seed):
