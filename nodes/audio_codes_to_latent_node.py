@@ -26,7 +26,7 @@ class AceStepAudioCodesToLatent:
     FUNCTION = "convert"
     CATEGORY = "Scromfy/Ace-Step/audio"
 
-    def convert(self, audio_codes, model):
+    def convert(self, audio_codes, model, latent_scaling):
         # 1. Parse input to flat int list
         code_ids = []
         for item in audio_codes:
