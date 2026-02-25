@@ -31,7 +31,7 @@ class AceStepLatentToAudioCodes:
         if semantic_hints is None: return "none"
         import hashlib
         try:
-            # Hash shape, mean, and a few corner values to detect content changes quickly
+            # Hash shape and mean to detect content changes quickly
             mean_val = semantic_hints.abs().mean().item()
             info = f"{semantic_hints.shape}_{mean_val:.6f}_{latent_scaling}"
             return hashlib.md5(info.encode()).hexdigest()
@@ -53,15 +53,18 @@ class AceStepLatentToAudioCodes:
         model_dtype = next(inner_model.parameters()).dtype
 
         # 2. Prepare latents
-        # semantic_hints is a raw tensor [B, D, T]
-        samples = semantic_hints.to(device)
+        # Source is [B, 64, T]. Tokenizer expects [B, T, 64]
+        device = comfy.model_management.get_torch_device()
+        dtype = model.model.get_dtype()
         
-        # Apply inverse scaling if needed (to get back to detokenizer-native space)
+        samples = semantic_hints.to(device=device, dtype=dtype)
+        
+        # Apply inverse scaling
         if latent_scaling != 1.0:
             samples = samples / latent_scaling
             
-        # Transpose back to [1, T_25hz, 64]
-        x = samples.transpose(1, 2).to(model_dtype)
+        # Parity with extract_semantic_hints: movedim(-1, -2)
+        x = samples.movedim(-1, -2)
 
         # 3. Tokenize
         with torch.no_grad():
@@ -71,9 +74,11 @@ class AceStepLatentToAudioCodes:
             # indices: [B, T_5hz, num_quantizers]
             _, indices = tokenizer.tokenize(x)
             
-            # Return as nested list [B, T, Q] to maintain exact structure
-            # This ensures roundtrip consistency with Audio Codes to Semantic Hints
-            audio_codes = indices.detach().cpu().tolist()
+            # Return as nested list [Batch, Time*Quantizers]
+            # This handles both combined (Q=1) and split (Q>1) codes consistently 
+            # while matching the user's loader format.
+            B = indices.shape[0]
+            audio_codes = indices.reshape(B, -1).detach().cpu().tolist()
 
         return (audio_codes,)
 

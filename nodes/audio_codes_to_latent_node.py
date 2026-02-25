@@ -77,12 +77,13 @@ class AceStepAudioCodesToSemanticHints:
         
         # 2. Determine quantizer structure
         num_quantizers = 1
-        if hasattr(quantizer, "layers"):
-            num_quantizers = len(quantizer.layers)
-        elif hasattr(quantizer, "_levels"):
-            num_quantizers = 1 # FSQ usually outputs one scalar index
-        elif hasattr(quantizer, "num_quantizers"):
+        if hasattr(quantizer, "num_quantizers"):
             num_quantizers = quantizer.num_quantizers
+        elif hasattr(quantizer, "layers"):
+            num_quantizers = len(quantizer.layers)
+        elif hasattr(quantizer, "_levels") and not hasattr(quantizer, "layers"):
+            # Single-level FSQ
+            num_quantizers = 1
         
         # 3. Process indices batch-wise
         batch_samples = []
