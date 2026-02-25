@@ -109,7 +109,9 @@ class AceStepAudioCodesToLatent:
         # Concatenate batch items back together
         samples = torch.cat(batch_samples, dim=0)
 
-        return ({"samples": samples.cpu()},)
+        # Return the raw tensor to match extract_semantic_hints parity
+        # and satisfy nodes expecting a .shape attribute
+        return (samples.cpu(),)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepAudioCodesToLatent": AceStepAudioCodesToLatent,

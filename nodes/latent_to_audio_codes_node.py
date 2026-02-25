@@ -27,10 +27,9 @@ class AceStepLatentToAudioCodes:
     
     @classmethod
     def IS_CHANGED(s, semantic_hints, model, latent_scaling):
-        # Latents are tensors; hash by shape and absolute mean to detect changes efficiently
-        samples = semantic_hints.get("samples")
-        if samples is not None:
-            return f"{samples.shape}_{samples.abs().mean().item()}_{latent_scaling}"
+        # semantic_hints is a raw tensor
+        if semantic_hints is not None:
+            return f"{semantic_hints.shape}_{semantic_hints.abs().mean().item()}_{latent_scaling}"
         return f"none_{latent_scaling}"
 
     def convert(self, semantic_hints, model, latent_scaling):
@@ -48,8 +47,8 @@ class AceStepLatentToAudioCodes:
         model_dtype = next(inner_model.parameters()).dtype
 
         # 2. Prepare latents
-        # ComfyUI latent shape: [B, C, T] -> [1, 64, T_25hz]
-        samples = latent["samples"].to(device)
+        # semantic_hints is a raw tensor [B, D, T]
+        samples = semantic_hints.to(device)
         
         # Apply inverse scaling if needed (to get back to detokenizer-native space)
         if latent_scaling != 1.0:
