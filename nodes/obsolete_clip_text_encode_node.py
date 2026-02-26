@@ -18,7 +18,7 @@ class AceStepCLIPTextEncode:
     
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "encode"
-    CATEGORY = "Scromfy/Ace-Step/text"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def encode(self, clip, text, metadata, lyrics=""):
         # Make a copy of metadata to avoid modifying the input dict

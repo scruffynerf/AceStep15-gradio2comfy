@@ -23,7 +23,7 @@ class AceStepAudioAnalyzer:
     RETURN_TYPES = ("INT", "STRING", "FLOAT")
     RETURN_NAMES = ("bpm", "key_scale", "duration")
     FUNCTION = "analyze"
-    CATEGORY = "Scromfy/Ace-Step/audio"
+    CATEGORY = "Scromfy/Ace-Step/metadata"
 
     def analyze(self, audio):
         """Analyze audio and return BPM, key/scale, duration"""

@@ -35,5 +35,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStep5HzLMConfig": "5Hz LM Config",
+    "AceStep5HzLMConfig": "5Hz LLM Config",
 }

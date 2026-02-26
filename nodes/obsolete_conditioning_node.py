@@ -17,7 +17,7 @@ class AceStepConditioning:
     
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "combine"
-    CATEGORY = "Scromfy/Ace-Step/advanced"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def combine(self, text_cond, lyrics=None, timbre_audio=None):
         # Conditioning is a list of lists: [[cond, {"pooled_output": ...}]]

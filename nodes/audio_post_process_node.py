@@ -22,7 +22,7 @@ class AceStepPostProcess:
     RETURN_TYPES = ("AUDIO",)
     RETURN_NAMES = ("audio",)
     FUNCTION = "process"
-    CATEGORY = "Scromfy/Ace-Step/post-process"
+    CATEGORY = "Scromfy/Ace-Step/audio"
 
     def process(self, audio, de_esser_strength=0.12, spectral_smoothing=0.08):
         try:

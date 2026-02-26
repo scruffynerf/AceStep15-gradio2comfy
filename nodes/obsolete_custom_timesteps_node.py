@@ -14,7 +14,7 @@ class AceStepCustomTimesteps:
     
     RETURN_TYPES = ("SIGMAS",)
     FUNCTION = "parse"
-    CATEGORY = "Scromfy/Ace-Step/advanced"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def parse(self, timesteps):
         try:
