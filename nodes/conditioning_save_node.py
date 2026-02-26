@@ -28,12 +28,12 @@ class AceStepConditioningSave:
         # 1. Find the next available counter for the prefix to prevent overwriting
         counter = 1
         # We check for the existence of ANY of the potential files for this prefix
-        # We assume if the 'tune' file exists, the whole bundle exists or we shouldn't overwrite it.
+        # We assume if the 'timbre' file exists, the whole bundle exists or we shouldn't overwrite it.
         while True:
             candidate_base = f"{filename_prefix}_{counter:04d}"
             # Check if any of our expected files exist with this base
             exists = False
-            for ext in ["_tune.safetensors", "_pooled.safetensors", "_lyrics.safetensors", "_codes.json"]:
+            for ext in ["_timbre.safetensors", "_pooled.safetensors", "_lyrics.safetensors", "_codes.json"]:
                 if os.path.exists(os.path.join(save_path, f"{candidate_base}{ext}")):
                     exists = True
                     break
@@ -43,7 +43,7 @@ class AceStepConditioningSave:
 
         for i, item in enumerate(conditioning):
             # Handle list of conditionings (batch)
-            tune_tensor = item[0]
+            timbre_tensor = item[0]
             metadata = item[1]
             
             # Use suffix for batch if more than 1 (inner batch index)
@@ -59,8 +59,8 @@ class AceStepConditioningSave:
             suffix = f"_{i}" if len(conditioning) > 1 else ""
             base_name = f"{candidate_base}{suffix}"
             
-            # 1. Tune Tensor (safetensors)
-            save_file({"tune": tune_tensor}, os.path.join(save_path, f"{base_name}_tune.safetensors"))
+            # 1. Timbre Tensor (safetensors)
+            save_file({"timbre": timbre_tensor}, os.path.join(save_path, f"{base_name}_timbre.safetensors"))
             
             # 2. Pooled Output (safetensors if tensor)
             pooled = metadata.get("pooled_output")

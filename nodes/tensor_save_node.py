@@ -3,14 +3,14 @@ import os
 from safetensors.torch import save_file
 
 class AceStepTensorSave:
-    """Save an individual conditioning tensor (tune or lyrics) to disk"""
+    """Save an individual conditioning tensor (timbre or lyrics) to disk"""
     
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
                 "tensor": ("TENSOR",),
-                "save_type": (["tune", "lyric"], {"default": "tune"}),
+                "save_type": (["timbre", "lyric"], {"default": "timbre"}),
                 "save_path": ("STRING", {"default": "output/conditioning"}),
                 "filename_prefix": ("STRING", {"default": "mixed_tensor"}),
             }
@@ -24,9 +24,9 @@ class AceStepTensorSave:
     def save(self, tensor, save_type, save_path, filename_prefix):
         os.makedirs(save_path, exist_ok=True)
 
-        if save_type == "tune":
-            suffix = "_tune.safetensors"
-            key = "tune"
+        if save_type == "timbre":
+            suffix = "_timbre.safetensors"
+            key = "timbre"
         else:
             suffix = "_lyrics.safetensors"
             key = "lyrics"

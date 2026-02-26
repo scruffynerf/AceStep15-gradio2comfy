@@ -13,7 +13,7 @@ class AceStepConditioningCombine:
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             },
             "optional": {
-                "tune_tensor": ("TENSOR",),
+                "timbre_tensor": ("TENSOR",),
                 "pooled_output": ("TENSOR",),
                 "lyrics_tensor": ("TENSOR",),
                 "audio_codes": ("LIST",),
@@ -24,7 +24,7 @@ class AceStepConditioningCombine:
     FUNCTION = "combine"
     CATEGORY = "Scromfy/Ace-Step/advanced"
 
-    def combine(self, empty_mode, seed, tune_tensor=None, pooled_output=None, lyrics_tensor=None, audio_codes=None):
+    def combine(self, empty_mode, seed, timbre_tensor=None, pooled_output=None, lyrics_tensor=None, audio_codes=None):
         # If both are missing, we use length 1
         # If one is present, we match its length
         
@@ -33,12 +33,12 @@ class AceStepConditioningCombine:
         device = "cpu"
         
         # 1. Inspect available tensors for dimensions
-        if tune_tensor is not None:
-            if tune_tensor.dim() == 2:
-                tune_tensor = tune_tensor.unsqueeze(0)
-            batch_size = tune_tensor.shape[0]
-            seq_len = tune_tensor.shape[1]
-            device = tune_tensor.device
+        if timbre_tensor is not None:
+            if timbre_tensor.dim() == 2:
+                timbre_tensor = timbre_tensor.unsqueeze(0)
+            batch_size = timbre_tensor.shape[0]
+            seq_len = timbre_tensor.shape[1]
+            device = timbre_tensor.device
         elif lyrics_tensor is not None:
             if lyrics_tensor.dim() == 2:
                 lyrics_tensor = lyrics_tensor.unsqueeze(0)
@@ -87,8 +87,8 @@ class AceStepConditioningCombine:
                 return torch.randn((b, l, d), device=dev, generator=generator)
             return torch.zeros((b, l, d), device=dev)
 
-        if tune_tensor is None:
-            tune_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
+        if timbre_tensor is None:
+            timbre_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
             
         if lyrics_tensor is None:
             lyrics_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed + 1, is_lyrics=True)
@@ -99,7 +99,7 @@ class AceStepConditioningCombine:
             "audio_codes": audio_codes
         }
         
-        return ([[tune_tensor, metadata]],)
+        return ([[timbre_tensor, metadata]],)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepConditioningCombine": AceStepConditioningCombine,

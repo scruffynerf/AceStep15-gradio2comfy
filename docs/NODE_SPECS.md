@@ -66,19 +66,19 @@ All nodes have been implemented and refactored into individual files within the 
 34. **AceStepConditioningSave** (`conditioning_save_node.py`): Save individual conditioning components to separate files on disk.
 35. **AceStepConditioningLoad** (`conditioning_load_node.py`): Load and reconstruct conditioning from saved component files.
 36. **AceStepConditioningMixerLoader** (`conditioning_mixer_loader_node.py`): Granularly mix saved components from different files.
-    - **Optional Base**: `tune_tensor_file` can be set to "none", generating a zero/ones/random fallback.
+    - **Optional Base**: `timbre_tensor_file` can be set to "none", generating a zero/ones/random fallback.
     - **Fallback Modes**: `empty_mode` (zeros, ones, random) for missing tensors.
     - **Explicit Lyrics Fallback**: Prioritizes `nodes/includes/emptytensors/empty_lyrics.safetensors` for missing lyrics, with sequence length synchronization.
     - **Automation**: Supports "random" selection, seeds, and outputs a string summary.
-37. **AceStepTuneTensorLoader** (`tune_tensor_loader_node.py`): Load a tune conditioning tensor (formerly "main") from disk with random/seed support.
-38. **AceStepLyricsTensorLoader** (`lyrics_loader_node.py`): Load a lyrics conditioning tensor from disk with random/seed support.
+37. **AceStepTimbreTensorLoader** (`timbre_tensor_loader_node.py`): Load a timbre conditioning tensor (formerly "main") from disk with random/seed support.
+38. **AceStepLyricsTensorLoader** (`loader_lyrics_node.py`): Load a lyrics conditioning tensor from disk with random/seed support.
 39. **AceStepAudioCodesLoader** (`audio_codes_loader_node.py`): Load audio codes from disk with random/seed support.
 40. **AceStepConditioningCombine** (`conditioning_combine_node.py`): Assemble individual tensors and codes into a full conditioning object.
     - **Optional Inputs**: All inputs are optional.
     - **Dimensions**: Intelligently infers batch size and device from any provided component.
     - **Length Sync**: Fallback tensors (zeros/ones/random) automatically synchronize their sequence length to match other provided components.
     - **Explicit Fallback**: Inherits the `empty_lyrics.safetensors` prioritization logic.
-41. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Inverse of the Combiner. Splits a `CONDITIONING` object into Tune Tensor, Pooled Output, Lyrics Tensor, and Audio Codes list for individual processing.
+41. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Inverse of the Combiner. Splits a `CONDITIONING` object into Timbre Tensor, Pooled Output, Lyrics Tensor, and Audio Codes list for individual processing.
 42. **AceStepTensorMaskGenerator** (`tensor_mask_nodes.py`): Generates a `[1, N, 1]` mask using various modes (`all`, `none`, `fraction`, `range`, `ramp`, `window`). Supports soft edges and reversals.
 43. **AceStepTensorUnaryOp** (`tensor_unary_op_node.py`): Transforms a single input tensor `A` with an optional mask. Modes: `gate`, `scale_masked`, `noise_masked`, `fade_out`.
 44. **AceStepTensorMixer** (`tensor_mixer_node.py`): Consolidated Binary Toolbox for mixing two tensors `A` and `B`. Features 12+ modes (blend, inject, lerp, average, concat, etc.), universal masking, and silent sequence length synchronization.

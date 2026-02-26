@@ -20,7 +20,7 @@ class AceStepConditioningMixerLoader:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "tune_tensor_file": (get_conditioning_files("_tune.safetensors"),),
+                "timbre_tensor_file": (get_conditioning_files("_timbre.safetensors"),),
                 "pooled_output_file": (get_conditioning_files("_pooled.safetensors"),),
                 "lyrics_file": (get_conditioning_files("_lyrics.safetensors"),),
                 "audio_codes_file": (get_conditioning_files("_codes.json"),),
@@ -35,10 +35,10 @@ class AceStepConditioningMixerLoader:
     CATEGORY = "Scromfy/Ace-Step/advanced"
 
     @classmethod
-    def IS_CHANGED(s, tune_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
-        return f"{tune_tensor_file}_{pooled_output_file}_{lyrics_file}_{audio_codes_file}_{empty_mode}_{seed}"
+    def IS_CHANGED(s, timbre_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
+        return f"{timbre_tensor_file}_{pooled_output_file}_{lyrics_file}_{audio_codes_file}_{empty_mode}_{seed}"
 
-    def load_and_mix(self, tune_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
+    def load_and_mix(self, timbre_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
         base_path = "output/conditioning"
         rng = random.Random(seed)
         
@@ -51,20 +51,20 @@ class AceStepConditioningMixerLoader:
             return selected
 
         # Resolve randoms
-        tune_tensor_file = pick_file(tune_tensor_file, "_tune.safetensors")
+        timbre_tensor_file = pick_file(timbre_tensor_file, "_timbre.safetensors")
         pooled_output_file = pick_file(pooled_output_file, "_pooled.safetensors")
         lyrics_file = pick_file(lyrics_file, "_lyrics.safetensors")
         audio_codes_file = pick_file(audio_codes_file, "_codes.json")
 
-        # Determine Tune Tensor (Required base or generated default)
-        if tune_tensor_file != "none":
-            tune_path = os.path.join(base_path, tune_tensor_file)
-            tune_tensor = load_file(tune_path).get("tune")
+        # Determine Timbre Tensor (Required base or generated default)
+        if timbre_tensor_file != "none":
+            timbre_path = os.path.join(base_path, timbre_tensor_file)
+            timbre_tensor = load_file(timbre_path).get("timbre")
             # If it's 2D [L, D], unsqueeze to [1, L, D]
-            if tune_tensor.dim() == 2:
-                tune_tensor = tune_tensor.unsqueeze(0)
+            if timbre_tensor.dim() == 2:
+                timbre_tensor = timbre_tensor.unsqueeze(0)
         else:
-            tune_tensor = None
+            timbre_tensor = None
 
         metadata = {}
         
@@ -92,10 +92,10 @@ class AceStepConditioningMixerLoader:
         seq_len = 1
         device = "cpu"
         
-        if tune_tensor is not None:
-            batch_size = tune_tensor.shape[0]
-            seq_len = tune_tensor.shape[1]
-            device = tune_tensor.device
+        if timbre_tensor is not None:
+            batch_size = timbre_tensor.shape[0]
+            seq_len = timbre_tensor.shape[1]
+            device = timbre_tensor.device
         elif lyrics is not None:
             batch_size = lyrics.shape[0]
             seq_len = lyrics.shape[1]
@@ -142,36 +142,36 @@ class AceStepConditioningMixerLoader:
                 return torch.randn((b, l, d), device=dev, generator=generator)
             return torch.zeros((b, l, d), device=dev)
 
-        # If no tune_tensor, generate a default
-        if tune_tensor is None:
-            tune_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
-            base_tune = "placeholder"
+        # If no timbre_tensor, generate a default
+        if timbre_tensor is None:
+            timbre_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
+            base_timbre = "placeholder"
         else:
-            base_tune = tune_tensor_file.replace("_tune.safetensors", "")
+            base_timbre = timbre_tensor_file.replace("_timbre.safetensors", "")
 
         # Ensure lyrics is a tensor if missing
         if lyrics is None:
             lyrics = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed + 1, is_lyrics=True)
             metadata["conditioning_lyrics"] = lyrics
             
-        # Construct filename-safe info string: tune_pool(if any)_lyrics_codes
+        # Construct filename-safe info string: timbre_pool(if any)_lyrics_codes
         def get_base(filename, suffix):
             if filename == "none": return None
             return filename.replace(suffix, "")
 
-        # base_tune already defined above in the new logic
+        # base_timbre already defined above in the new logic
         base_pool = get_base(pooled_output_file, "_pooled.safetensors")
         base_lyrics = get_base(lyrics_file, "_lyrics.safetensors")
         base_codes = get_base(audio_codes_file, "_codes.json")
         
-        parts = [base_tune]
+        parts = [base_timbre]
         if base_pool: parts.append(base_pool)
         parts.append(base_lyrics if base_lyrics else "nolyrics")
         parts.append(base_codes if base_codes else "noaudiocodes")
         
         filename_info = "_".join(parts)
             
-        return ([[tune_tensor, metadata]], filename_info)
+        return ([[timbre_tensor, metadata]], filename_info)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepConditioningMixerLoader": AceStepConditioningMixerLoader,
