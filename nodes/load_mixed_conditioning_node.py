@@ -21,10 +21,9 @@ class AceStepConditioningMixerLoader:
         return {
             "required": {
                 "timbre_tensor_file": (get_conditioning_files("_timbre.safetensors"),),
-                "pooled_output_file": (get_conditioning_files("_pooled.safetensors"),),
                 "lyrics_file": (get_conditioning_files("_lyrics.safetensors"),),
                 "audio_codes_file": (get_conditioning_files("_codes.json"),),
-                "empty_mode": (["zeros", "ones", "random"], {"default": "zeros"}),
+                "empty_mode": (["silence", "zeros", "ones", "random"], {"default": "silence"}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
             }
         }
@@ -52,7 +51,6 @@ class AceStepConditioningMixerLoader:
 
         # Resolve randoms
         timbre_tensor_file = pick_file(timbre_tensor_file, "_timbre.safetensors")
-        pooled_output_file = pick_file(pooled_output_file, "_pooled.safetensors")
         lyrics_file = pick_file(lyrics_file, "_lyrics.safetensors")
         audio_codes_file = pick_file(audio_codes_file, "_codes.json")
 
@@ -69,11 +67,6 @@ class AceStepConditioningMixerLoader:
         metadata = {}
         
         # Load other components
-        pooled = None
-        if pooled_output_file != "none":
-            pooled = load_file(os.path.join(base_path, pooled_output_file)).get("pooled")
-            metadata["pooled_output"] = pooled
-            
         lyrics = None
         if lyrics_file != "none":
             lyrics = load_file(os.path.join(base_path, lyrics_file)).get("lyrics")
@@ -100,21 +93,25 @@ class AceStepConditioningMixerLoader:
             batch_size = lyrics.shape[0]
             seq_len = lyrics.shape[1]
             device = lyrics.device
-        elif pooled is not None:
-            batch_size = pooled.shape[0]
-            device = pooled.device
 
         # Helper to create empty tensors
         def create_empty(b, l, d, dev, mode, s, is_lyrics=False):
             # Check for explicit empty lyrics file if requested or as primary fallback for lyrics
-            if is_lyrics:
+            if is_lyrics or mode == "silence":
                 try:
                     # Resolve path relative to this file
                     base_dir = os.path.dirname(__file__)
-                    empty_path = os.path.join(base_dir, "includes", "emptytensors", "empty_lyrics.safetensors")
+                    if mode == "silence":
+                        filename = "silence.safetensors"
+                    else:
+                        filename = "empty_lyrics.safetensors"
+                    empty_path = os.path.join(base_dir, "includes", "emptytensors", filename)
                     if os.path.exists(empty_path):
                         from safetensors.torch import load_file
-                        loaded = load_file(empty_path).get("lyrics")
+                        if filename == "silence.safetensors":
+                            loaded = load_file(empty_path).get("silence")
+                        else:
+                            loaded = load_file(empty_path).get("lyrics")
                         if loaded is not None:
                             # Ensure it has batch dim
                             if loaded.dim() == 2:
@@ -130,7 +127,7 @@ class AceStepConditioningMixerLoader:
                                 
                             return loaded.to(dev)
                 except Exception as e:
-                    print(f"AceStepMixerLoader: Failed to load empty_lyrics.safetensors: {e}")
+                    print(f"AceStepMixerLoader: Failed to load safetensors from includes/emptytensors: {e}")
 
             if mode == "zeros":
                 return torch.zeros((b, l, d), device=dev)
@@ -145,29 +142,27 @@ class AceStepConditioningMixerLoader:
         # If no timbre_tensor, generate a default
         if timbre_tensor is None:
             timbre_tensor = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed)
-            base_timbre = "placeholder"
+            base_timbre = empty_mode
         else:
             base_timbre = timbre_tensor_file.replace("_timbre.safetensors", "")
 
         # Ensure lyrics is a tensor if missing
         if lyrics is None:
-            lyrics = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed + 1, is_lyrics=True)
+            lyrics = create_empty(batch_size, seq_len, 1024, device, empty_mode, seed, is_lyrics=True)
             metadata["conditioning_lyrics"] = lyrics
             
-        # Construct filename-safe info string: timbre_pool(if any)_lyrics_codes
+        # Construct filename-safe info string: timbre_lyrics_codes
         def get_base(filename, suffix):
             if filename == "none": return None
             return filename.replace(suffix, "")
 
         # base_timbre already defined above in the new logic
-        base_pool = get_base(pooled_output_file, "_pooled.safetensors")
         base_lyrics = get_base(lyrics_file, "_lyrics.safetensors")
         base_codes = get_base(audio_codes_file, "_codes.json")
         
         parts = [base_timbre]
-        if base_pool: parts.append(base_pool)
-        parts.append(base_lyrics if base_lyrics else "nolyrics")
-        parts.append(base_codes if base_codes else "noaudiocodes")
+        parts.append(base_lyrics if base_lyrics else f"{empty_mode}_lyrics")
+        parts.append(base_codes if base_codes else f"nocodes")
         
         filename_info = "_".join(parts)
             
