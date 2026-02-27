@@ -1,6 +1,5 @@
 """
 ACE-Step Custom Nodes for ComfyUI
-Complete self-contained node package for ACE-Step 1.5 music generation
 """
 import os
 import importlib
@@ -10,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
+WEB_DIRECTORY = "./web"
 
 def load_nodes():
     nodes_dir = os.path.join(os.path.dirname(__file__), "nodes")
@@ -30,6 +30,6 @@ def load_nodes():
 
 load_nodes()
 
-__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
 
 print(f"🎵 ACE-Step Nodes loaded: {len(NODE_CLASS_MAPPINGS)} nodes registered")

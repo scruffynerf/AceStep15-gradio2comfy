@@ -308,7 +308,7 @@ class AceStepLoRALoader:
 
     RETURN_TYPES = ("MODEL",)
     FUNCTION = "apply_lora"
-    CATEGORY = "Scromfy/Ace-Step/TBD"
+    CATEGORY = "Scromfy/Ace-Step/loaders"
 
     def apply_lora(self, ace_model, lora_name, strength=1.0, mode="auto_clean", debug=False):
         if safetensors_load is None:
