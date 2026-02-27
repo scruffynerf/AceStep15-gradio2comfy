@@ -94,7 +94,7 @@ class RadioPlayerNode:
     RETURN_TYPES = ()
     OUTPUT_NODE = True
     FUNCTION = "run"
-    CATEGORY = "audio"
+    CATEGORY = "Scromfy/Ace-Step/Radio"
 
     def run(self, folder: str, poll_interval_seconds: float = 60.0):
         return {}
