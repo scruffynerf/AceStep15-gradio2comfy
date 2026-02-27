@@ -18,7 +18,7 @@ function trackLabel(filename) {
 }
 
 function buildRadioWidget(node) {
-  console.log("[RadioPlayer] buildRadioWidget called for node", node.id);
+  //console.log("[RadioPlayer] buildRadioWidget called for node", node.id);
 
   const root = document.createElement("div");
   root.style.cssText = "background:#1a1a2e;border:1px solid #a78bfa;border-radius:6px;padding:8px;color:#e0e0e0;width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;";
@@ -205,7 +205,7 @@ app.registerExtension({
   name: "Comfy.RadioPlayer",
 
   nodeCreated(node) {
-    console.log("[RadioPlayer] nodeCreated fired, comfyClass =", node.comfyClass, "type =", node.type);
+    //console.log("[RadioPlayer] nodeCreated fired, comfyClass =", node.comfyClass, "type =", node.type);
     if (node.comfyClass !== "RadioPlayer" && node.type !== "RadioPlayer") return;
     console.log("[RadioPlayer] Matched RadioPlayer node – building widget");
 
@@ -218,16 +218,16 @@ app.registerExtension({
         setValue() { },
       });
       domWidget.serialize = false;
-      console.log("[RadioPlayer] addDOMWidget succeeded", domWidget);
+      //console.log("[RadioPlayer] addDOMWidget succeeded", domWidget);
     } catch (e) {
-      console.error("[RadioPlayer] addDOMWidget failed:", e);
+      //console.error("[RadioPlayer] addDOMWidget failed:", e);
       return;
     }
 
     setTimeout(() => {
       const folderW = node.widgets?.find(w => w.name === "folder");
       const intervalW = node.widgets?.find(w => w.name === "poll_interval_seconds");
-      console.log("[RadioPlayer] widgets:", node.widgets?.map(w => w.name));
+      //console.log("[RadioPlayer] widgets:", node.widgets?.map(w => w.name));
 
       if (!folderW) { console.warn("[RadioPlayer] No folder widget found"); return; }
 

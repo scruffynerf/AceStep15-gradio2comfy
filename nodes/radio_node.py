@@ -16,7 +16,7 @@ async def scan_folder(request: web.Request) -> web.Response:
     if not folder:
         return web.json_response({"error": "No folder specified"}, status=400)
 
-    folder_path = Path("./output/". folder)
+    folder_path = Path("./output/" + folder)
     if not folder_path.is_dir():
         return web.json_response({"error": f"Folder not found: {folder}"}, status=404)
 
