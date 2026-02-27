@@ -8,13 +8,13 @@ from .includes.prompt_utils import (
 # Each category: (list, input_name, output_name, label used in combined prompt)
 _CATEGORIES = [
     (sorted(STYLE_PRESETS.keys()), "style",         "style_text",      "Style"),
-    (GENRES,                       "genre",          "genre_text",      "Genre"),
     (MOODS,                        "mood",           "mood_text",       "Mood"),
     (ADJECTIVES,                   "adjective",      "adjective_text",  "Adjective"),
     (CULTURES,                     "culture",        "culture_text",    "Culture"),
-    (INSTRUMENTS,                  "instrument",     "instrument_text", "Instrument"),
-    (PERFORMERS,                   "performer",      "performer_text",  "Performer"),
+    (GENRES,                       "genre",          "genre_text",      "Genre"),
     (VOCAL_QUALITIES,              "vocal_quality",  "vocal_text",      "Vocal"),
+    (PERFORMERS,                   "performer",      "performer_text",  "Performer"),
+    (INSTRUMENTS,                  "instrument",     "instrument_text", "Instrument"),
 ]
 
 def _choices_for(items):
@@ -74,7 +74,7 @@ class AceStepPromptGen:
             val = results[output_name]
             if val:
                 parts.append(val)
-        combined = ", ".join(parts)
+        combined = " ".join(parts)
 
         # Return order: prompt first, then each category in _CATEGORIES order
         return tuple(

@@ -12,7 +12,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
     KEYSCALE_ACCIDENTALS = ['', '#', 'b']
     KEYSCALE_MODES = ['major', 'minor']
 
-    VALID_KEYSCALES = [""]
+    VALID_KEYSCALES = ["Auto-detect"]
     for note in KEYSCALE_NOTES:
         for acc in KEYSCALE_ACCIDENTALS:
             for mode in KEYSCALE_MODES:
@@ -100,8 +100,8 @@ class ScromfyACEStep15TaskTextEncodeNode:
                 "lyrics": ("STRING", {"multiline": True, "default": ""}),
                 "bpm": ("INT", {"default": 0, "min": 0, "max": 300, "step": 1.0}),
                 "duration": ("FLOAT", {"default": 0, "min": 0, "max": 600.0, "step": 0.1}),
-                "keyscale": (s.VALID_KEYSCALES, {"default": ""}),
-                "timesignature": (s.VALID_TIME_SIGNATURES, {"default": ""}),
+                "keyscale": (s.VALID_KEYSCALES, {"default": "C major"}),
+                "timesignature": (s.VALID_TIME_SIGNATURES, {"default": "4/4"}),
                 "language": (s.VALID_LANGUAGES, {"default": "English"}),
                 "llm_audio_codes": ("BOOLEAN", {"default": True}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffff}),
@@ -145,7 +145,10 @@ class ScromfyACEStep15TaskTextEncodeNode:
 
         # Convert display name to numeric code
         timesig_code = self.TIMESIG_MAP.get(timesignature, timesignature)
+
         if bpm < 30: bpm = -1
+        
+        if keyscale == "Auto-detect": keyscale = ""
 
         tokens = clip.tokenize(text, 
                                 lyrics=lyrics, 
