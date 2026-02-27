@@ -34,10 +34,10 @@ class AceStepConditioningMixerLoader:
     CATEGORY = "Scromfy/Ace-Step/loaders"
 
     @classmethod
-    def IS_CHANGED(s, timbre_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
-        return f"{timbre_tensor_file}_{pooled_output_file}_{lyrics_file}_{audio_codes_file}_{empty_mode}_{seed}"
+    def IS_CHANGED(s, timbre_tensor_file, lyrics_file, audio_codes_file, empty_mode, seed):
+        return f"{timbre_tensor_file}_{lyrics_file}_{audio_codes_file}_{empty_mode}_{seed}"
 
-    def load_and_mix(self, timbre_tensor_file, pooled_output_file, lyrics_file, audio_codes_file, empty_mode, seed):
+    def load_and_mix(self, timbre_tensor_file, lyrics_file, audio_codes_file, empty_mode, seed):
         base_path = "output/conditioning"
         rng = random.Random(seed)
         
