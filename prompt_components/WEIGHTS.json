@@ -1,0 +1,10 @@
+{
+    "STYLE_PRESETS": 100,
+    "GENRES": 90,
+    "MOODS": 80,
+    "ADJECTIVES": 70,
+    "CULTURES": 60,
+    "VOCAL_QUALITIES": 50,
+    "PERFORMERS": 40,
+    "INSTRUMENTS": 30
+}

@@ -19,15 +19,17 @@ def _load_components():
         print(f"Warning: prompt_components directory not found at {components_dir}", file=sys.stderr)
         return
 
-    # Load ignore/hide/replace lists first
+    # Load ignore/hide/replace/weight lists first
     total_ignore = set()
     load_but_not_show = set()
-    replace_map = {}  # Key: original name to skip, Value: new name to use
-    reverse_replace = {} # Value: filename to look for, Key: name to assign
+    replace_map = {}
+    reverse_replace = {}
+    weights = {} # Component Name -> float Weight
     
     ignore_path = os.path.join(components_dir, "TOTALIGNORE.list")
     hide_path = os.path.join(components_dir, "LOADBUTNOTSHOW.list")
     replace_path = os.path.join(components_dir, "REPLACE.list")
+    weights_path = os.path.join(components_dir, "WEIGHTS.json")
     
     def read_list_file(p):
         if os.path.exists(p):
@@ -42,49 +44,42 @@ def _load_components():
         try:
             with open(replace_path, "r", encoding="utf-8") as f:
                 raw_map = json.load(f)
-                # Filter out examples and ensure the replacement file actually exists
-                # This prevents skipping the 'Original' if the 'Replacement' doesn't exist
                 for k, v in raw_map.items():
                     if k.startswith("EXAMPLE_") or v.startswith("EXAMPLE_"):
                         continue
-                        
-                    # Find if any file (txt or json) matches the replacement name v
-                    has_replacement = any(
-                        os.path.exists(os.path.join(components_dir, f"{v}{ext}"))
-                        for ext in [".txt", ".json"]
-                    )
-                    
+                    has_replacement = any(os.path.exists(os.path.join(components_dir, f"{v}{ext}")) for ext in [".txt", ".json"])
                     if has_replacement:
                         replace_map[k] = v
                         reverse_replace[v] = k
         except Exception as e:
             print(f"Error reading REPLACE.list: {e}", file=sys.stderr)
 
+    if os.path.exists(weights_path):
+        try:
+            with open(weights_path, "r", encoding="utf-8") as f:
+                weights = json.load(f)
+        except Exception as e:
+            print(f"Error reading WEIGHTS.json: {e}", file=sys.stderr)
+
     _HIDDEN_COMPONENTS = load_but_not_show
+    _COMPONENT_WEIGHTS = weights
 
     for filename in os.listdir(components_dir):
-        if filename in ("TOTALIGNORE.list", "LOADBUTNOTSHOW.list", "REPLACE.list"):
+        if filename in ("TOTALIGNORE.list", "LOADBUTNOTSHOW.list", "REPLACE.list", "WEIGHTS.json", "README.md"):
             continue
             
         name, ext = os.path.splitext(filename)
-        
-        # 1. Check Total Ignore
         if filename in total_ignore or name in total_ignore:
             continue
-            
-        # 2. Check if this file is the "Original" being replaced by something else
         if name in replace_map:
             continue
             
-        # 3. Determine actual assignment name (handle replacement)
         assign_name = reverse_replace.get(name, name)
-            
         full_path = os.path.join(components_dir, filename)
         if not os.path.isfile(full_path):
             continue
             
         ext = ext.lower()
-        
         try:
             if ext == ".json":
                 with open(full_path, "r", encoding="utf-8") as f:
@@ -99,17 +94,26 @@ def _load_components():
         except Exception as e:
             print(f"Error loading prompt component {filename}: {e}", file=sys.stderr)
 
+# Global caches for weighted sorting
+_COMPONENT_WEIGHTS = {}
+
+def sort_weighted(names):
+    """Sort a list of component names by weight (descending) then alphabetically."""
+    # Weight defaults to 0 if not listed. Higher weight comes first.
+    return sorted(names, key=lambda x: (-_COMPONENT_WEIGHTS.get(x, 0), x))
+
 # Initialize on import
 _load_components()
 
 def get_available_components():
-    """Return a list of all dynamically loaded component names (including hidden)."""
-    return sorted(list(_COMPONENTS.keys()))
+    """Return a list of all dynamically loaded component names (including hidden), sorted by weight."""
+    return sort_weighted(_COMPONENTS.keys())
 
 def get_visible_components():
-    """Return component names that should be shown in the UI."""
-    all_comps = get_available_components()
-    return [c for c in all_comps if c not in _HIDDEN_COMPONENTS]
+    """Return component names that should be shown in the UI, sorted by weight."""
+    all_comps = _COMPONENTS.keys()
+    visible = [c for c in all_comps if c not in _HIDDEN_COMPONENTS]
+    return sort_weighted(visible)
 
 def get_component(name, default=None):
     """Safely retrieve a component by name."""

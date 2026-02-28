@@ -38,6 +38,15 @@ Allows you to substitute an existing component name with a custom file.
   - It loads `MY_PROMPT_LIST.txt` instead.
   - It assigns it the name `ADJECTIVES` (so wildcards and UI labels remain unchanged).
 
+### 4. `WEIGHTS.json` (JSON)
+Controls the **order** in which components appear in the UI and their position in the final combined prompt.
+- **Format**: `{"COMPONENT_NAME": numerical_weight}`
+- **Rules**:
+  - Higher weights appear first.
+  - Items not listed default to weight `0`.
+  - Tied weights are sorted alphabetically.
+- **Example**: `{"STYLE_PRESETS": 100, "INSTRUMENTS": 10}` ensures Style is always at the top.
+
 ---
 
 ## 🔄 Refreshing
