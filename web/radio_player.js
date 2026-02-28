@@ -46,7 +46,7 @@ function buildRadioWidget(node) {
       <button data-id="stop" style="${BTN}">⏹</button>
     </div>
     <div style="color:#9ca3af;font-size:11px;margin-bottom:2px;">Lyrics</div>
-    <div id="lyricer-${node.id}" style="width:100%;"></div>
+    <div id="lyricer-${node.id}" class="rp-lyricer" style="width:100%;"></div>
     <div style="color:#9ca3af;font-size:11px;margin-bottom:2px;margin-top:8px;">Queue (oldest first)</div>
     <div class="rp-queue" style="max-height:110px;overflow-y:auto;border:1px solid #333;border-radius:4px;background:#111;"></div>
     <div class="rp-status" style="color:#6b7280;font-size:10px;margin-top:4px;">Idle – set folder path above</div>
@@ -74,8 +74,11 @@ function buildRadioWidget(node) {
   const btnPP = root.querySelector("[data-id=pp]");
 
   async function fetchLrc(url) {
+    const container = document.getElementById(lyricerElId);
+    if (!container) return;
+
     if (!url) {
-      document.getElementById(lyricerElId).innerHTML = "<div style='color:#555;text-align:center;padding:10px;'>No lyrics available</div>";
+      container.innerHTML = "<div class='rp-lyricer-nodata'>No lyrics available</div>";
       return;
     }
     try {
@@ -84,10 +87,11 @@ function buildRadioWidget(node) {
         const text = await res.text();
         lrc.setLrc(text);
       } else {
-        document.getElementById(lyricerElId).innerHTML = "<div style='color:#555;text-align:center;padding:10px;'>Lyrics not found</div>";
+        container.innerHTML = "<div class='rp-lyricer-nodata'>Lyrics not found</div>";
       }
     } catch (e) {
       console.error("[RadioPlayer] Error fetching lyrics:", e);
+      container.innerHTML = "<div class='rp-lyricer-nodata'>Error loading lyrics</div>";
     }
   }
 
