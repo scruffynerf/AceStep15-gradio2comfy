@@ -75,9 +75,11 @@ class AceStepRandomLyrics:
                 except Exception:
                     lyrics = None
 
-                if lyrics and lyrics.strip() and ("[chorus]" in lyrics.lower() or "[verse " in lyrics.lower()):
-                    print(f"[RandomLyrics] Found: '{title}' by {artist} (id={song_id}, attempt {attempts})")
-                    return (lyrics, title, artist)
+                if lyrics and lyrics.strip():
+                    lowerlyrics = lyrics.lower()
+                    if ("[chorus]" in lowerlyrics or "[verse " in lowerlyrics or "[bridge]" in lowerlyrics or "[outro]" in lowerlyrics or "[intro]" in lowerlyrics or "[Hook]" in lowerlyrics):
+                        print(f"[RandomLyrics] Found: '{title}' by {artist} (id={song_id}, attempt {attempts})")
+                        return (lyrics, title, artist)
 
             return (f"No lyrics found after {max_retries} attempts.", "", "")
 
