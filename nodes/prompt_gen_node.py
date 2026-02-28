@@ -55,18 +55,19 @@ class AceStepPromptGen:
             if choice == "none":
                 results[output_name] = ""
             elif choice == "random":
-                results[output_name] = rng.choice(items_list)
+                picked = rng.choice(items_list)
+                results[output_name] = STYLE_PRESETS.get(picked, picked) if input_name == "style" else picked
             elif choice == "random2":
                 if len(items_list) >= 2:
-                    results[output_name] = ", ".join(rng.sample(items_list, 2))
+                    picks = rng.sample(items_list, 2)
                 else:
-                    results[output_name] = rng.choice(items_list)
-            else:
-                # Explicit selection — for STYLE_PRESETS expand the value
+                    picks = [rng.choice(items_list)]
                 if input_name == "style":
-                    results[output_name] = STYLE_PRESETS.get(choice, choice)
-                else:
-                    results[output_name] = choice
+                    picks = [STYLE_PRESETS.get(p, p) for p in picks]
+                results[output_name] = ", ".join(picks)
+            else:
+                # Explicit selection — for STYLE_PRESETS expand the key to full text
+                results[output_name] = STYLE_PRESETS.get(choice, choice) if input_name == "style" else choice
 
         # Build combined prompt from non-empty parts
         parts = []
