@@ -3,7 +3,7 @@
 All nodes live in `nodes/` and are auto-registered by `__init__.py`.
 Shared logic is in `nodes/includes/`. Frontend extensions are in `web/`.
 
-**60 node files total** — 46 active, 14 obsolete.
+**60 node files total** — 45 active, 15 obsolete (46 active node types).
 
 ---
 
@@ -76,26 +76,27 @@ API keys stored in `keys/*.txt` — see [keys/README.md](../keys/README.md).
 36. **AceStepOpenAILyrics** (`lyrics_openai_node.py`): OpenAI API.
 37. **AceStepPerplexityLyrics** (`lyrics_perplexity_node.py`): Perplexity API.
 38. **AceStepGenericAILyrics** (`lyrics_generic_ai_node.py`): OpenAI-compatible API (Ollama, LM Studio, etc.) with custom `api_url`.
+39. **AceStepGenericModelList** (`lyrics_generic_ai_node.py`): Fetch available model IDs from an OpenAI-compatible `/v1/models` endpoint.
 
 ## Persistence / Save (Scromfy/Ace-Step/save)
 
-37. **AceStepConditioningSave** (`save_conditioning_node.py`): Save conditioning components to separate files.
-38. **AceStepTensorSave** (`save_tensor_node.py`): Save a raw tensor to disk.
+40. **AceStepConditioningSave** (`save_conditioning_node.py`): Save conditioning components to separate files.
+41. **AceStepTensorSave** (`save_tensor_node.py`): Save a raw tensor to disk.
 
 ## Miscellaneous (Scromfy/Ace-Step/misc)
 
-39. **AceStep5HzLMConfig** (`llm_config_node.py`): LLM parameter configuration.
+42. **AceStep5HzLMConfig** (`llm_config_node.py`): LLM parameter configuration.
 
 ## Radio (Scromfy/Ace-Step/Radio)
 
-40. **RadioPlayer** (`radio_node.py`): In-UI audio player that scans an output folder and plays tracks with polling. Frontend in `web/radio_player.js`.
+43. **RadioPlayer** (`radio_node.py`): In-UI audio player that scans an output folder and plays tracks with polling. Frontend in `web/radio_player.js`.
 
 ## TBD / Uncategorized (Scromfy/Ace-Step/TBD)
 
-41. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
-42. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
-43. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
-44. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
+44. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
+45. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
+46. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
+47. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
 
 ---
 
@@ -105,21 +106,21 @@ These are deprecated and will be removed in a future version.
 
 | # | Class | File |
 |---|-------|------|
-| 45 | ObsoleteAceStepAudioCodesToSemanticHints | `obsolete_audio_codes_to_latent_node.py` |
-| 46 | ObsoleteAceStepAudioToCodec | `obsolete_audio_to_codec_node.py` |
-| 47 | ObsoleteAceStepCLIPTextEncode | `obsolete_clip_text_encode_node.py` |
-| 48 | ObsoleteAceStepCodecToLatent | `obsolete_codec_to_latent_node.py` |
-| 49 | ObsoleteAceStepConditioning | `obsolete_conditioning_node.py` |
-| 50 | ObsoleteAceStepCustomTimesteps | `obsolete_custom_timesteps_node.py` |
-| 51 | ObsoleteAceStepKSamplerAdvanced | `obsolete_ksampler_advanced_node.py` |
-| 52 | ObsoleteAceStepKSampler | `obsolete_ksampler_node.py` |
-| 53 | ObsoleteAceStepLatentToAudioCodes | `obsolete_latent_to_audio_codes_node.py` |
-| 54 | ObsoleteAceStepLoRAStatus | `obsolete_lora_status_node.py` |
-| 55 | ObsoleteFlacPreviewAudio | `obsolete_preview_audio_node.py` |
-| 56 | ObsoleteSaveAudio | `obsolete_save_audio_node.py` |
-| 57 | ObsoleteSaveText | `obsolete_save_text_node.py` |
-| 58 | ObsoleteVAEDecodeAudio | `obsolete_vae_decode_audio_node.py` |
-| 59 | ObsoleteVAEEncodeAudio | `obsolete_vae_encode_audio_node.py` |
+| 48 | ObsoleteAceStepAudioCodesToSemanticHints | `obsolete_audio_codes_to_latent_node.py` |
+| 49 | ObsoleteAceStepAudioToCodec | `obsolete_audio_to_codec_node.py` |
+| 50 | ObsoleteAceStepCLIPTextEncode | `obsolete_clip_text_encode_node.py` |
+| 51 | ObsoleteAceStepCodecToLatent | `obsolete_codec_to_latent_node.py` |
+| 52 | ObsoleteAceStepConditioning | `obsolete_conditioning_node.py` |
+| 53 | ObsoleteAceStepCustomTimesteps | `obsolete_custom_timesteps_node.py` |
+| 54 | ObsoleteAceStepKSamplerAdvanced | `obsolete_ksampler_advanced_node.py` |
+| 55 | ObsoleteAceStepKSampler | `obsolete_ksampler_node.py` |
+| 56 | ObsoleteAceStepLatentToAudioCodes | `obsolete_latent_to_audio_codes_node.py` |
+| 57 | ObsoleteAceStepLoRAStatus | `obsolete_lora_status_node.py` |
+| 58 | ObsoleteFlacPreviewAudio | `obsolete_preview_audio_node.py` |
+| 59 | ObsoleteSaveAudio | `obsolete_save_audio_node.py` |
+| 60 | ObsoleteSaveText | `obsolete_save_text_node.py` |
+| 61 | ObsoleteVAEDecodeAudio | `obsolete_vae_decode_audio_node.py` |
+| 62 | ObsoleteVAEEncodeAudio | `obsolete_vae_encode_audio_node.py` |
 
 ---
 

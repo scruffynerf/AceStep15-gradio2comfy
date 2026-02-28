@@ -169,7 +169,7 @@ function buildRadioWidget(node) {
         statusEl.textContent = `+${added} new – ${allTracks.length} total`;
         renderQueue();
         // Autoplay only if: not user-stopped, and player is idle (never started or finished queue)
-        const idleAtEnd = currentIdx < 0 || currentIdx >= allTracks.length - added;
+        const idleAtEnd = currentIdx < 0 || currentIdx >= (allTracks.length - added - 1);
         if (!userStopped && audio.paused && idleAtEnd) {
           playIdx(Math.max(0, allTracks.length - added));
         }

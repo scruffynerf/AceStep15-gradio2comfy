@@ -2,7 +2,7 @@
 
 ## Node Implementation Status
 
-All nodes are implemented and refactored. **60 node files** — 46 active, 14 obsolete.
+All nodes are implemented and refactored. **60 node files** — 45 active, 15 obsolete.
 
 ### ✅ Refactored Structure Summary
 - **Nodes**: Each node is in its own `nodes/*_node.py` file.
@@ -108,9 +108,9 @@ All nodes are implemented and refactored. **60 node files** — 46 active, 14 ob
 
 ## Progress Statistics
 
-- **Total Nodes: 60/60 complete (100%)** ✅
-- **Active Nodes: 46** ✅
-- **Obsolete Nodes: 14** (deprecated, to be removed)
+- **Total Nodes: 62/62 complete (100%)** ✅
+- **Active Nodes: 47** ✅
+- **Obsolete Nodes: 15** (deprecated, to be removed)
 - **Refactoring: Complete** ✅
 - **Dynamic Loading: Functional** ✅
 - **Frontend Extensions: 1** (`web/radio_player.js`) ✅
