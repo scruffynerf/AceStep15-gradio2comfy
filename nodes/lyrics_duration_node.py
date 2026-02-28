@@ -36,7 +36,7 @@ class AceStepLyricsBPMCalculator:
             }
         }
 
-    RETURN_TYPES = ("FLOAT", "FLOAT", "FLOAT", "FLOAT", "INT", "INT",)
+    RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT", "INT",)
     RETURN_NAMES = ("duration", "bpm_low", "bpm_mid", "bpm_high", "word_count", "line_count",)
     FUNCTION = "calculate"
     CATEGORY = "Scromfy/Ace-Step/lyrics"
@@ -78,9 +78,9 @@ class AceStepLyricsBPMCalculator:
             bars = l_count * density
             return (bars * beats * 60) / duration
 
-        bpm_low = round(calc_bpm(line2bar), 1)
-        bpm_mid = round(calc_bpm(line2bar * 1.5), 1)
-        bpm_high = round(calc_bpm(line2bar * 2.0), 1)
+        bpm_low = int(round(calc_bpm(line2bar), 1))
+        bpm_mid = int(round(calc_bpm(line2bar * 1.5), 1))
+        bpm_high = int(round(calc_bpm(line2bar * 2.0), 1))
 
         return (duration, bpm_low, bpm_mid, bpm_high, w_count, l_count)
 
