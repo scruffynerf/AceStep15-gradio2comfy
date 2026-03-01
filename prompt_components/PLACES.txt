@@ -5,27 +5,248 @@ alabama
 alaska
 alberta
 albuquerque
+ann arbor
 arkansas
+asheville
 athens
+atlanta
+auckland
+baja
 baltimore
+basel
+basque
+bath
+baton rouge
+bay area
+belarusian
 belfast
+belo horizonte
+bergen
+bern
+birmingham
 boston
+brighton
+brisbane
+bristol
+brooklyn
+buffalo ny
+bury st edmunds
+calgary
+california
+cambridgeshire
+canberra
+cape town
+caracas
+cdmx
+channel islands
+charlotte nc
+charlottesville
 chicago
+chihuahua
+christchurch
+cincinnati
+cleveland
+cologne
+columbus ohio
+concepcion
+connecticut
+cork
+cornwall
+coventry
+dallas
+dallas fort worth
+dc
+dc maryland virginia
+delaware
+denton tx
+denver
+derry
 detroit
+devon
+dominican
+dortmund
+dresden
+dublin
+duluth
+dunedin
+dusseldorf
+east anglia
+east coast
+eau claire
 edinburgh
+edmonton
+el paso
+english
+essex
+florida
+fort worth
+frankfurt
+fremantle
+gainesville
+galway
+ghent
+glasgow
+gothenburg
+grand rapids
+graz
+guadalajara
+guam
+halifax
 hamburg
+hamilton on
+hampton roads
+hong kong
+houston
+hull
+idaho
+indiana
+indy
+iowa
+isle of wight
+jacksonville
+kansas
+kc
+kent
+kentucky
+kingston on
+la
+lafayette
+lancaster pa
+lawrence ks
+leeds
+leicester
+leipzig
+leon gto
+lexington ky
+limerick
+lincoln ne
+liverpool
+london
+london on
+louisiana
+louisville
+lund
+maine
+malmo
+manchester
+manitoba
+manso
+melbourne
 memphis
+merida
 miami
+michigan
+milan
+milwaukee
+minneapolis
+mississippi
+missouri
+montana
+monterrey
+montreal
+munich
 nashville
+new brunswick
+new hampshire
+new jersey
+new orleans
+new york city
+newcastle
+newcastle nsw
+newfoundland
+nice
+nl
+norman ok
+north carolina
+north dakota
+north east england
+northern
+nottingham
+nyc
 nz
+oakland
+oaxaca
+ohio
+ok
+okc
+olympia wa
+omaha
+ontario
+orlando
+oslo
+oth
+ottawa
+oulu
+oxford
+paraguayan
+pei
+perth
+philadelphia
+philly
+phoenix
+pittsburgh
+portland
+portsmouth
+puglia
 quebec
+reading
+rhode island
+rochester mn
+rochester ny
+rome
+rosario
+rva
+sacramento
+salzburg
+san antonio
+san diego
+san marcos tx
+santa fe
+sardinia
+saskatchewan
+seattle
+sheffield
+sinaloa
+slc
+sonora
+south carolina
+south dakota
+southampton
+southern
+springfield mo
+st petersburg fl
+stl
+stockholm
+stuttgart
+swansea
+sydney
+tampa
+tassie
 texas
+tijuana
 toronto
+triangle
+trondheim
+tucson
+tulsa
+turin
+twee
+twin cities
+uae
 uk
+umea
+uruguayan
+utah
 vancouver
+vegas
+veracruz
+vermont
+victoria bc
+vienna
 virgin islands
 washington
 wellington
+west coast
 west virginia
 western mass
 windsor

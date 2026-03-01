@@ -5,10 +5,11 @@ from .includes.prompt_utils import get_available_components, get_visible_compone
 
 
 def _choices_for(items):
-    """Build the dropdown list: none, random, random2, then all items."""
+    """Build the dropdown list: none, random, random2, then all items (deduplicated for UI)."""
     if isinstance(items, dict):
         items = items.keys()
-    return ["none", "random", "random2"] + sorted(list(items))
+    # Use set() to deduplicate for the UI while keeping the source list weighted for random picks
+    return ["none", "random", "random2"] + sorted(list(set(items)))
 
 
 def expand_wildcards(text, rng, max_depth=5):
