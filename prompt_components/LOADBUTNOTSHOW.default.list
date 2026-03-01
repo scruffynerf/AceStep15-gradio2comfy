@@ -1,3 +1,6 @@
 # Files listed here will be loaded (available for wildcards)
 # but NOT shown as dropdowns in the Prompt Generator node.
 # Use one filename per line (e.g. ADJECTIVES.txt).
+
+OTHER_CULTURES.txt
+PLACES.txt

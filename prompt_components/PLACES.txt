@@ -1,0 +1,36 @@
+aarhus
+aberdeen
+adelaide
+alabama
+alaska
+alberta
+albuquerque
+arkansas
+athens
+baltimore
+belfast
+boston
+chicago
+detroit
+edinburgh
+hamburg
+memphis
+miami
+nashville
+nz
+quebec
+texas
+toronto
+uk
+vancouver
+virgin islands
+washington
+wellington
+west virginia
+western mass
+windsor
+winnipeg
+wisconsin
+wyoming
+york
+zurich
