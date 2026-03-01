@@ -109,10 +109,7 @@ def scromfy_save_audio(self, audio, filename_prefix="ComfyUI", format="flac", pr
         
         counter += 1
 
-    # Return UI results and the first filepath (or comma-separated if batch? 
-    # Usually ACE-Step is 1:1, so we'll return the first one for best compatibility with Whisper nodes)
     primary_path = saved_filepaths[0] if saved_filepaths else ""
-    
     return { "ui": { "audio": results }, "result": (primary_path,) }
 
 
@@ -136,9 +133,9 @@ class ScromfySaveAudio:
     OUTPUT_NODE = True
     CATEGORY = "Scromfy/Ace-Step/save"
 
-    def save(self, audio, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+    def save(self, audio, filename_prefix="audio/ACE-Step", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "flac", prompt, extra_pnginfo)
-        return {"ui": res["ui"], "result": res["result"]}
+        return res
 
 class ScromfySaveAudioMP3:
     def __init__(self):
@@ -161,9 +158,9 @@ class ScromfySaveAudioMP3:
     OUTPUT_NODE = True
     CATEGORY = "Scromfy/Ace-Step/save"
 
-    def save(self, audio, filename_prefix="ComfyUI", quality="V0", prompt=None, extra_pnginfo=None):
+    def save(self, audio, filename_prefix="audio/ACE-Step", quality="V0", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "mp3", prompt, extra_pnginfo, quality)
-        return {"ui": res["ui"], "result": res["result"]}
+        return res
 
 class ScromfySaveAudioOpus:
     def __init__(self):
@@ -186,34 +183,19 @@ class ScromfySaveAudioOpus:
     OUTPUT_NODE = True
     CATEGORY = "Scromfy/Ace-Step/save"
 
-    def save(self, audio, filename_prefix="ComfyUI", quality="128k", prompt=None, extra_pnginfo=None):
+    def save(self, audio, filename_prefix="audio/ACE-Step", quality="128k", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "opus", prompt, extra_pnginfo, quality)
-        return {"ui": res["ui"], "result": res["result"]}
+        return res
 
-class ScromfyPreviewAudio(ScromfySaveAudio):
-    def __init__(self):
-        self.output_dir = folder_paths.get_temp_directory()
-        self.type = "temp"
-        self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO", ), },
-                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
-                }
-
-    CATEGORY = "Scromfy/Ace-Step/audio"
 
 NODE_CLASS_MAPPINGS = {
     "ScromfySaveAudio": ScromfySaveAudio,
     "ScromfySaveAudioMP3": ScromfySaveAudioMP3,
     "ScromfySaveAudioOpus": ScromfySaveAudioOpus,
-    "ScromfyPreviewAudio": ScromfyPreviewAudio,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ScromfySaveAudio": "Scromfy Save Audio (FLAC/WAV)",
     "ScromfySaveAudioMP3": "Scromfy Save Audio (MP3)",
     "ScromfySaveAudioOpus": "Scromfy Save Audio (Opus)",
-    "ScromfyPreviewAudio": "Scromfy Preview Audio",
 }

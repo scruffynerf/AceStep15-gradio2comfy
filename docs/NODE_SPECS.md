@@ -85,31 +85,31 @@ API keys stored in `keys/*.txt` — see [keys/README.md](../keys/README.md).
 
 40. **Scromfy Save Audio** (`save_audio_node.py`): High-fidelity FLAC/WAV saver.
     *   **Output**: Returns the absolute `filepath` (without extension) for downstream syncing.
-41. **Scromfy Save Audio MP3/Opus** (`save_audio_node.py`): Compressed audio saving with quality presets.
+41. **Scromfy Save Audio (MP3/Opus/FLAC)** (`save_audio_node.py`): Integrated audio savers for MP3, Opus, and FLAC.
 42. **AceStepConditioningSave** (`save_conditioning_node.py`): Save conditioning components to separate files.
 43. **AceStepTensorSave** (`save_tensor_node.py`): Save a raw tensor to disk.
 
 ## Miscellaneous (Scromfy/Ace-Step/misc)
 
-42. **AceStep5HzLMConfig** (`llm_config_node.py`): LLM parameter configuration.
+44. **AceStep5HzLMConfig** (`llm_config_node.py`): LLM parameter configuration.
 
-43. **RadioPlayer** (`radio_node.py`): In-UI audio player that scans an output folder and plays tracks with polling. Frontend in `web/radio_player.js`.
+45. **RadioPlayer** (`radio_node.py`): In-UI audio player that scans an output folder and plays tracks with polling. Frontend in `web/radio_player.js`.
 
 ## Transcription (Scromfy/Ace-Step/Whisper)
 
-44. **Faster Whisper Loader** (`faster_whisper_node.py`): Load Systran's optimized Whisper models. Supports CPU/GPU and precision settings.
-45. **Faster Whisper Transcribe** (`faster_whisper_node.py`): High-speed transcription with VAD and word-timestamps (AUDIO-only input, auto-resampled to 16kHz).
+46. **Faster Whisper Loader** (`faster_whisper_node.py`): Load Systran's optimized Whisper models. Supports CPU/GPU and precision settings.
+47. **Faster Whisper Transcribe** (`faster_whisper_node.py`): High-speed transcription with VAD and word-timestamps (AUDIO-only input, auto-resampled to 16kHz).
     *   **Advanced Options**: Full support for `log_prob_threshold`, `temperature`, `patience`, `hotwords`, and many others.
     *   **User Friendly**: Replaced legacy `-999` placeholders with clean `0` defaults for optional numeric parameters.
-46. **Save Subtitle/Lyrics** (`faster_whisper_node.py`): Specialized saver that matches filenames with your audio saves.
+48. **Save Subtitle/Lyrics** (`faster_whisper_node.py`): Specialized saver that matches filenames with your audio saves.
     *   **Logic**: Takes the `filepath` from a Scromfy Save Audio node and appends the chosen extension (`.srt`, `.vtt`, `.lrc`).
 
 ## TBD / Uncategorized (Scromfy/Ace-Step/TBD)
 
-47. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
-48. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
-49. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
-50. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
+49. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
+50. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
+51. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
+52. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
 
 ---
 
@@ -129,11 +129,11 @@ These are deprecated and will be removed in a future version.
 | 55 | ObsoleteAceStepKSampler | `obsolete_ksampler_node.py` |
 | 56 | ObsoleteAceStepLatentToAudioCodes | `obsolete_latent_to_audio_codes_node.py` |
 | 57 | ObsoleteAceStepLoRAStatus | `obsolete_lora_status_node.py` |
-| 58 | ObsoleteFlacPreviewAudio | `obsolete_preview_audio_node.py` |
+| 58 | ObsoleteFlacPreviewAudio | [REMOVED] |
 | 59 | ObsoleteSaveAudio | [REMOVED] |
-| 60 | ObsoleteSaveText | `obsolete_save_text_node.py` |
-| 61 | ObsoleteVAEDecodeAudio | `obsolete_vae_decode_audio_node.py` |
-| 62 | ObsoleteVAEEncodeAudio | `obsolete_vae_encode_audio_node.py` |
+| 59 | ObsoleteSaveText | `obsolete_save_text_node.py` |
+| 60 | ObsoleteVAEDecodeAudio | `obsolete_vae_decode_audio_node.py` |
+| 61 | ObsoleteVAEEncodeAudio | `obsolete_vae_encode_audio_node.py` |
 
 ---
 
