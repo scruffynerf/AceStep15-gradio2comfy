@@ -1,5 +1,6 @@
 import os
 import torch
+import torchaudio
 import numpy as np
 import faster_whisper
 from typing import Union, BinaryIO, Dict, List, Tuple
@@ -52,10 +53,9 @@ class AceStepFasterWhisperTranscription:
         return {
             "required": {
                 "model": ("FASTER_WHISPER_MODEL",),
+                "audio": ("AUDIO",),
             },
             "optional": {
-                "audio": ("AUDIO",),
-                "filepath": ("STRING", {"default": ""}),
                 "language": (langs, {"default": "auto"}),
                 "task": (["transcribe", "translate"],),
                 "beam_size": ("INT", {"default": 5, "min": 1, "max": 20}),
@@ -69,31 +69,29 @@ class AceStepFasterWhisperTranscription:
     FUNCTION = "transcribe"
     CATEGORY = "Scromfy/Ace-Step/Whisper"
 
-    def transcribe(self, model, audio=None, filepath="", language="auto", task="transcribe", beam_size=5, word_timestamps=False, vad_filter=True):
+    def transcribe(self, model, audio, language="auto", task="transcribe", beam_size=5, word_timestamps=False, vad_filter=True):
         source = None
         
-        # Determine source: Priority to direct audio input
+        # Determine source: Direct audio input (required)
         if audio is not None:
             # ComfyUI audio format: {"waveform": torch.Tensor [batch, channels, samples], "sample_rate": int}
             waveform = audio["waveform"]
             sample_rate = audio["sample_rate"]
             
-            # Convert to mono if needed and to numpy
+            # Convert to mono if needed
             if waveform.shape[1] > 1:
                 waveform = torch.mean(waveform, dim=1)
             else:
                 waveform = waveform.squeeze(1)
                 
-            # Take first item in batch
+            # Resample to 16000 as required by Faster Whisper numpy array input
+            if sample_rate != 16000:
+                waveform = torchaudio.functional.resample(waveform, sample_rate, 16000)
+                
+            # Take first item in batch and convert to numpy
             source = waveform[0].cpu().numpy()
-            
-            # Note: faster-whisper handles resampling if necessary, but it's best at 16k
-            # If we wanted to be perfect, we'd resample here, but faster_whisper.WhisperModel.transcribe
-            # accepts a numpy array of the audio signal.
-        elif filepath and os.path.exists(filepath):
-            source = filepath
         else:
-            raise ValueError("No valid audio source provided. Please connect an AUDIO input or provide a valid FILEPATH.")
+            raise ValueError("No valid audio source provided. Please connect an AUDIO input.")
 
         # Map language name to code
         lang_code = FULL_LANG_MAPPING.get(language) if language != "auto" else None
@@ -129,32 +127,30 @@ class AceStepFasterWhisperTranscription:
 
         return (results, srt, vtt, lrc)
 
-class AceStepSaveText:
+class AceStepSaveSubtitleLyrics:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
                 "text": ("STRING", {"forceInput": True}),
-                "filename": ("STRING", {"default": "output.txt"}),
-                "path": ("STRING", {"default": "whisper"}),
+                "filepath_base": ("STRING", {"forceInput": True}),
+                "extension": (AVAILABLE_SUBTITLE_FORMATS, {"default": ".lrc"}),
             }
         }
 
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("filepath",)
     FUNCTION = "save"
-    CATEGORY = "Scromfy/Ace-Step/Utils"
+    CATEGORY = "Scromfy/Ace-Step/Whisper"
     OUTPUT_NODE = True
 
-    def save(self, text, filename, path):
-        output_dir = folder_paths.get_output_directory()
-        full_output_dir = os.path.join(output_dir, path)
-        os.makedirs(full_output_dir, exist_ok=True)
+    def save(self, text: str, filepath_base: str, extension: str):
+        # Combine base path with chosen extension
+        full_path = filepath_base + extension
         
-        # Ensure extension logic (keep original or use provided)
-        full_path = os.path.join(full_output_dir, filename)
+        # Ensure parent directory exists
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
         
-        # Handle filename increments if user wants safety, but for now just overwrite
         with open(full_path, "w", encoding="utf-8") as f:
             f.write(text)
             
@@ -163,11 +159,11 @@ class AceStepSaveText:
 NODE_CLASS_MAPPINGS = {
     "AceStepLoadFasterWhisperModel": AceStepLoadFasterWhisperModel,
     "AceStepFasterWhisperTranscription": AceStepFasterWhisperTranscription,
-    "AceStepSaveText": AceStepSaveText,
+    "AceStepSaveSubtitleLyrics": AceStepSaveSubtitleLyrics,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AceStepLoadFasterWhisperModel": "Faster Whisper Loader",
     "AceStepFasterWhisperTranscription": "Faster Whisper Transcribe",
-    "AceStepSaveText": "Save Text/Subtitle",
+    "AceStepSaveSubtitleLyrics": "Save Subtitle/Lyrics (Matched)",
 }

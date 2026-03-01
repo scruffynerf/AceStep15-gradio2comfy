@@ -98,16 +98,16 @@ API keys stored in `keys/*.txt` — see [keys/README.md](../keys/README.md).
 ## Transcription (Scromfy/Ace-Step/Whisper)
 
 44. **Faster Whisper Loader** (`faster_whisper_node.py`): Load Systran's optimized Whisper models. Supports CPU/GPU and precision settings.
-45. **Faster Whisper Transcribe** (`faster_whisper_node.py`): High-speed transcription with VAD and word-timestamps.
-    *   **Inputs**: Supports **AUDIO** (ComfyUI tensors) or **FILEPATH** (strings).
-    *   **Outputs**: Raw segments and pre-formatted **SRT**, **VTT**, and **LRC** strings.
+45. **Faster Whisper Transcribe** (`faster_whisper_node.py`): High-speed transcription with VAD and word-timestamps (AUDIO-only input, auto-resampled to 16kHz).
+46. **Save Subtitle/Lyrics** (`faster_whisper_node.py`): Specialized saver that matches filenames with your audio saves.
+    *   **Logic**: Takes the `filepath` from a Scromfy Save Audio node and appends the chosen extension (`.srt`, `.vtt`, `.lrc`).
 
 ## TBD / Uncategorized (Scromfy/Ace-Step/TBD)
 
 47. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
-45. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
-46. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
-47. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
+48. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
+49. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
+50. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompts.
 
 ---
 

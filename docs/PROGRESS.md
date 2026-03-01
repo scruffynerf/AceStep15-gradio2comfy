@@ -89,7 +89,7 @@ All nodes are implemented and refactored. **60 node files** — 45 active, 15 ob
 #### Transcription (Whisper)
 - [x] `AceStepLoadFasterWhisperModel` — `faster_whisper_node.py`
 - [x] `AceStepFasterWhisperTranscription` — `faster_whisper_node.py`
-- [x] `AceStepSaveText` — `faster_whisper_node.py`
+- [x] `AceStepSaveSubtitleLyrics` — `faster_whisper_node.py`
 
 #### TBD / Uncategorized
 - [x] `AceStepInpaintSampler` — `inpaint_sampler_node.py`
