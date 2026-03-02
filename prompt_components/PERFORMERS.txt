@@ -7,3 +7,20 @@ choir
 orchestra
 band
 ensemble
+barbershop
+baritone
+contralto
+countertenor
+singing
+vocal ensemble
+cathedral choir
+children's choir
+choir
+jugendchor
+men's choir
+norges stemme
+polyphony
+school choir
+south choral
+university choir
+women's choir

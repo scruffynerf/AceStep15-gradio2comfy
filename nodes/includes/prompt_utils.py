@@ -7,7 +7,7 @@ import sys
 
 # Cache to store loaded components
 _COMPONENTS = {}
-_HIDDEN_COMPONENTS = set()
+_TOP_LEVEL_COMPONENTS = set()
 _COMPONENT_WEIGHTS = {}
 
 def get_keyscales():
@@ -38,9 +38,8 @@ def _load_components():
         print(f"Warning: prompt_components directory not found at {components_dir}", file=sys.stderr)
         return
 
-    # Load ignore/hide/replace/weight lists first
+    # Load ignore/replace/weight lists first
     total_ignore = set()
-    load_but_not_show = set()
     replace_map = {}
     reverse_replace = {}
     weights = {} # Component Name -> float Weight
@@ -62,7 +61,6 @@ def _load_components():
         return user_p
 
     ignore_path = get_path("TOTALIGNORE.list")
-    hide_path = get_path("LOADBUTNOTSHOW.list")
     replace_path = get_path("REPLACE.list")
     weights_path = get_path("WEIGHTS.json")
     
@@ -73,7 +71,6 @@ def _load_components():
         return set()
 
     total_ignore = read_list_file(ignore_path)
-    load_but_not_show = read_list_file(hide_path)
     
     if os.path.exists(replace_path):
         try:
@@ -96,13 +93,9 @@ def _load_components():
         except Exception as e:
             print(f"Error reading weights from {weights_path}: {e}", file=sys.stderr)
 
-    global _HIDDEN_COMPONENTS, _COMPONENT_WEIGHTS, _COMPONENTS
+    global _TOP_LEVEL_COMPONENTS, _COMPONENT_WEIGHTS, _COMPONENTS
     
-    _HIDDEN_COMPONENTS = set()
-    for item in load_but_not_show:
-        _HIDDEN_COMPONENTS.add(item.lower())
-        if '.' in item:
-            _HIDDEN_COMPONENTS.add(os.path.splitext(item)[0].lower())
+    _TOP_LEVEL_COMPONENTS = set()
 
     # We also lowercase total_ignore for robust checking
     lower_ignore = {item.lower() for item in total_ignore}
@@ -115,38 +108,50 @@ def _load_components():
     # Reset components cache
     _COMPONENTS = {}
 
-    for filename in os.listdir(components_dir):
-        if filename in ("TOTALIGNORE.list", "LOADBUTNOTSHOW.list", "REPLACE.list", "WEIGHTS.json", "README.md") or ".default." in filename:
-            continue
+    for root, dirs, files in os.walk(components_dir):
+        # Skip hidden directories (like .git or __pycache__)
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        
+        for filename in files:
+            if filename in ("TOTALIGNORE.list", "LOADBUTNOTSHOW.list", "REPLACE.list", "WEIGHTS.json", "README.md") or ".default." in filename:
+                continue
+                
+            name, ext = os.path.splitext(filename)
+            if filename.lower() in lower_ignore or name.lower() in lower_ignore:
+                continue
+            if name in replace_map:
+                continue
+                
+            assign_name = reverse_replace.get(name, name)
             
-        name, ext = os.path.splitext(filename)
-        if filename.lower() in lower_ignore or name.lower() in lower_ignore:
-            continue
-        if name in replace_map:
-            continue
-            
-        assign_name = reverse_replace.get(name, name)
-        full_path = os.path.join(components_dir, filename)
-        if not os.path.isfile(full_path):
-            continue
-            
-        ext = ext.lower()
-        try:
-            if ext == ".json":
-                with open(full_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    _COMPONENTS[assign_name] = data
-                    globals()[assign_name] = data
-            elif ext == ".txt":
-                with open(full_path, "r", encoding="utf-8") as f:
-                    lines = [ln.strip() for ln in f if ln.strip()]
-                    _COMPONENTS[assign_name] = lines
-                    globals()[assign_name] = lines
-        except Exception as e:
-            print(f"Error loading prompt component {filename}: {e}", file=sys.stderr)
+            # Key collision check: first one found (alphabetically by path) wins
+            if assign_name in _COMPONENTS:
+                continue
 
-    # Inject built-in Keyscale component
+            full_path = os.path.join(root, filename)
+            
+            # Visibility logic: Only files in the root of prompt_components are visible in UI
+            if root == components_dir:
+                _TOP_LEVEL_COMPONENTS.add(assign_name)
+
+            ext = ext.lower()
+            try:
+                if ext == ".json":
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        _COMPONENTS[assign_name] = data
+                        globals()[assign_name] = data
+                elif ext == ".txt":
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        lines = [ln.strip() for ln in f if ln.strip()]
+                        _COMPONENTS[assign_name] = lines
+                        globals()[assign_name] = lines
+            except Exception as e:
+                print(f"Error loading prompt component {filename} from {root}: {e}", file=sys.stderr)
+
+    # Inject built-in Keyscale component as visible
     _COMPONENTS["KEYSCALE"] = get_keyscales()
+    _TOP_LEVEL_COMPONENTS.add("KEYSCALE")
 
 # Initialize global caches
 _COMPONENT_WEIGHTS = {}
@@ -165,10 +170,8 @@ def get_available_components():
 
 def get_visible_components():
     """Return component names that should be shown in the UI, sorted by weight."""
-    all_comps = _COMPONENTS.keys()
-    # Case-insensitive check against hidden list
-    visible = [c for c in all_comps if c.lower() not in _HIDDEN_COMPONENTS]
-    return sort_weighted(visible)
+    # Only top-level components are shown in dropdowns
+    return sort_weighted(list(_TOP_LEVEL_COMPONENTS))
 
 def get_component(name, default=None):
     """Safely retrieve a component by name, case-insensitively."""

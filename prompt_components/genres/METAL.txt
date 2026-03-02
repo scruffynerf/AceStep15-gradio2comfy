@@ -1,0 +1,95 @@
+__CULTURES__ black metal
+__CULTURES__ death metal
+__CULTURES__ folk metal
+__CULTURES__ metal
+__PLACES__ black metal
+__PLACES__ death metal
+__PLACES__ metal
+__PLACES__ metalcore
+alternative metal
+alternative metalcore
+atmospheric black metal
+atmospheric doom
+atmospheric metal
+atmospheric sludge
+autonomous black metal
+avant-garde black metal
+avant-garde metal
+black 'n' roll
+black death
+black metal
+black sludge
+blackened crust
+blackgaze
+brutal death metal
+caribbean metal
+chaotic black metal
+charred death
+comic metal
+cosmic black metal
+crossover thrash
+cryptic black metal
+cyber metal
+czsk black metal
+death 'n' roll
+death core
+death metal
+deathgrind
+depressive black metal
+djent
+doom metal
+drone metal
+dub metal
+folk metal
+funeral doom
+funk metal
+gaian doom
+glam metal
+goregrind
+grave wave
+grim death metal
+grindcore
+grisly death metal
+groove metal
+hard alternative
+heavy alternative
+heavy metal
+industrial black metal
+industrial metal
+instrumental death metal
+instrumental metal
+lovecraftian metal
+metal
+metal guitar
+metalcore
+necrogrind
+neo classical metal
+neo metal
+neo-trad doom metal
+neo-trad metal
+nu metal
+nu-metalcore
+nwobhm
+nwothm
+oriental metal
+pagan black metal
+pornogrind
+power metal
+rap metal espanol
+raw black metal
+retro metal
+sci-fi metal
+slam death metal
+slamming deathcore
+slayer
+sludge metal
+speed metal
+steampunk
+stoner metal
+thrash metal
+thrash-groove metal
+unblack metal
+usbm
+viking metal
+visual kei
+voidgrind

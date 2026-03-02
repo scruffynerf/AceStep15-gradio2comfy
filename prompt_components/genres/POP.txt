@@ -1,9 +1,12 @@
-poptimism
+__CULTURES__ pop
+__PLACES__ pop
 adult contemporary
 alt-idol
 alternative pop
+alternative pop rock
 antiviral pop
 arena pop
+art pop
 baile pop
 baroque pop
 beach music
@@ -13,47 +16,88 @@ boy band
 boy pop
 brill building pop
 bubblegum pop
+c-pop
+cafe pop
 candy pop
+cantopop
+chalga
 chamber pop
 channel pop
-girl group
-opm
-pop
-schlager
+city pop
+country pop
+dance pop
+dancepop
 disco pop
 dream pop
 easy listening
+electro pop
+electropop
+electropowerpop
+etherpop
+europop
+eurovision
+folk pop
+folk-pop
 garage pop
 gauze pop
+girl group
+grunge pop
+hip pop
 hopebeat
 idol
 idol pop
-psych-pop
+invasion
+iskelma
 j-division
 j-idol
 j-pop
+j-pop boy group
 j-pop girl group
 j-poprock
 jangle pop
 jewish pop
+junior eurovision
+k-pop
+k-pop boy group
 k-pop girl group
 mande pop
+mandopop
 math pop
 melodipop
+merseybeat
+metropopolis
+neo mellow
 neo-synthpop
 neon pop punk
 new wave pop
 noise pop
 operatic pop
+opm
+pop
+pop argentino
+pop catracho
+pop chileno
 pop christmas
 pop emo
+pop flamenco
 pop house
 pop nacional
+pop punk
+pop quebecois
+pop rock
+pop romantico
 popgaze
+poptimism
 power pop
+psych-pop
+regional pop
 reunion pop
+russiavision
+schlager
+sertanejo pop
 shimmer pop
 shiver pop
+soda pop
 space age pop
 stomp and flutter
 stomp pop
@@ -64,7 +108,10 @@ teen pop
 twee pop
 ukulele
 underground pop rap
+underground power pop
+v-pop
 vapor pop
+viral pop
+vispop
 vocal harmony group
-__PLACES__ pop
-__CULTURES__ pop
+volkspop

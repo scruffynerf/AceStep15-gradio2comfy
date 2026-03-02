@@ -25,6 +25,7 @@ bergen
 bern
 birmingham
 boston
+botswana
 brighton
 brisbane
 bristol
@@ -50,6 +51,7 @@ cologne
 columbus ohio
 concepcion
 connecticut
+cook islands
 cork
 cornwall
 coventry
@@ -127,6 +129,7 @@ louisiana
 louisville
 lund
 maine
+mainland
 malmo
 manchester
 manitoba
@@ -185,6 +188,7 @@ philadelphia
 philly
 phoenix
 pittsburgh
+png
 portland
 portsmouth
 puglia
@@ -208,6 +212,7 @@ seattle
 sheffield
 sinaloa
 slc
+socal
 sonora
 south carolina
 south dakota

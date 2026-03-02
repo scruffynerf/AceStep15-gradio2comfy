@@ -1,0 +1,136 @@
+andean
+arabesk
+bangla
+barnmusik
+bhangra
+composition
+desi
+egyptian
+er ge
+fado
+folklore argentino
+ghazal
+hawaiian
+kabyle
+maghreb
+mambo
+mariachi
+merengue urbano
+nu-cumbia
+nueva cancion
+orquesta tipica
+pop reggaeton
+porro
+ranchera
+rif
+rio de la plata
+salsa
+samba
+tango
+tropical
+trova
+vallenato
+velha guarda
+world
+nasyid
+musica sarda
+napoletano
+neomelodici
+tarantella
+doujin
+fuji
+j-acoustic
+j-ambient
+j-core
+j-pixie
+j-punk
+j-reggae
+kayokyoku
+kodomo no ongaku
+rakugo
+magyar
+magyar alternative
+carnatic
+carnatic instrumental
+carnatic vocal
+hindustani instrumental
+hindustani vocal
+kannada bhava geethe
+raga
+hamburger schule
+liedermacher
+mundart
+neue deutsche welle
+schlager
+musique acadienne
+quebecois
+calypso
+caribbean
+gwoka
+haitian dance
+kaneka
+kaseko
+kompa
+musique guadeloupe
+punta
+ritmo kombina
+zouk
+zouk riddim
+capoeira
+funk das antigas
+funk evangelico
+funk ostentacao
+jovem guarda
+mangue bit
+musica de pernambuco
+musica nativista
+musica popular amazonense
+musica popular paraense
+nova mpb
+pernambuco alternative
+samba-enredo
+talentos brasileiros
+tecnobrega
+vaqueiro
+indigenous
+powwow
+sami
+dangdut
+dangdut koplo
+keroncong
+manele
+muzica populara
+dansband
+danseband
+dansktop
+shabad
+khmer
+musica canaria
+orquestas de galicia
+sevillanas
+umbanda
+mahraganat
+sevdah
+minyao
+kritika
+klapa
+son
+son cubano
+son cubano clasico
+son cubano moderno
+bachata
+francoton
+levenslied
+ancient mediterranean
+azeri traditional
+bandinhas
+batak
+gamelan
+georgian polyphony
+throat singing
+traditional
+trio batak
+trio huasteco
+laiko
+nisiotika
+rebetiko

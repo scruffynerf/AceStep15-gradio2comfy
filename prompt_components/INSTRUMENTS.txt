@@ -1,9 +1,14 @@
 808 drums
+accordion
 acoustic guitar
+alphorn
 analog synth
+arpa paraguaya
+band organ
 banjo
 bass
 bassoon
+bells
 brass
 cello
 choir
@@ -12,35 +17,60 @@ congas
 double bass
 drum machine
 drums
+duduk
 electric guitar
 electric piano
 fiddle
 flute
 french horn
 guitar
+guitar duo
+guitar quartet
+guzheng
+hammered dulcimer
+handbells
+harmonica
 harp
 harpsichord
-harmonica
+horn
+hurdy-gurdy
+lute
 mandolin
 marimba
+mbira
 mellotron
 oboe
+one-person band
 organ
+oud
+panpipe
 percussion
 piano
+piano duo
+piano trio
+pipa
 recorder
 rhodes
 saxophone
+saxophone quartet
 sitar
+string quartet
+string trio
 strings
 synthesizer
 tabla
 tambourine
+theremin
 trombone
 trumpet
 tuba
+uilleann pipes
 ukulele
+veena
+viol
+viola
 violin
 vocoder
+wind quintet
 wurlitzer
 xylophone

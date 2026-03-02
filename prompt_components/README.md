@@ -26,8 +26,11 @@ The following files allow you to manage how components are loaded and displayed.
 ### 1. `TOTALIGNORE.list` (TXT)
 Files listed here are completely ignored by the system. Use this to disable repo-default lists without deleting them.
 
-### 2. `LOADBUTNOTSHOW.list` (TXT)
-Files listed here are loaded (available for wildcards) but **hidden** from the Prompt Generator's UI dropdowns.
+### 2. Visibility Control (Directory-Based)
+The visibility of components in the **Prompt Generator** dropdown is determined by their file location:
+
+- **Visible Dropdowns**: Files located directly in the root of `prompt_components/` (e.g. `GENRE.txt`). These are also available as wildcards (`__GENRE__`).
+- **Wildcard Only**: Files located in **subdirectories** (e.g. `wildcards/PLACES.txt`). These will **not** appear in the UI dropdowns but are fully functional as wildcards (`__PLACES__`).
 
 ### 3. `REPLACE.list` (JSON)
 Allows you to substitute an existing component name with a custom file.

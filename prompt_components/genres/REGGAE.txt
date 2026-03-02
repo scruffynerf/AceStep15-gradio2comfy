@@ -1,19 +1,26 @@
+__PLACES__ reggae
 belly dance
 cumbia
 cumbia pop
 Dancehall Pop
+dub reggae
 east coast reggae
 euroska
 gospel reggae
 highlife
 jawaiian
 lovers rock
+pacific reggae
 ragga
 reggae
 reggae fusion
-roots reggae
-soca
+reggae mexicano
 reggae rock
-rock steady
 reggaeton
-__PLACES__ reggae
+reggaeton chileno
+rock steady
+roots reggae
+skinhead reggae
+soca
+trinidadian reggae
+west coast reggae

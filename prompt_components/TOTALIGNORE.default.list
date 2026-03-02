@@ -1,2 +1,3 @@
 # Files listed here will be completely ignored by the prompt system.
 # Use one filename per line (e.g. OLD_GENRES.txt).
+# This is to allow you replace the default files with your own.
