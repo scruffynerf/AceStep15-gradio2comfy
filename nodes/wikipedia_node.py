@@ -192,11 +192,12 @@ class WikipediaRandomNode:
         return {
             "required": {
                 "mode": (["Truly Random", "Word Search", "Category Search"], {"default": "Truly Random"}),
-                "category": (sorted(list(set(WIKI_CATEGORIES))), {"default": "Music"}),
+                "category": (list(dict.fromkeys(WIKI_CATEGORIES)), {"default": "Music"}),
                 "search_keyword": ("STRING", {"default": "", "multiline": False, "placeholder": "Keyword for Word Search mode"}),
-                "language": (["en", "zh", "ja", "ko", "es", "fr", "de", "it", "pt", "ru"], {"default": "en"}),
+                "language": (["en", "simple", "zh", "ja", "ko", "es", "fr", "de", "it", "pt", "ru"], {"default": "en"}),
                 "user_agent": ("STRING", {"default": "ScromfyAceStep/1.5 (comfyui)", "multiline": False}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffff}),
+                "clean_content": ("BOOLEAN", {"default": True}),
             }
         }
 
@@ -205,7 +206,7 @@ class WikipediaRandomNode:
     FUNCTION = "fetch"
     CATEGORY = "Scromfy/Ace-Step/misc"
 
-    def fetch(self, mode, category, search_keyword, language, user_agent, seed):
+    def fetch(self, mode, category, search_keyword, language, user_agent, seed, clean_content=True):
         rng = random.Random(seed)
         wiki = wikipediaapi.Wikipedia(
             user_agent=user_agent,
@@ -284,8 +285,48 @@ class WikipediaRandomNode:
                 return (f"Page not found: {title}", "", "")
 
             # Combine summary and sections for "main content"
-            content = page.summary + "\n\n" + page.text
+            # wikipedia-api's page.text usually starts with the summary, so we use it directly
+            # to avoid duplication reported by users.
+            content = page.text
             
+            if clean_content:
+                # Footer sections to truncate
+                stop_headers = [
+                    "== See also ==",
+                    "== References ==",
+                    "== Further reading ==",
+                    "== External links ==",
+                    "== Related pages ==",
+                    "== Notes ==",
+                    "== Sources ==",
+                    "== Citations ==",
+                    "== Bibliography =="
+                ]
+                
+                # Also check for plain text versions as fallback
+                plain_stops = [
+                    "\nRelated pages\n",
+                    "\nReferences\n",
+                    "\nSee also\n"
+                ]
+                
+                earliest_index = len(content)
+                
+                # Check structured headers
+                for header in stop_headers:
+                    idx = content.find(header)
+                    if idx != -1 and idx < earliest_index:
+                        earliest_index = idx
+                
+                # Check plain text fallbacks
+                for stop in plain_stops:
+                    idx = content.find(stop)
+                    if idx != -1 and idx < earliest_index:
+                        earliest_index = idx
+                        
+                if earliest_index < len(content):
+                    content = content[:earliest_index].strip()
+
             return (page.title, content, page.fullurl)
 
         except Exception as e:
