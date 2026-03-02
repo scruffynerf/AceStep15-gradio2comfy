@@ -101,7 +101,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
                            "tooltip": "Restricts each generation step to only the top K most likely choices. 0 disables this filter. Lower values (e.g. 40) reduce unlikely outputs while keeping variety. No effect on cover/extract/lego tasks, which use semantic hints from source audio instead of generating new audio codes."}),
                 "min_p": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001,
                            "tooltip": "Minimum probability threshold for token sampling. Filters out tokens with probability below min_p × max_probability. 0.0 disables this filter. No effect on cover/extract/lego tasks."}),
-                "repetition_penalty": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.01,
+                "repetition_penalty": ("FLOAT", {"default": 1.3, "min": 0.0, "max": 2.0, "step": 0.01,
                            "tooltip": "Controls how much to penalize repeated tokens. 1.0 means no penalty. Higher values (e.g. 1.1) reduce repetition."}),
             }
         }
@@ -127,7 +127,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
                top_p=0.9,
                top_k=0,
                min_p=0.0,
-               repetition_penalty=1.1,
+               repetition_penalty=1.3,
                ):
         # Convert display name to ISO code
         language_code = self.LANGUAGE_MAP.get(language, language)
