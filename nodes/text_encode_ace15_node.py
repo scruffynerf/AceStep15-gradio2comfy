@@ -111,6 +111,20 @@ class ScromfyACEStep15TaskTextEncodeNode:
     FUNCTION = "encode"
     CATEGORY = "Scromfy/Ace-Step/prompt"
 
+    @classmethod
+    def IS_CHANGED(s, clip, text, lyrics="", bpm=0, duration=-1.0, keyscale="C major", 
+                   timesignature="4/4", language="English", llm_audio_codes=True, seed=0, 
+                   cfg_scale=2.0, temperature=0.85, top_p=0.9, top_k=0, min_p=0.0, 
+                   repetition_penalty=1.3):
+        # Return a hash of all inputs (except clip which is handled by Comfy's graph)
+        import hashlib
+        m = hashlib.sha256()
+        for v in [text, lyrics, bpm, duration, keyscale, timesignature, language, 
+                  llm_audio_codes, seed, cfg_scale, temperature, top_p, top_k, 
+                  min_p, repetition_penalty]:
+            m.update(str(v).encode('utf-8'))
+        return m.hexdigest()
+
     def encode(self,
                clip,
                text,
