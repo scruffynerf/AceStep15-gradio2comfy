@@ -37,8 +37,8 @@ class AceStepAudioCodesUnaryOp:
             }
         }
     
-    RETURN_TYPES = ("LIST", "IMAGE")
-    RETURN_NAMES = ("audio_codes", "visualization")
+    RETURN_TYPES = ("LIST", "IMAGE", "IMAGE")
+    RETURN_NAMES = ("audio_codes", "visualization_ssm", "visualization_linear")
     FUNCTION = "process"
     CATEGORY = "Scromfy/Ace-Step/mixers"
 
@@ -53,6 +53,28 @@ class AceStepAudioCodesUnaryOp:
             return hashlib.md5(info.encode()).hexdigest()
         except:
             return "random"
+
+    def _linear_token_image(self, A, upscale=32):
+        """
+        Linear time visualization of tokens.
+        A shape: [1, T, 6]
+        """
+
+        X = A[0]  # [T,6]
+
+        # normalize [-1,1] -> [0,1]
+        X = (X.clamp(-1,1) + 1.0) / 2.0
+
+        # transpose so dims become rows
+        img = X.T  # [6,T]
+
+        # upscale vertically
+        img = img.repeat_interleave(upscale, dim=0)
+
+        # expand RGB
+        img = img.unsqueeze(0).unsqueeze(-1).repeat(1,1,1,3)
+
+    return img
 
     def _self_similarity_image(self, A, blur_sigma=0.0):
         """
@@ -114,7 +136,8 @@ class AceStepAudioCodesUnaryOp:
         A = fsq_decode_indices(torch.tensor(ids, dtype=torch.long, device=device).unsqueeze(0), levels)
 
         # --- Visualization (time vs FSQ dimensions) ---
-        vis_image = self._self_similarity_image(A, blur_sigma=ssm_blur)
+        vis_image1 = self._self_similarity_image(A, blur_sigma=ssm_blur)
+        vis_image2 = self._linear_token_image(A, upscale=32)
 
         # Handle Length Scaling
         if length_pct != 100.0:
@@ -181,7 +204,7 @@ class AceStepAudioCodesUnaryOp:
         # Encode back to indices
         result_ids = fsq_encode_to_indices(out, levels)[0].tolist()
 
-        return ([result_ids], vis_image)
+        return ([result_ids], vis_image1, vis_image2)
 
 NODE_CLASS_MAPPINGS = {
     "AceStepAudioCodesUnaryOp": AceStepAudioCodesUnaryOp,
