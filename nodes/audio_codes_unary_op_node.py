@@ -74,7 +74,7 @@ class AceStepAudioCodesUnaryOp:
         # expand RGB
         img = img.unsqueeze(0).unsqueeze(-1).repeat(1,1,1,3)
 
-    return img
+        return img
 
     def _self_similarity_image(self, A, blur_sigma=0.0):
         """
