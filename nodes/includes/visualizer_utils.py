@@ -54,6 +54,9 @@ class BaseAudioProcessor:
         # Extract desired frequency range
         freqs = np.fft.rfftfreq(fft_size, d=1.0 / self.sample_rate)
         freq_indices = np.where((freqs >= min_frequency) & (freqs <= max_frequency))[0]
+        
+        # Store active frequencies for color mapping
+        self.active_frequencies = freqs[freq_indices]
         spectrum = spectrum[freq_indices]
 
         # Check if spectrum is not empty
@@ -70,6 +73,7 @@ class BaseAudioProcessor:
         else:
             # Return zeros if spectrum is empty
             spectrum = np.zeros(1)
+            self.active_frequencies = np.array([min_frequency])
 
         return spectrum
 
@@ -79,6 +83,27 @@ class BaseAudioProcessor:
 
         # Apply smoothing
         self.spectrum = smoothing * self.spectrum + (1 - smoothing) * new_spectrum
+
+import colorsys
+
+def get_color_for_frequency(freq, shift=0.0, saturation=1.0, brightness=1.0):
+    """
+    Maps a frequency to a color in the HSL spectrum.
+    Uses log scale so octaves match.
+    """
+    if freq <= 0:
+        return (0.0, 0.0, 0.0)
+    
+    # log2(freq) gives us a linear scale where +1 is one octave
+    # Multiply by 1.0 (or whatever) to map an octave to a range
+    # 1.0 means one octave wraps around the full 360 degrees (0.0 to 1.0)
+    # Most musical-visual mappings use this "circular" property.
+    hue = (np.log2(freq) + shift) % 1.0
+    
+    # Convert HLS (Hue, Lightness, Saturation) to RGB
+    # We use lightness = brightness * 0.5 (since 0.5 is full color, 1.0 is white)
+    r, g, b = colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
+    return (r, g, b)
 
 class FlexAudioVisualizerBase(FlexBase):
     @classmethod
@@ -95,6 +120,10 @@ class FlexAudioVisualizerBase(FlexBase):
                 "screen_height": ("INT", {"default": 464, "min": 100, "max": 1080, "step": 1}),
                 "position_x": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "position_y": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "color_mode": (["white", "spectrum"], {"default": "spectrum"}),
+                "color_shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Shifts the starting point of the color spectrum."}),
+                "saturation": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
             }
         }
 
@@ -139,6 +168,9 @@ class FlexAudioVisualizerBase(FlexBase):
             'radius': lambda x: max(1.0, x),
             'base_radius': lambda x: max(1.0, x),
             'amplitude_scale': lambda x: max(0.0, x),
+            'color_shift': lambda x: x % 1.0,
+            'saturation': lambda x: np.clip(x, 0.0, 1.0),
+            'brightness': lambda x: np.clip(x, 0.0, 1.0),
         }
 
         if param_name in valid_params:
@@ -206,9 +238,20 @@ class FlexAudioVisualizerBase(FlexBase):
             processor.spectrum = np.zeros(len(data))
         processor.update_spectrum(data, smoothing)
 
-        # Return updated data and feature value
+        # Return updated data and frequency mapping
         feature_value = np.mean(np.abs(processor.spectrum))
-        return processor.spectrum.copy(), feature_value
+        
+        # We need to resample frequencies as well to match num_points
+        if visualization_feature == 'frequency' and hasattr(processor, 'active_frequencies'):
+            item_freqs = np.interp(
+                np.linspace(0, len(processor.active_frequencies), num_points, endpoint=False),
+                np.arange(len(processor.active_frequencies)),
+                processor.active_frequencies,
+            )
+        else:
+            item_freqs = np.zeros(num_points)
+            
+        return processor.spectrum.copy(), feature_value, item_freqs
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, 
                      strength, feature_param, feature_mode, feature_threshold,
@@ -244,7 +287,7 @@ class FlexAudioVisualizerBase(FlexBase):
             
             # Get audio data using the processed parameters
             num_points = processed_kwargs.get('num_points', processed_kwargs.get('num_bars', 64))
-            spectrum, _ = self.process_audio_data(
+            spectrum, _, item_freqs = self.process_audio_data(
                 processor, 
                 i,
                 processed_kwargs.get('visualization_feature', 'frequency'),
@@ -254,6 +297,7 @@ class FlexAudioVisualizerBase(FlexBase):
                 processed_kwargs.get('min_frequency', 20.0),
                 processed_kwargs.get('max_frequency', 8000.0)
             )
+            processed_kwargs["item_freqs"] = item_freqs
 
             # Generate the image for the current frame
             image = self.apply_effect_internal(processor, **processed_kwargs)

@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor
+from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency
 
 class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
     @classmethod
@@ -45,7 +45,8 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
     def get_modifiable_params(cls):
         return ["smoothing", "rotation", "position_y", "position_x",
                 "num_bars", "max_height", "min_height", "separation", "curvature", 
-                "curve_smoothing", "fft_size", "min_frequency", "max_frequency", "None"]
+                "curve_smoothing", "fft_size", "min_frequency", "max_frequency", 
+                "color_shift", "saturation", "brightness", "None"]
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
@@ -55,7 +56,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         min_frequency = kwargs.get('min_frequency', 20.0)
         max_frequency = kwargs.get('max_frequency', 8000.0)
 
-        _, feature_value = self.process_audio_data(
+        _, feature_value, _ = self.process_audio_data(
             processor, frame_index, visualization_feature,
             num_bars, smoothing, fft_size, min_frequency, max_frequency
         )
@@ -73,6 +74,12 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         length = kwargs.get('length', 0.0)
         max_height = kwargs.get('max_height', 200.0)
         min_height = kwargs.get('min_height', 10.0)
+        
+        color_mode = kwargs.get('color_mode', 'white')
+        color_shift = kwargs.get('color_shift', 0.0)
+        saturation = kwargs.get('saturation', 1.0)
+        brightness = kwargs.get('brightness', 1.0)
+        item_freqs = kwargs.get('item_freqs', None)
 
         if length == 0:
             rotation_rad = np.deg2rad(rotation)
@@ -115,7 +122,13 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                 y_end = min(padded_height - 1, y_end)
                 if y_start > y_end: y_start, y_end = y_end, y_start
                 x_end = int(x + bar_width)
-                color = (1.0, 1.0, 1.0)
+                
+                # Determine color
+                if color_mode == "spectrum" and item_freqs is not None:
+                    color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
+                else:
+                    color = (1.0, 1.0, 1.0)
+                
                 rect_width = max(1, int(bar_width))
                 rect_height = max(1, int(y_end - y_start))
 
@@ -140,12 +153,19 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             else:
                 data_smooth = data
             amplitude = min_height + data_smooth * (max_height - min_height)
-            num_points = len(amplitude)
-            x_values = np.linspace(x_offset, x_offset + visualization_length, num_points)
+            num_pts = len(amplitude)
+            x_values = np.linspace(x_offset, x_offset + visualization_length, num_pts)
             y_values = (baseline_y + amplitude) if reflect else (baseline_y - amplitude)
             points = np.array([x_values, y_values]).T.astype(np.int32)
+            
             if len(points) > 1:
-                cv2.polylines(padded_image, [points], False, (1.0, 1.0, 1.0))
+                if color_mode == "spectrum" and item_freqs is not None:
+                    # For line mode, we draw segments with different colors
+                    for i in range(len(points) - 1):
+                        color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
+                        cv2.line(padded_image, tuple(points[i]), tuple(points[i+1]), color, 1)
+                else:
+                    cv2.polylines(padded_image, [points], False, (1.0, 1.0, 1.0))
 
         if rotation != 0:
             M = cv2.getRotationMatrix2D((padded_width // 2, padded_height // 2), rotation, 1.0)
@@ -156,10 +176,6 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         start_x = padded_width // 2 - target_x
         start_y = padded_height // 2 - target_y
         
-        # DEBUG: Track frame and memory usage
-        if processor.current_frame % 30 == 0:
-            print(f"[LineVisualizer] Processed frame {processor.current_frame}, padded image shape: {padded_image.shape}")
-
         # CRITICAL: Use .copy() to return a new array instead of a view of the huge padded_image.
         # This allows the padded_image to be garbage collected for each frame.
         image = padded_image[start_y:start_y + screen_height, start_x:start_x + screen_width].copy()

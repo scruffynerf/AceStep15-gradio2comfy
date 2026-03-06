@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor
+from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency
 
 class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
     @classmethod
@@ -40,7 +40,8 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
     def get_modifiable_params(cls):
         return ["smoothing", "rotation", "num_points", "fft_size", 
                 "min_frequency", "max_frequency", "radius", "line_width",
-                "amplitude_scale", "base_radius", "position_x", "position_y", "None"]
+                "amplitude_scale", "base_radius", "position_x", "position_y", 
+                "color_shift", "saturation", "brightness", "None"]
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
@@ -50,7 +51,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         min_frequency = kwargs.get('min_frequency', 20.0)
         max_frequency = kwargs.get('max_frequency', 8000.0)
 
-        _, feature_value = self.process_audio_data(
+        _, feature_value, _ = self.process_audio_data(
             processor, frame_index, visualization_feature,
             num_points, smoothing, fft_size, min_frequency, max_frequency
         )
@@ -68,6 +69,12 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         amplitude_scale = kwargs.get('amplitude_scale', 100.0)
         line_width = kwargs.get('line_width', 2)
         
+        color_mode = kwargs.get('color_mode', 'white')
+        color_shift = kwargs.get('color_shift', 0.0)
+        saturation = kwargs.get('saturation', 1.0)
+        brightness = kwargs.get('brightness', 1.0)
+        item_freqs = kwargs.get('item_freqs', None)
+        
         image = np.zeros((screen_height, screen_width, 3), dtype=np.float32)
         center_x = screen_width * position_x
         center_y = screen_height * position_y
@@ -79,20 +86,37 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         data = processor.spectrum
 
         if visualization_method == 'bar':
-            for angle, amplitude in zip(angles, data):
+            for i, (angle, amplitude) in enumerate(zip(angles, data)):
                 x_start = center_x + base_radius * np.cos(angle)
                 y_start = center_y + base_radius * np.sin(angle)
                 x_end = center_x + (base_radius + amplitude * amplitude_scale) * np.cos(angle)
                 y_end = center_y + (base_radius + amplitude * amplitude_scale) * np.sin(angle)
+                
+                # Determine color
+                if color_mode == "spectrum" and item_freqs is not None:
+                    color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
+                else:
+                    color = (1.0, 1.0, 1.0)
+                
                 cv2.line(image, (int(x_start), int(y_start)), (int(x_end), int(y_end)),
-                         (1.0, 1.0, 1.0), thickness=line_width)
+                         color, thickness=line_width)
         elif visualization_method == 'line':
             radii = base_radius + data * amplitude_scale
             x_values = center_x + radii * np.cos(angles)
             y_values = center_y + radii * np.sin(angles)
             points = np.array([x_values, y_values]).T.astype(np.int32)
+            
             if len(points) > 2:
-                cv2.polylines(image, [points], isClosed=True, color=(1.0, 1.0, 1.0), thickness=line_width)
+                if color_mode == "spectrum" and item_freqs is not None:
+                    # Draw segments with colors
+                    num_pts = len(points)
+                    for i in range(num_pts):
+                        p1 = points[i]
+                        p2 = points[(i+1) % num_pts]
+                        color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
+                        cv2.line(image, tuple(p1), tuple(p2), color, line_width)
+                else:
+                    cv2.polylines(image, [points], isClosed=True, color=(1.0, 1.0, 1.0), thickness=line_width)
 
         return image
 

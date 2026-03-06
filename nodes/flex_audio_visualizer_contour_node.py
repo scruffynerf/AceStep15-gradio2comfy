@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor
+from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency
 
 class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
     @classmethod
@@ -49,7 +49,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
     def get_modifiable_params(cls):
         return ["smoothing", "rotation", "num_points", "fft_size", 
                 "min_frequency", "max_frequency", "bar_length", "line_width",
-                "contour_smoothing", "min_contour_area", "max_contours", "None"]
+                "contour_smoothing", "min_contour_area", "max_contours", 
+                "color_shift", "saturation", "brightness", "None"]
 
     def apply_effect(self, audio, frame_rate, mask, strength, feature_param, feature_mode,
                      feature_threshold, opt_feature=None, **kwargs):
@@ -76,7 +77,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         min_frequency = kwargs.get('min_frequency', 20.0)
         max_frequency = kwargs.get('max_frequency', 8000.0)
 
-        _, feature_value = self.process_audio_data(
+        _, feature_value, _ = self.process_audio_data(
             processor, frame_index, visualization_feature,
             num_points, smoothing, fft_size, min_frequency, max_frequency
         )
@@ -95,6 +96,12 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         max_contours = kwargs.get('max_contours', 5)
         distribute_by = kwargs.get('distribute_by', 'perimeter')
         
+        color_mode = kwargs.get('color_mode', 'white')
+        color_shift = kwargs.get('color_shift', 0.0)
+        saturation = kwargs.get('saturation', 1.0)
+        brightness = kwargs.get('brightness', 1.0)
+        item_freqs = kwargs.get('item_freqs', None)
+
         frame_index = processor.current_frame
         image = np.zeros((screen_height, screen_width, 3), dtype=np.float32)
         
@@ -154,13 +161,30 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     x1, y1 = int(x_coords[i]), int(y_coords[i])
                     bar_h = amplitude * bar_length * direction_multiplier
                     x2, y2 = int(x1 + normals_x[i] * bar_h), int(y1 + normals_y[i] * bar_h)
-                    cv2.line(image, (x1, y1), (x2, y2), (1.0, 1.0, 1.0), thickness=line_width)
+                    
+                    # Determine color
+                    if color_mode == "spectrum" and item_freqs is not None:
+                        color = get_color_for_frequency(item_freqs[start_idx + i], color_shift, saturation, brightness)
+                    else:
+                        color = (1.0, 1.0, 1.0)
+                        
+                    cv2.line(image, (x1, y1), (x2, y2), color, thickness=line_width)
             else:
                 pts = np.column_stack([
                     x_coords + normals_x * contour_data * bar_length * direction_multiplier,
                     y_coords + normals_y * contour_data * bar_length * direction_multiplier
-                ]).astype(np.int32)
-                cv2.polylines(image, [pts], True, (1.0, 1.0, 1.0), thickness=line_width)
+                ]).astype(np.int16) # Use int16 for coordinates
+                
+                if color_mode == "spectrum" and item_freqs is not None:
+                    # Draw segments with colors
+                    for i in range(len(pts) - 1):
+                        color = get_color_for_frequency(item_freqs[start_idx + i], color_shift, saturation, brightness)
+                        cv2.line(image, tuple(pts[i]), tuple(pts[i+1]), color, line_width)
+                    # Close the loop if needed (contour is closed)
+                    color = get_color_for_frequency(item_freqs[end_idx - 1], color_shift, saturation, brightness)
+                    cv2.line(image, tuple(pts[-1]), tuple(pts[0]), color, line_width)
+                else:
+                    cv2.polylines(image, [pts.astype(np.int32)], True, (1.0, 1.0, 1.0), thickness=line_width)
 
         start_idx = 0
         total_pts = len(data)
