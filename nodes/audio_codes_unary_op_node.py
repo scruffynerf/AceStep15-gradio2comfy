@@ -3,6 +3,8 @@ import torch
 import torch.nn.functional as F
 import logging
 import hashlib
+import math
+
 import comfy.model_management
 from .includes.fsq_utils import (
     parse_audio_codes, fsq_decode_indices, fsq_encode_to_indices, get_fsq_levels
@@ -224,7 +226,7 @@ class AceStepAudioCodesUnaryOp:
 
         return img.unsqueeze(0)
 
-    def spiral_music_image(A, size=256, tokens_per_turn=20, starburst_strength=2.5):
+    def _spiral_music_image(self, A, size=256, tokens_per_turn=20, starburst_strength=2.5):
         """
         Spiral visualization of token embeddings with beat/starburst enhancement.
 
@@ -234,10 +236,7 @@ class AceStepAudioCodesUnaryOp:
         tokens_per_turn: tokens per spiral revolution
         starburst_strength: how strongly transients brighten the spiral
         """
-
-        import torch
-        import math
-
+        
         X = A[0]  # [T,6]
         T = X.shape[0]
 
@@ -320,7 +319,7 @@ class AceStepAudioCodesUnaryOp:
         elif visualization_type == "song_texture":
             vis_image = self._song_texture_image(A, size=256)
         elif visualization_type == "spiral":
-            vis_image = self.spiral_music_image(A, size=256, tokens_per_turn=20, starburst_strength=2.5)
+            vis_image = self._spiral_music_image(A, size=256, tokens_per_turn=20, starburst_strength=2.5)
         else:
             vis_image = self._linear_token_image(A, upscale=32)
 
