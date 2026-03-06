@@ -435,6 +435,13 @@ class FlexAudioVisualizerBase(FlexBase):
 
             image = self.apply_effect_internal(processor, **processed_kwargs)
             
+            # Ensure image is uint8 [0, 255] for lyric renderer and efficient processing
+            if image.dtype != np.uint8:
+                if np.max(image) <= 1.01: # Check if it's [0, 1] floats
+                    image = (image * 255).astype(np.uint8)
+                else:
+                    image = image.astype(np.uint8)
+            
             # Apply lyrics if enabled
             if lyric_renderer:
                 image = lyric_renderer.render(image, i / frame_rate)
