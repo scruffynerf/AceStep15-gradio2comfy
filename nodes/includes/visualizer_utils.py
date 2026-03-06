@@ -96,7 +96,8 @@ def get_color_for_frequency(freq, shift=0.0, saturation=1.0, brightness=1.0):
     Uses log scale so octaves match.
     """
     if freq <= 0:
-        return (0.0, 0.0, 0.0)
+        # Default to neutral white/light gray if frequency is zero (common in waveform mode)
+        return (1.0, 1.0, 1.0)
     
     # log2(freq) gives us a linear scale where +1 is one octave
     hue = (np.log2(freq) + shift) % 1.0
@@ -278,6 +279,7 @@ class FlexAudioVisualizerBase(FlexBase):
                 "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
+                "opt_video": ("IMAGE",),
                 "lrc_text": ("STRING", {"multiline": True, "default": ""}),
                 "lyric_font_size": ("INT", {"default": 24, "min": 10, "max": 200}),
                 "lyric_highlight_color": ("COLOR", {"default": "#34d399"}),
@@ -396,17 +398,27 @@ class FlexAudioVisualizerBase(FlexBase):
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, 
                      strength, feature_param, feature_mode, feature_threshold,
-                     opt_feature=None, lrc_text="", **kwargs):
+                     opt_feature=None, opt_video=None, lrc_text="", **kwargs):
         
         audio_duration = len(audio['waveform'].squeeze(0).mean(axis=0)) / audio['sample_rate']
-        num_frames = int(audio_duration * frame_rate)
-        processor = BaseAudioProcessor(audio, num_frames, screen_height, screen_width, frame_rate)
+        
+        # Determine number of frames and resolution from video if provided
+        if opt_video is not None:
+            num_frames = opt_video.shape[0]
+            v_height, v_width = opt_video.shape[1], opt_video.shape[2]
+            # Use video resolution as override
+            actual_width, actual_height = v_width, v_height
+        else:
+            num_frames = int(audio_duration * frame_rate)
+            actual_width, actual_height = screen_width, screen_height
+
+        processor = BaseAudioProcessor(audio, num_frames, actual_height, actual_width, frame_rate)
         
         # Initialize Lyric Renderer if text provided
         lyric_renderer = None
         if lrc_text:
             lyric_renderer = LyricRenderer(
-                lrc_text, screen_width, screen_height, 
+                lrc_text, actual_width, actual_height, 
                 kwargs.get("lyric_font_size", 24),
                 kwargs.get("lyric_highlight_color", "#34d399"),
                 kwargs.get("lyric_normal_color", "#9ca3af"),
@@ -424,6 +436,13 @@ class FlexAudioVisualizerBase(FlexBase):
         for i in range(num_frames):
             if i % 100 == 0: gc.collect()
             
+            # Get video frame for background if available
+            background_np = None
+            if opt_video is not None:
+                # Get i-th frame, wrap around or clamp if video shorter than audio (though we clamped num_frames above)
+                v_idx = min(i, opt_video.shape[0] - 1)
+                background_np = (opt_video[v_idx].cpu().numpy() * 255).astype(np.uint8)
+
             processor.current_frame = i
             processed_kwargs = self.process_parameters(
                 frame_index=i,
@@ -435,7 +454,8 @@ class FlexAudioVisualizerBase(FlexBase):
                 **kwargs
             )
             processed_kwargs.update({
-                "frame_index": i, "screen_width": screen_width, "screen_height": screen_height
+                "frame_index": i, "screen_width": actual_width, "screen_height": actual_height,
+                "background": background_np
             })
             
             num_points = processed_kwargs.get('num_points', processed_kwargs.get('num_bars', 64))
@@ -464,7 +484,9 @@ class FlexAudioVisualizerBase(FlexBase):
             
             # Apply lyrics if enabled
             if lyric_renderer:
-                image = lyric_renderer.render(image, i / frame_rate)
+                # Calculate the exact time for this frame
+                frame_time = i / frame_rate
+                image = lyric_renderer.render(image, frame_time)
                 
             result.append(torch.from_numpy(image.astype(np.float32) / 255.0))
             self.update_progress()
@@ -475,6 +497,6 @@ class FlexAudioVisualizerBase(FlexBase):
             mask = result_tensor[:, :, :, 0]
             return (result_tensor, mask,)
         else:
-            empty_tensor = torch.zeros((1, screen_height, screen_width, 3), dtype=torch.float32)
-            empty_mask = torch.zeros((1, screen_height, screen_width), dtype=torch.float32)
+            empty_tensor = torch.zeros((1, actual_height, actual_width, 3), dtype=torch.float32)
+            empty_mask = torch.zeros((1, actual_height, actual_width), dtype=torch.float32)
             return (empty_tensor, empty_mask,)
