@@ -72,8 +72,15 @@ class ScromfyLyricsOverlay:
     def overlay_lyrics(self, images, lrc_text, fps, font_size, highlight_color, normal_color, 
                        background_alpha, blur_radius, y_position, max_lines, line_spacing, font_path=""):
         
+        import gc
+        import psutil
         from comfy.utils import ProgressBar
         
+        process = psutil.Process(os.getpid())
+        def log_mem(frame):
+            mem = process.memory_info().rss / 1024 / 1024
+            print(f"[LyricOverlay] Frame {frame}/{batch_size}, Mem: {mem:.2f}MB")
+
         # Parse lyrics (detect mode)
         if "-->" in lrc_text:
             lyrics = self.parse_srt(lrc_text)
@@ -83,28 +90,37 @@ class ScromfyLyricsOverlay:
         if not lyrics:
             return (images,)
 
-        # Load font
+        # Load font once
         try:
             if font_path and os.path.exists(font_path):
-                font_reg = ImageFont.truetype(font_path, font_size)
-                font_bold = ImageFont.truetype(font_path, int(font_size * 1.3))
+                f_reg = ImageFont.truetype(font_path, font_size)
+                f_bold = ImageFont.truetype(font_path, int(font_size * 1.3))
             else:
-                # Try to find Roboto in the workspace fonts we saw
-                roboto_reg = "/Users/scohn/code/AceStep15-gradio2comfy/referencecode/scrolling-lyrics-music-visualization/ref/fonts/Roboto/Roboto-Regular.ttf"
-                roboto_bold = "/Users/scohn/code/AceStep15-gradio2comfy/referencecode/scrolling-lyrics-music-visualization/ref/fonts/Roboto/Roboto-Bold.ttf"
+                # Use local Roboto fonts
+                base_font_dir = os.path.join(os.path.dirname(__file__), "includes", "fonts")
+                roboto_reg = os.path.join(base_font_dir, "Roboto-Regular.ttf")
+                roboto_bold = os.path.join(base_font_dir, "Roboto-Bold.ttf")
+                
                 if os.path.exists(roboto_reg):
-                    font_reg = ImageFont.truetype(roboto_reg, font_size)
-                    font_bold = ImageFont.truetype(roboto_bold, int(font_size * 1.3))
+                    f_reg = ImageFont.truetype(roboto_reg, font_size)
+                    f_bold = ImageFont.truetype(roboto_bold, int(font_size * 1.3))
                 else:
-                    font_reg = ImageFont.load_default()
-                    font_bold = font_reg
-        except Exception:
-            font_reg = ImageFont.load_default()
-            font_bold = font_reg
+                    f_reg = ImageFont.load_default()
+                    f_bold = f_reg
+        except:
+            f_reg = ImageFont.load_default()
+            f_bold = f_reg
 
         batch_size, height, width, channels = images.shape
-        # Pre-allocate output tensor to avoid stack copy later
-        out_tensor = torch.empty_like(images)
+        
+        # MEMORY: Pre-allocate output tensor. 
+        # If this line alone crashes, we can't do anything without in-place modification.
+        try:
+            out_tensor = torch.zeros_like(images)
+        except RuntimeError:
+            print("[LyricOverlay] OOM triggered at allocation. Falling back to in-place (dangerous) or smaller chunks.")
+            raise
+
         pbar = ProgressBar(batch_size)
 
         # Pre-calculate colors
@@ -116,98 +132,84 @@ class ScromfyLyricsOverlay:
             high_rgb = hex_to_rgb(highlight_color)
             norm_rgb = hex_to_rgb(normal_color)
         except:
-            high_rgb = (52, 211, 153)
-            norm_rgb = (156, 163, 175)
+            high_rgb = (52, 211, 153); norm_rgb = (156, 163, 175)
+
+        # REUSE: Pre-allocate a scratch PIL image to avoid allocations in loop
+        # We only need it as big as the box, but let's just make it the box's max size
+        max_box_w, max_box_h = int(width * 0.8), int(font_size * line_spacing * (max_lines + 2))
+        scratch_overlay = Image.new("RGBA", (max_box_w, max_box_h), (0, 0, 0, 0))
+        scratch_draw = ImageDraw.Draw(scratch_overlay)
 
         for i in range(batch_size):
+            if i % 50 == 0:
+                gc.collect() # Trigger GC every 50 frames
+                # log_mem(i)
+
             time = i / fps
-            
-            # Find current lyric index
             current_idx = -1
             for j, lyric in enumerate(lyrics):
-                if time >= lyric["time"]:
-                    current_idx = j
-                else:
-                    break
+                if time >= lyric["time"]: current_idx = j
+                else: break
             
-            # Convert frame to numpy (copy ensures we don't hold references to the batch)
-            frame_np = (images[i].cpu().numpy() * 255).astype(np.uint8).copy()
+            # 1. Access input and prepare frame
+            # Use .clone() to decouple from the batch immediately, allowing input frames to be swapped out if needed
+            frame_np = (images[i].cpu().numpy() * 255).astype(np.uint8)
             
             if current_idx != -1:
-                # Lines to render
                 start_l = max(0, current_idx - max_lines // 2)
                 end_l = min(len(lyrics), start_l + max_lines)
-                if end_l - start_l < max_lines:
-                    start_l = max(0, end_l - max_lines)
+                if end_l - start_l < max_lines: start_l = max(0, end_l - max_lines)
                 
                 lines_to_draw = []
                 for j in range(start_l, end_l):
-                    lines_to_draw.append({
-                        "text": lyrics[j]["text"],
-                        "active": (j == current_idx),
-                        "offset": j - current_idx
-                    })
+                    lines_to_draw.append({"txt": lyrics[j]["text"], "active": (j == current_idx), "off": j-current_idx})
 
                 if lines_to_draw:
-                    center_y = int(height * y_position)
-                    line_height = int(font_size * line_spacing)
-                    total_h = line_height * len(lines_to_draw)
+                    center_y, line_h = int(height * y_position), int(font_size * line_spacing)
+                    total_h = line_h * len(lines_to_draw)
                     
-                    # Box dimensions
-                    box_top = max(0, center_y - total_h // 2 - 20)
-                    box_bottom = min(height, center_y + total_h // 2 + 20)
-                    box_left = int(width * 0.1)
-                    box_right = int(width * 0.9)
-                    box_w = box_right - box_left
-                    box_h = box_bottom - box_top
+                    b_top, b_left = max(0, center_y - total_h // 2 - 20), int(width*0.1)
+                    b_bot, b_right = min(height, center_y + total_h // 2 + 20), int(width*0.9)
+                    b_w, b_h = b_right - b_left, b_bot - b_top
 
-                    if box_w > 0 and box_h > 0:
-                        # 1. Blur and Dim in-place using OpenCV (Much faster and memory efficient)
-                        sub_img = frame_np[box_top:box_bottom, box_left:box_right]
+                    if b_w > 0 and b_h > 0:
+                        # 2. Fast In-Place Blur/Dim via CV2
+                        sub = frame_np[b_top:b_bot, b_left:b_right]
                         if blur_radius > 0:
                             k = blur_radius if blur_radius % 2 == 1 else blur_radius + 1
-                            sub_img = cv2.GaussianBlur(sub_img, (k, k), 0)
-                        
-                        # Dimming (Manual alpha blend with black)
+                            cv2.GaussianBlur(sub, (k, k), 0, dst=sub)
                         if background_alpha > 0:
-                            sub_img = (sub_img.astype(np.float32) * (1.0 - background_alpha)).astype(np.uint8)
+                            cv2.addWeighted(sub, 1.0 - background_alpha, np.zeros_like(sub), background_alpha, 0, dst=sub)
                         
-                        frame_np[box_top:box_bottom, box_left:box_right] = sub_img
-
-                        # 2. Render Text onto a SMALL PIL image (the size of the box)
-                        text_overlay = Image.new("RGBA", (box_w, box_h), (0, 0, 0, 0))
-                        draw = ImageDraw.Draw(text_overlay)
+                        # 3. Clean and reuse text overlay
+                        scratch_draw.rectangle([0, 0, max_box_w, max_box_h], fill=(0,0,0,0))
                         
                         for item in lines_to_draw:
-                            f = font_bold if item["active"] else font_reg
-                            c = high_rgb if item["active"] else norm_rgb
-                            if item["active"]:
-                                rgba_color = (*c, 255)
-                            else:
-                                rgba_color = (*c, 180) # Slightly transparent for normal lines
-
-                            bbox = draw.textbbox((0, 0), item["text"], font=f)
-                            tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+                            f = f_bold if item["active"] else f_reg
+                            c = (*(high_rgb if item["active"] else norm_rgb), 255 if item["active"] else 180)
                             
-                            tx = (box_w - tw) // 2
-                            # Rel to box center
-                            ty = (box_h // 2) + (item["offset"] * line_height) - th // 2
-                            
-                            draw.text((tx, ty), item["text"], font=f, fill=rgba_color)
+                            bbox = scratch_draw.textbbox((0, 0), item["txt"], font=f)
+                            tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
+                            tx = (b_w - tw) // 2
+                            ty = (b_h // 2) + (item["off"] * line_h) - th // 2
+                            if ty + th < b_h and ty >= 0:
+                                scratch_draw.text((tx, ty), item["txt"], font=f, fill=c)
                         
-                        # Composite the small text overlay onto the frame
-                        text_overlay_np = np.array(text_overlay)
-                        text_rgb = text_overlay_np[:, :, :3]
-                        text_alpha = text_overlay_np[:, :, 3:] / 255.0
+                        # 4. Composite small mask back using numpy (avoid PIL full-frame convert)
+                        text_np = np.array(scratch_overlay.crop((0, 0, b_w, b_h)))
+                        t_rgb = text_np[:, :, :3]
+                        t_alpha = text_np[:, :, 3:].astype(np.float32) / 255.0
                         
-                        target_region = frame_np[box_top:box_bottom, box_left:box_right]
-                        blended = (text_rgb * text_alpha + target_region * (1.0 - text_alpha)).astype(np.uint8)
-                        frame_np[box_top:box_bottom, box_left:box_right] = blended
+                        # In-place blend
+                        frame_np[b_top:b_bot, b_left:b_right] = (t_rgb * t_alpha + sub * (1.0 - t_alpha)).astype(np.uint8)
 
-            # Put back into pre-allocated tensor
+            # 5. Save and Cleanup
             out_tensor[i] = torch.from_numpy(frame_np.astype(np.float32) / 255.0)
             pbar.update(1)
-
+            
+            # Explicitly free frame-specific memory
+            del frame_np
+            
         return (out_tensor,)
 
 NODE_CLASS_MAPPINGS = {
