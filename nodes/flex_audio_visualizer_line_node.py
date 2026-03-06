@@ -155,7 +155,14 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         target_y = int(screen_height * position_y)
         start_x = padded_width // 2 - target_x
         start_y = padded_height // 2 - target_y
-        image = padded_image[start_y:start_y + screen_height, start_x:start_x + screen_width]
+        
+        # DEBUG: Track frame and memory usage
+        if processor.current_frame % 30 == 0:
+            print(f"[LineVisualizer] Processed frame {processor.current_frame}, padded image shape: {padded_image.shape}")
+
+        # CRITICAL: Use .copy() to return a new array instead of a view of the huge padded_image.
+        # This allows the padded_image to be garbage collected for each frame.
+        image = padded_image[start_y:start_y + screen_height, start_x:start_x + screen_width].copy()
         return image
 
     def smooth_curve(self, y, window_size):
