@@ -18,7 +18,7 @@ class AceStepAudioCodesUnaryOp:
         return {
             "required": {
                 "audio_codes": ("LIST",),
-                "model": ("MODEL",),
+                #"model": ("MODEL",),
                 "mode": ([
                     "noop_visualize",
                     "gate",
@@ -43,11 +43,11 @@ class AceStepAudioCodesUnaryOp:
     CATEGORY = "Scromfy/Ace-Step/mixers"
 
     @classmethod
-    def IS_CHANGED(s, audio_codes, mode, length_pct, strength, sigma, seed, mask=None):
+    def IS_CHANGED(s, audio_codes, mode, length_pct, strength, sigma, seed, ssm_blur, mask=None):
         try:
             # Hash some samples and parameters
             sample = str(audio_codes[0][:5]) if audio_codes else "e"
-            info = f"{sample}_{mode}_{length_pct}_{strength}_{sigma}_{seed}"
+            info = f"{sample}_{mode}_{length_pct}_{strength}_{sigma}_{seed}_{ssm_blur}"
             if mask is not None:
                 info += f"_{mask.abs().mean().item():.4f}"
             return hashlib.md5(info.encode()).hexdigest()
@@ -93,14 +93,14 @@ class AceStepAudioCodesUnaryOp:
         img = S.unsqueeze(0).unsqueeze(-1).repeat(1,1,1,3)
         return img
 
-    def process(self, audio_codes, model, mode, length_pct, strength, sigma, seed, mask=None):
-        inner_model = model.model
-        if hasattr(inner_model, "diffusion_model"):
-            inner_model = inner_model.diffusion_model
+    def process(self, audio_codes, mode, length_pct, strength, sigma, seed, ssm_blur, mask=None):
+        #inner_model = model.model
+        #if hasattr(inner_model, "diffusion_model"):
+        #    inner_model = inner_model.diffusion_model
 
-        comfy.model_management.load_model_gpu(model)
+        #comfy.model_management.load_model_gpu(model)
         device = comfy.model_management.get_torch_device()
-        levels = get_fsq_levels(inner_model)
+        levels = get_fsq_levels(None)
 
         parsed = parse_audio_codes(audio_codes)
 

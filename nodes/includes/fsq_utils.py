@@ -44,10 +44,10 @@ def fsq_encode_to_indices(codes_6d, levels):
 
 def get_fsq_levels(model):
     """Extract FSQ levels from model's tokenizer quantizer"""
-    if hasattr(model, "tokenizer") and hasattr(model.tokenizer, "quantizer"):
-        q = model.tokenizer.quantizer
-        if hasattr(q, "layers") and len(q.layers) > 0 and hasattr(q.layers[0], "_levels"):
-            return q.layers[0]._levels.tolist()
+    # if hasattr(model, "tokenizer") and hasattr(model.tokenizer, "quantizer"):
+    #    q = model.tokenizer.quantizer
+    #    if hasattr(q, "layers") and len(q.layers) > 0 and hasattr(q.layers[0], "_levels"):
+    #        return q.layers[0]._levels.tolist()
     return [8, 8, 8, 5, 5, 5] # Default for ACE-Step 1.5
 
 def parse_audio_codes(audio_codes):
@@ -81,6 +81,6 @@ def fsq_indices_to_quantized(q, code_ids, device, dtype):
     return quantized
 
 def get_fsq_levels_from_q(q):
-    if hasattr(q, "layers") and len(q.layers) > 0 and hasattr(q.layers[0], "_levels"):
-        return q.layers[0]._levels.tolist()
+    #if hasattr(q, "layers") and len(q.layers) > 0 and hasattr(q.layers[0], "_levels"):
+    #   return q.layers[0]._levels.tolist()
     return [8, 8, 8, 5, 5, 5]

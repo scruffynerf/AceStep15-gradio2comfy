@@ -22,7 +22,7 @@ class AceStepAudioCodesMixer:
             "required": {
                 "audio_codes_A": ("LIST",),
                 "audio_codes_B": ("LIST",),
-                "model": ("MODEL",),
+                #"model": ("MODEL",),
                 "mode": ([
                     "blend", "lerp", "inject", "average", "difference_injection", 
                     "dominant_recessive", "replace", "concatenate", "add", 
@@ -57,14 +57,14 @@ class AceStepAudioCodesMixer:
         except:
             return "random"
 
-    def mix(self, audio_codes_A, audio_codes_B, model, mode, alpha, ratio, weight, eps, scale_mode, mask=None):
-        inner_model = model.model
-        if hasattr(inner_model, "diffusion_model"):
-            inner_model = inner_model.diffusion_model
+    def mix(self, audio_codes_A, audio_codes_B, mode, alpha, ratio, weight, eps, scale_mode, mask=None):
+        #inner_model = model.model
+        #if hasattr(inner_model, "diffusion_model"):
+        #    inner_model = inner_model.diffusion_model
 
-        comfy.model_management.load_model_gpu(model)
+        #comfy.model_management.load_model_gpu(model)
         device = comfy.model_management.get_torch_device()
-        levels = get_fsq_levels(inner_model)
+        levels = get_fsq_levels(None)
 
         parsed_A = parse_audio_codes(audio_codes_A)
         parsed_B = parse_audio_codes(audio_codes_B)
