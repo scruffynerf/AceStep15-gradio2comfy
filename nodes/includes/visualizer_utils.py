@@ -90,6 +90,33 @@ class BaseAudioProcessor:
 
 import colorsys
 
+def parse_color(color_input, fallback=(255, 255, 255), to_float=True):
+    """
+    Robustly parse various color input formats (hex string, list/tuple of ints/floats)
+    returns (r, g, b) in [0.0, 1.0] if to_float=True, or [0, 255] if to_float=False.
+    """
+    r, g, b = 255, 255, 255
+    try:
+        if isinstance(color_input, str):
+            c = color_input.lstrip('#')
+            if len(c) == 3:
+                c = ''.join([char*2 for char in c])
+            if len(c) == 6:
+                r, g, b = int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16)
+        elif isinstance(color_input, (list, tuple)):
+            if len(color_input) >= 3:
+                # Check if floats [0,1] or ints [0,255]
+                if all(isinstance(val, (float, int)) for val in color_input[:3]) and any(isinstance(val, float) and val <= 1.0 for val in color_input[:3]):
+                    r, g, b = [int(val * 255) for val in color_input[:3]]
+                else:
+                    r, g, b = [int(val) for val in color_input[:3]]
+    except Exception:
+        r, g, b = fallback
+
+    if to_float:
+        return (r/255.0, g/255.0, b/255.0)
+    return (r, g, b)
+
 def get_color_for_frequency(freq, shift=0.0, saturation=1.0, brightness=1.0):
     """
     Maps a frequency to a color in the HSL spectrum.
@@ -126,16 +153,8 @@ class LyricRenderer:
             self.lyrics = self._parse_lrc(lrc_text)
 
         # Pre-calculate colors
-        def hex_to_rgb(hex_str):
-            hex_str = hex_str.lstrip('#')
-            return tuple(int(hex_str[i:i+2], 16) for i in (0, 2, 4))
-        
-        try:
-            self.high_rgb = hex_to_rgb(highlight_color)
-            self.norm_rgb = hex_to_rgb(normal_color)
-        except:
-            self.high_rgb = (52, 211, 153)
-            self.norm_rgb = (156, 163, 175)
+        self.high_rgb = parse_color(highlight_color, fallback=(52, 211, 153), to_float=False)
+        self.norm_rgb = parse_color(normal_color, fallback=(156, 163, 175), to_float=False)
 
         # Load font
         try:
@@ -284,7 +303,7 @@ class FlexAudioVisualizerBase(FlexBase):
                 "position_x": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "position_y": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "color_mode": (["white", "spectrum", "custom"], {"default": "spectrum"}),
-                "custom_color": ("COLOR", {"default": "#00FFFF"}),
+                "custom_color": ("COLOR", {"default": "#00ffff"}),
                 "color_shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "saturation": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -293,8 +312,8 @@ class FlexAudioVisualizerBase(FlexBase):
                 "opt_video": ("IMAGE",),
                 "lrc_text": ("STRING", {"multiline": True, "default": ""}),
                 "lyric_font_size": ("INT", {"default": 24, "min": 10, "max": 200}),
-                "lyric_highlight_color": ("COLOR", {"default": "#34D399"}),
-                "lyric_normal_color": ("COLOR", {"default": "#F3F4F6"}),
+                "lyric_highlight_color": ("COLOR", {"default": "#34d399"}),
+                "lyric_normal_color": ("COLOR", {"default": "#f3f4f6"}),
                 "lyric_background_alpha": ("FLOAT", {"default": 0.1, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "lyric_blur_radius": ("INT", {"default": 1, "min": 0, "max": 50}),
                 "lyric_active_blur": ("INT", {"default": 10, "min": 0, "max": 100}),

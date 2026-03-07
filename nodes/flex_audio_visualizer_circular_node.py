@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency
+from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency, parse_color
 
 class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
     @classmethod
@@ -96,8 +96,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                 if color_mode == "spectrum" and item_freqs is not None:
                     color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
                 elif color_mode == "custom":
-                    custom_hex = kwargs.get("custom_color", "#FFFFFF").lstrip('#')
-                    color = tuple(int(custom_hex[i:i+2], 16)/255.0 for i in (0, 2, 4))
+                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
                 else:
                     color = (1.0, 1.0, 1.0)
                 
@@ -119,8 +118,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                         color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
                         cv2.line(image, tuple(p1), tuple(p2), color, line_width)
                 elif color_mode == "custom":
-                    custom_hex = kwargs.get("custom_color", "#FFFFFF").lstrip('#')
-                    color = tuple(int(custom_hex[i:i+2], 16)/255.0 for i in (0, 2, 4))
+                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
                     cv2.polylines(image, [points], isClosed=True, color=color, thickness=line_width)
                 else:
                     cv2.polylines(image, [points], isClosed=True, color=(1.0, 1.0, 1.0), thickness=line_width)

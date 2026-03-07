@@ -4,7 +4,7 @@ import torch
 import os
 import random
 from PIL import Image
-from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency
+from .includes.visualizer_utils import FlexAudioVisualizerBase, BaseAudioProcessor, get_color_for_frequency, parse_color
 
 class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
     @classmethod
@@ -70,9 +70,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, mask=None, opt_feature=None, **kwargs):
         
+        seed = kwargs.get("seed", 0)
+        s_rng = random.Random(seed)
+
         # Randomization logic
         if kwargs.get("randomize", False):
-            s_rng = random.Random(kwargs.get("seed", 0))
             kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
@@ -83,22 +85,29 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["max_contours"] = s_rng.randint(5, 20)
             kwargs["contour_smoothing"] = s_rng.randint(0, 10) # subtle smoothing
             kwargs["smoothing"] = s_rng.uniform(0.1, 0.9)
+            kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
+            # Seeded random custom color (lowercase hex)
+            kwargs["custom_color"] = "#%06x" % s_rng.randint(0, 0xffffff)
 
         # Handle optional/missing mask
         if mask is None:
             masks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "masks")
             installed_mask = kwargs.get("installed_mask", "random")
             
-            if installed_mask == "random":
+            if installed_mask == "random" and os.path.exists(masks_dir):
                 masks_list = [f for f in os.listdir(masks_dir) if f.lower().endswith(".png")]
                 if masks_list:
-                    installed_mask = random.choice(masks_list)
+                    # Use the seeded generator for mask selection too
+                    installed_mask = s_rng.choice(masks_list)
                 else:
                     # Fallback to a simple circle if no masks found
                     mask = torch.zeros((1, 512, 512), dtype=torch.float32)
                     cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
+            elif installed_mask == "random": # Fallback if dir missing
+                mask = torch.zeros((1, 512, 512), dtype=torch.float32)
+                cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
             
-            if mask is None: # Means we have a filename to load
+            if mask is None and os.path.exists(masks_dir): # Means we have a filename to load
                 mask_path = os.path.join(masks_dir, installed_mask)
                 if os.path.exists(mask_path):
                     pil_img = Image.open(mask_path).convert('L')
@@ -276,8 +285,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     color = get_color_for_frequency(item_freqs[end_idx - 1], color_shift, saturation, brightness)
                     cv2.line(image, tuple(pts[-1]), tuple(pts[0]), color, line_width)
                 elif color_mode == "custom":
-                    custom_hex = kwargs.get("custom_color", "#FFFFFF").lstrip('#')
-                    color = tuple(int(custom_hex[i:i+2], 16)/255.0 for i in (0, 2, 4))
+                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
                     cv2.polylines(image, [pts.astype(np.int32)], True, color, thickness=line_width)
                 else:
                     cv2.polylines(image, [pts.astype(np.int32)], True, (1.0, 1.0, 1.0), thickness=line_width)
