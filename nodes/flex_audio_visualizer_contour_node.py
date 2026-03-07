@@ -30,8 +30,10 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         new_inputs = {
             "required": {
                 "installed_mask": (installed_masks, {"default": "random"}),
-                "mask_scale": ("FLOAT", {"default": 0.40, "min": 0.01, "max": 1.0, "step": 0.01}),
+                "mask_scale": ("FLOAT", {"default": 0.60, "min": 0.01, "max": 1.0, "step": 0.01}),
                 "mask_top_margin": ("FLOAT", {"default": 0.05, "min": 0.0, "max": 0.5, "step": 0.01}),
+                "randomize": ("BOOLEAN", {"default": False}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "visualization_method": (["bar", "line"], {"default": "bar"}),
                 "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
                 "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -67,6 +69,21 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, mask=None, opt_feature=None, **kwargs):
+        
+        # Randomization logic
+        if kwargs.get("randomize", False):
+            s_rng = random.Random(kwargs.get("seed", 0))
+            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
+            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
+            kwargs["color_mode"] = s_rng.choice(["white", "spectrum", "custom"])
+            kwargs["bar_length"] = s_rng.uniform(5.0, 100.0)
+            kwargs["line_width"] = s_rng.randint(1, 10)
+            kwargs["distribute_by"] = s_rng.choice(["area", "perimeter", "equal"])
+            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
+            kwargs["max_contours"] = s_rng.randint(1, 20)
+            kwargs["contour_smoothing"] = s_rng.randint(0, 10) # subtle smoothing
+            kwargs["smoothing"] = s_rng.uniform(0.1, 0.9)
+
         # Handle optional/missing mask
         if mask is None:
             masks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "masks")
