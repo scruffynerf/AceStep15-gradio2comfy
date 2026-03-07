@@ -68,6 +68,9 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "contour_smoothing", "min_contour_area", "max_contours", 
                 "color_shift", "saturation", "brightness", "None"]
 
+    RETURN_TYPES = ("IMAGE", "MASK", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK")
+
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, mask=None, opt_feature=None, **kwargs):
         
@@ -84,10 +87,10 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["distribute_by"] = s_rng.choice(["area", "perimeter", "equal"])
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
             kwargs["max_contours"] = s_rng.randint(5, 20)
-            kwargs["contour_smoothing"] = s_rng.randint(0, 10) # subtle smoothing
-            kwargs["smoothing"] = s_rng.uniform(0.1, 0.9)
+            kwargs["contour_smoothing"] = s_rng.randint(0, 5) # subtle smoothing
+            kwargs["smoothing"] = s_rng.uniform(0.1, 0.3)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
-            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.5)
+            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
             # Seeded random custom color (lowercase hex)
             kwargs["custom_color"] = "#%06x" % s_rng.randint(0, 0xffffff)
 
@@ -117,9 +120,16 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     mask = torch.from_numpy(mask_np)
                 else:
                     mask = torch.zeros((1, 512, 512), dtype=torch.float32)
+                    cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
+
+        # Capture the "Source Mask" before we do any resizing/processing
+        if len(mask.shape) == 2:
+            source_mask = mask.unsqueeze(0)
+        else:
+            source_mask = mask
 
         # Resizing and Positioning logic
-        mask_scale = kwargs.get("mask_scale", 0.40)
+        mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
         
         # We need the original/target dimensions to pad correctly
@@ -163,11 +173,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         batch_size, screen_height, screen_width = mask.shape
             
         kwargs['mask'] = mask
-        return super().apply_effect(
+        images, masks = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
             opt_feature, **kwargs
         )
+        
+        return (images, masks, source_mask)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
