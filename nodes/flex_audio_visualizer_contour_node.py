@@ -84,15 +84,22 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
             kwargs["bar_length"] = s_rng.uniform(5.0, 100.0)
             kwargs["line_width"] = s_rng.randint(2, 10)
-            kwargs["distribute_by"] = s_rng.choice(["area", "perimeter", "equal"])
+            kwargs["distribute_by"] = s_rng.choice(["area", "perimeter"])
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
             kwargs["max_contours"] = s_rng.randint(5, 20)
-            kwargs["contour_smoothing"] = s_rng.randint(0, 5) # subtle smoothing
-            kwargs["smoothing"] = s_rng.uniform(0.1, 0.3)
+            kwargs["contour_smoothing"] = s_rng.randint(0, 0) # subtle smoothing
+            kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
-            # Seeded random custom color (lowercase hex)
-            kwargs["custom_color"] = "#%06x" % s_rng.randint(0, 0xffffff)
+            
+            # Seeded random vibrant colors to avoid dull results
+            vibrant_colors = [
+                "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
+                "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6",
+                "#ff9100", "#2979ff", "#ff1744", "#00b0ff", "#00e676",
+                "#ffee58", "#ff4081", "#7c4dff", "#64ffda", "#ffab40"
+            ]
+            kwargs["custom_color"] = s_rng.choice(vibrant_colors)
 
         # Handle optional/missing mask
         if mask is None:
