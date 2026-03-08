@@ -24,10 +24,7 @@ def _choices_for(items):
             
     return ["none", "random", "random2"] + choices
 
-
-
-
-class AceStepPromptGen:
+class ScromfyAceStepPromptGen:
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -118,7 +115,6 @@ class AceStepPromptGen:
 NODE_CLASS_MAPPINGS = {
     "ScromfyAceStepPromptGen": ScromfyAceStepPromptGen,
 }
-
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ScromfyAceStepPromptGen": "Scromfy Prompt Generator",
 }
