@@ -57,7 +57,10 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
             # amplitude_scale is the "bar" height equivalent here
-            kwargs["amplitude_scale"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
+            if kwargs["visualization_feature"] == "waveform":
+                kwargs["amplitude_scale"] = 10.0 + (s_rng.random() ** 1.5) * 40.0
+            else:
+                kwargs["amplitude_scale"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
             kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)

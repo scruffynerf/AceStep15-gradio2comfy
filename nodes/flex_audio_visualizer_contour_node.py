@@ -86,8 +86,12 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"])
-            # Average in 20s: 5.0 + (mean of distribution ~0.15 * 95) = ~20
-            kwargs["bar_length"] = 5.0 + (s_rng.random() ** 2.2) * 95.0
+            # Average in 20s for frequency: 5.0 + (mean of distribution ~0.15 * 95) = ~20
+            # For waveform, cap it lower (under 20)
+            if kwargs["visualization_feature"] == "waveform":
+                kwargs["bar_length"] = 5.0 + (s_rng.random() ** 1.5) * 10.0
+            else:
+                kwargs["bar_length"] = 5.0 + (s_rng.random() ** 2.2) * 95.0
             kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["distribute_by"] = "perimeter"
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
@@ -175,10 +179,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
         # Get final dimensions
         batch_size, screen_height, screen_width = mask.shape
-            
-        if kwargs.get("visualization_feature") == "waveform":
-            kwargs["ghost_mask_strength"] = 0.0
-            
+        
         kwargs['mask'] = mask
 
         # Find contours here so we can use them for adaptive density

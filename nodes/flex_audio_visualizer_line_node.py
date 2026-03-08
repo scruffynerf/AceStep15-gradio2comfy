@@ -76,7 +76,10 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
             # max_height is the "bar" height equivalent here
-            kwargs["max_height"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
+            if kwargs["visualization_feature"] == "waveform":
+                kwargs["max_height"] = 10.0 + (s_rng.random() ** 1.5) * 40.0
+            else:
+                kwargs["max_height"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
             kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.choice([0, 90, 180, 270]) # Stick to cardinal rotations for line
             
