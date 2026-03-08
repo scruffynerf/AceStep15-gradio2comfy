@@ -84,11 +84,12 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"])
             kwargs["bar_length"] = 1.0 + (s_rng.random() ** 2.5) * 99.0
-            kwargs["line_width"] = s_rng.randint(2, 10)
+            kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["distribute_by"] = s_rng.choice(["area", "perimeter"])
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
-            kwargs["max_contours"] = s_rng.randint(5, 50)
-            kwargs["contour_smoothing"] = s_rng.randint(0, 0) # subtle smoothing
+            kwargs["max_contours"] = 50
+            kwargs["min_contour_area"] = 0
+            kwargs["contour_smoothing"] = 0
             kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
