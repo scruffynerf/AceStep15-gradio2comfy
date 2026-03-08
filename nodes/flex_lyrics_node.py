@@ -23,11 +23,13 @@ class ScromfyFlexLyricsNode(FlexAudioVisualizerBase):
         # Add basic visualizer mode so it passes base class validation
         cleaned_required["color_mode"] = required["color_mode"]
         cleaned_required["custom_color"] = required["custom_color"]
+        cleaned_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
         
-        # Use simplified base inputs
+        # Use simplified base inputs from optional
+        optional = base["optional"]
         cleaned_optional = {
-            "opt_video": optional["opt_video"],
-            "lyric_settings": optional["lyric_settings"],
+            "opt_video": optional.get("opt_video"),
+            "lyric_settings": optional.get("lyric_settings"),
         }
         
         return {
