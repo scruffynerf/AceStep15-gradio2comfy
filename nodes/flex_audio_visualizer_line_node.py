@@ -17,6 +17,8 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             "required": {
                 "visualization_method": (["bar", "line"], {"default": "bar"}),
                 "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
+                "randomize": ("BOOLEAN", {"default": False}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "length": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 4000.0, "step": 10.0}),
@@ -61,6 +63,40 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             num_bars, smoothing, fft_size, min_frequency, max_frequency
         )
         return feature_value
+
+    def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
+                     feature_threshold, opt_feature=None, **kwargs):
+        
+        seed = kwargs.get("seed", 0)
+        import random
+        s_rng = random.Random(seed)
+
+        if kwargs.get("randomize", False):
+            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
+            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
+            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
+            # max_height is the "bar" height equivalent here
+            kwargs["max_height"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
+            kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
+            kwargs["rotation"] = s_rng.choice([0, 90, 180, 270]) # Stick to cardinal rotations for line
+            
+            vibrant_colors = [
+                "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
+                "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6"
+            ]
+            kwargs["custom_color"] = s_rng.choice(vibrant_colors)
+
+        # Get screen dimensions
+        screen_width = 512
+        screen_height = 512
+        
+        images, masks, settings = super().apply_effect(
+            audio, frame_rate, screen_width, screen_height,
+            strength, feature_param, feature_mode, feature_threshold,
+            opt_feature, **kwargs
+        )
+        
+        return (images, masks, settings)
 
     def apply_effect_internal(self, processor: BaseAudioProcessor, **kwargs):
         visualization_method = kwargs.get('visualization_method', 'bar')

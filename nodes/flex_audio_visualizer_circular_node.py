@@ -16,6 +16,8 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             "required": {
                 "visualization_method": (["bar", "line"], {"default": "bar"}),
                 "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
+                "randomize": ("BOOLEAN", {"default": False}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "num_points": ("INT", {"default": 360, "min": 3, "max": 1000, "step": 1}),
@@ -42,6 +44,41 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                 "min_frequency", "max_frequency", "radius", "line_width",
                 "amplitude_scale", "base_radius", "position_x", "position_y", 
                 "color_shift", "saturation", "brightness", "None"]
+
+    def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
+                     feature_threshold, opt_feature=None, **kwargs):
+        
+        seed = kwargs.get("seed", 0)
+        import random
+        s_rng = random.Random(seed)
+
+        if kwargs.get("randomize", False):
+            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
+            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
+            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
+            # amplitude_scale is the "bar" height equivalent here
+            kwargs["amplitude_scale"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
+            kwargs["line_width"] = s_rng.randint(1, 10)
+            kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
+            kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
+            
+            vibrant_colors = [
+                "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
+                "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6"
+            ]
+            kwargs["custom_color"] = s_rng.choice(vibrant_colors)
+
+        # Get screen dimensions from base or defaults
+        screen_width = 512
+        screen_height = 512
+        
+        images, masks, settings = super().apply_effect(
+            audio, frame_rate, screen_width, screen_height,
+            strength, feature_param, feature_mode, feature_threshold,
+            opt_feature, **kwargs
+        )
+        
+        return (images, masks, settings)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')

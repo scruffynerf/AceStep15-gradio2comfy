@@ -42,10 +42,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "fft_size": ("INT", {"default": 2048, "min": 256, "max": 8192, "step": 256}),
                 "min_frequency": ("FLOAT", {"default": 20.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
                 "max_frequency": ("FLOAT", {"default": 8000.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
-                "bar_length": ("FLOAT", {"default": 20.0, "min": 1.0, "max": 100.0, "step": 1.0}),
+                "bar_length": ("FLOAT", {"default": 20.0, "min": 5.0, "max": 100.0, "step": 1.0}),
                 "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
                 "contour_smoothing": ("INT", {"default": 0, "min": 0, "max": 50, "step": 1}),
                 "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "ghost_use_custom_color": ("BOOLEAN", {"default": True}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "direction": (["outward", "inward", "both"], {"default": "outward"}),
@@ -69,7 +70,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         return ["smoothing", "rotation", "num_points", "fft_size", 
                 "min_frequency", "max_frequency", "bar_length", "line_width",
                 "contour_smoothing", "min_contour_area", "max_contours", 
-                "color_shift", "saturation", "brightness", "ghost_mask_strength", "adaptive_point_density", "None"]
+                "color_shift", "saturation", "brightness", "ghost_mask_strength", "ghost_use_custom_color", "adaptive_point_density", "None"]
 
     RETURN_TYPES = ("IMAGE", "MASK", "MASK", "STRING")
     RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
@@ -85,14 +86,16 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
             kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"])
-            kwargs["bar_length"] = 1.0 + (s_rng.random() ** 2.5) * 99.0
+            # Average in 20s: 5.0 + (mean of distribution ~0.15 * 95) = ~20
+            kwargs["bar_length"] = 5.0 + (s_rng.random() ** 2.2) * 95.0
             kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["distribute_by"] = "perimeter"
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 0
             kwargs["contour_smoothing"] = 0
-            kwargs["ghost_mask_strength"] = 0.15
+            kwargs["ghost_mask_strength"] = 0.07
+            kwargs["ghost_use_custom_color"] = True
             kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
@@ -111,28 +114,17 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             masks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "masks")
             installed_mask = kwargs.get("installed_mask", "random")
             
-            if installed_mask == "random" and os.path.exists(masks_dir):
-                masks_list = [f for f in os.listdir(masks_dir) if f.lower().endswith(".png")]
-                if masks_list:
-                    # Use the seeded generator for mask selection too
-                    installed_mask = s_rng.choice(masks_list)
-                else:
-                    # Fallback to a simple circle if no masks found
-                    mask = torch.zeros((1, 512, 512), dtype=torch.float32)
-                    cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
-            elif installed_mask == "random": # Fallback if dir missing
+            if installed_mask == "random":
+                masks_list = [f for f in os.listdir(masks_dir) if f.lower().endswith(".png")] if os.path.exists(masks_dir) else []
+                installed_mask = s_rng.choice(masks_list) if masks_list else None
+            
+            mask_path = os.path.join(masks_dir, installed_mask) if installed_mask else ""
+            if mask_path and os.path.exists(mask_path):
+                pil_img = Image.open(mask_path).convert('L')
+                mask = torch.from_numpy(np.array(pil_img).astype(np.float32) / 255.0)
+            else:
                 mask = torch.zeros((1, 512, 512), dtype=torch.float32)
                 cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
-            
-            if mask is None and os.path.exists(masks_dir): # Means we have a filename to load
-                mask_path = os.path.join(masks_dir, installed_mask)
-                if os.path.exists(mask_path):
-                    pil_img = Image.open(mask_path).convert('L')
-                    mask_np = np.array(pil_img).astype(np.float32) / 255.0
-                    mask = torch.from_numpy(mask_np)
-                else:
-                    mask = torch.zeros((1, 512, 512), dtype=torch.float32)
-                    cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
 
         # Capture the "Source Mask" before we do any resizing/processing
         if len(mask.shape) == 2:
@@ -184,7 +176,10 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Get final dimensions
         batch_size, screen_height, screen_width = mask.shape
             
-        kwargs['mask'] = mask
+        # Disable ghosting for waveform mode as it tends to be too messy/overlapping
+        if kwargs.get("visualization_feature") == "waveform":
+            kwargs["ghost_mask_strength"] = 0.0
+
         # Find contours here so we can use them for adaptive density
         mask_uint8 = (mask[0].cpu().numpy() * 255).astype(np.uint8)
         contours, _ = cv2.findContours(mask_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -280,16 +275,15 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Option 1: Draw ghost mask (filled dimmed area) if enabled
         ghost_mask_strength = kwargs.get("ghost_mask_strength", 0.0)
         if ghost_mask_strength > 0:
-            ghost_color = (0.2, 0.2, 0.2) # Default subtle gray
-            # If we have a custom color, use a dimmed version of it
-            if color_mode == "custom":
-                c = parse_color(kwargs.get("custom_color", "#00ffff"))
-                ghost_color = tuple(val * ghost_mask_strength for val in c)
-            elif color_mode != "white":
-                # For spectrum etc, just use gray but at the requested strength
-                ghost_color = (ghost_mask_strength, ghost_mask_strength, ghost_mask_strength)
+            # Determine ghost color
+            if kwargs.get("ghost_use_custom_color", True):
+                base_ghost_color = parse_color(kwargs.get("custom_color", "#00ffff"))
+            elif color_mode == "white":
+                base_ghost_color = (1.0, 1.0, 1.0)
             else:
-                ghost_color = (ghost_mask_strength, ghost_mask_strength, ghost_mask_strength)
+                base_ghost_color = (1.0, 1.0, 1.0) # Fallback to white/gray
+                
+            ghost_color = tuple(val * ghost_mask_strength for val in base_ghost_color)
             
             # Fill the mask area in the image
             image[mask_uint8 > 0] = ghost_color
