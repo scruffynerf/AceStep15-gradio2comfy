@@ -12,25 +12,25 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         
         # Override feature_param with valid options
         base_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
+
+        # Remove parameters handled by base/settings
+        for param in ["screen_width", "screen_height", "position_x", "position_y",
+                      "color_mode", "randomize", "seed", "visualization_method",
+                      "visualization_feature", "smoothing", "line_width", "rotation",
+                      "fft_size", "min_frequency", "max_frequency"]:
+            if param in base_required:
+                del base_required[param]
         
         new_inputs = {
             "required": {
-                "visualization_method": (["bar", "line"], {"default": "bar"}),
-                "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
-                "randomize": ("BOOLEAN", {"default": False}),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
-                "length": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 4000.0, "step": 10.0}),
                 "num_bars": ("INT", {"default": 64, "min": 1, "max": 1024, "step": 1}),
                 "max_height": ("FLOAT", {"default": 200.0, "min": 10.0, "max": 2000.0, "step": 10.0}),
                 "min_height": ("FLOAT", {"default": 10.0, "min": 0.0, "max": 500.0, "step": 5.0}),
+                "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
+                "length": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 4000.0, "step": 10.0}),
                 "separation": ("FLOAT", {"default": 5.0, "min": 0.0, "max": 100.0, "step": 1.0}),
                 "curvature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 50.0, "step": 1.0}),
                 "curve_smoothing": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "fft_size": ("INT", {"default": 2048, "min": 256, "max": 8192, "step": 256}),
-                "min_frequency": ("FLOAT", {"default": 20.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
-                "max_frequency": ("FLOAT", {"default": 8000.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
                 "reflect": ("BOOLEAN", {"default": False}),
             }
         }
@@ -48,21 +48,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         return ["smoothing", "rotation", "position_y", "position_x",
                 "num_bars", "max_height", "min_height", "separation", "curvature", 
                 "curve_smoothing", "fft_size", "min_frequency", "max_frequency", 
-                "color_shift", "saturation", "brightness", "None"]
-
-    def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
-        visualization_feature = kwargs.get('visualization_feature', 'frequency')
-        smoothing = kwargs.get('smoothing', 0.5)
-        num_bars = kwargs.get('num_bars', 64)
-        fft_size = kwargs.get('fft_size', 2048)
-        min_frequency = kwargs.get('min_frequency', 20.0)
-        max_frequency = kwargs.get('max_frequency', 8000.0)
-
-        _, feature_value, _ = self.process_audio_data(
-            processor, frame_index, visualization_feature,
-            num_bars, smoothing, fft_size, min_frequency, max_frequency
-        )
-        return feature_value
+                "color_shift", "saturation", "brightness", "bar_length_mode", "None"]
 
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, opt_feature=None, **kwargs):
@@ -72,26 +58,18 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         s_rng = random.Random(seed)
 
         if kwargs.get("randomize", False):
-            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
-            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
-            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
+            kwargs["bar_length_mode"] = "relative"
             # max_height is the "bar" height equivalent here
-            if kwargs["visualization_feature"] == "waveform":
-                kwargs["max_height"] = 10.0 + (s_rng.random() ** 1.5) * 40.0
+            if kwargs.get("visualization_feature", "frequency") == "waveform":
+                kwargs["max_height"] = s_rng.uniform(10.0, 30.0)
             else:
-                kwargs["max_height"] = 10.0 + (s_rng.random() ** 2.2) * 490.0
-            kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
-            kwargs["rotation"] = s_rng.choice([0, 90, 180, 270]) # Stick to cardinal rotations for line
+                kwargs["max_height"] = s_rng.uniform(30.0, 70.0)
             
-            vibrant_colors = [
-                "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
-                "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6"
-            ]
-            kwargs["custom_color"] = s_rng.choice(vibrant_colors)
+            kwargs["num_bars"] = s_rng.choice([16, 32, 64, 128])
 
         # Get screen dimensions
-        screen_width = 512
-        screen_height = 512
+        screen_width = kwargs.get("screen_width", 512)
+        screen_height = kwargs.get("screen_height", 512)
         
         images, masks, settings = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
@@ -111,16 +89,30 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         reflect = kwargs.get('reflect', False)
         num_bars = kwargs.get('num_bars', 64)
         length = kwargs.get('length', 0.0)
+        
         max_height = kwargs.get('max_height', 200.0)
         min_height = kwargs.get('min_height', 10.0)
+        bar_length_mode = kwargs.get('bar_length_mode', 'absolute')
         
+        if bar_length_mode == "relative":
+            # Treat max_height as a percentage of screen_height
+            effective_max_height = (max_height / 100.0) * screen_height
+            effective_min_height = (min_height / 100.0) * screen_height
+        else:
+            effective_max_height = max_height
+            effective_min_height = min_height
+
         color_mode = kwargs.get('color_mode', 'white')
         color_shift = kwargs.get('color_shift', 0.0)
         saturation = kwargs.get('saturation', 1.0)
         brightness = kwargs.get('brightness', 1.0)
         item_freqs = kwargs.get('item_freqs', None)
+        line_width = kwargs.get('line_width', 2)
 
-        if length == 0:
+        baseline_y = screen_height * position_y
+        
+        # Determine effective length
+        if length == 0.0:
             rotation_rad = np.deg2rad(rotation)
             cos_theta = abs(np.cos(rotation_rad))
             sin_theta = abs(np.sin(rotation_rad))
@@ -131,7 +123,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         else:
             visualization_length = length
 
-        padding = int(max(visualization_length, max_height) * 0.5)
+        padding = int(max(visualization_length, effective_max_height) * 0.5)
         padded_width = int(visualization_length + 2 * padding)
         padded_height = int(screen_height + 2 * padding)
         padded_image = np.zeros((padded_height, padded_width, 3), dtype=np.float32)
@@ -144,18 +136,18 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             total_separation = separation * (num_bars - 1)
             total_bar_width = visualization_length - total_separation
             bar_width = total_bar_width / num_bars
-            baseline_y = padded_height // 2
+            baseline_y_padded = baseline_y + padding
             x_offset = (padded_width - visualization_length) // 2
 
             for i, bar_value in enumerate(data):
                 x = int(x_offset + i * (bar_width + separation))
-                bar_h = min_height + (max_height - min_height) * bar_value
+                bar_h = effective_min_height + (effective_max_height - effective_min_height) * bar_value
                 if reflect:
-                    y_start = int(baseline_y)
-                    y_end = int(baseline_y + bar_h)
+                    y_start = int(baseline_y_padded)
+                    y_end = int(baseline_y_padded + bar_h)
                 else:
-                    y_start = int(baseline_y - bar_h)
-                    y_end = int(baseline_y)
+                    y_start = int(baseline_y_padded - bar_h)
+                    y_end = int(baseline_y_padded)
                 
                 y_start = max(0, y_start)
                 y_end = min(padded_height - 1, y_end)

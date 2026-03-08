@@ -15,8 +15,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         
         base_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
         
-        # Remove parameters not used by contour
-        for param in ["screen_width", "screen_height", "position_x", "position_y"]:
+        # Remove parameters not used by contour or handled by base
+        for param in ["screen_width", "screen_height", "position_x", "position_y",
+                      "color_mode", "randomize", "seed", "visualization_method",
+                      "visualization_feature", "smoothing", "num_points", "fft_size",
+                      "min_frequency", "max_frequency", "line_width", "rotation"]:
             if param in base_required:
                 del base_required[param]
 
@@ -30,26 +33,14 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         new_inputs = {
             "required": {
                 "installed_mask": (installed_masks, {"default": "random"}),
-                "color_mode": (["white", "spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"], {"default": "spectrum"}),
                 "mask_scale": ("FLOAT", {"default": 0.60, "min": 0.01, "max": 1.0, "step": 0.01}),
                 "mask_top_margin": ("FLOAT", {"default": 0.05, "min": 0.0, "max": 0.5, "step": 0.01}),
-                "randomize": ("BOOLEAN", {"default": False}),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "visualization_method": (["bar", "line"], {"default": "bar"}),
-                "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
-                "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "num_points": ("INT", {"default": 360, "min": 3, "max": 1000, "step": 1}),
-                "fft_size": ("INT", {"default": 2048, "min": 256, "max": 8192, "step": 256}),
-                "min_frequency": ("FLOAT", {"default": 20.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
-                "max_frequency": ("FLOAT", {"default": 8000.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
                 "bar_length": ("FLOAT", {"default": 20.0, "min": 0.01, "max": 1000.0, "step": 0.1}),
                 "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
-                "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
                 "contour_smoothing": ("INT", {"default": 0, "min": 0, "max": 50, "step": 1}),
                 "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "ghost_use_custom_color": ("BOOLEAN", {"default": True}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
-                "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "direction": (["outward", "inward", "both"], {"default": "outward"}),
                 "min_contour_area": ("FLOAT", {"default": 100.0, "min": 0.0, "max": 10000.0, "step": 10.0}),
                 "max_contours": ("INT", {"default": 5, "min": 1, "max": 50, "step": 1}),
@@ -74,48 +65,34 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "color_shift", "saturation", "brightness", "ghost_mask_strength", 
                 "ghost_use_custom_color", "adaptive_point_density", "bar_length_mode", "None"]
 
-    RETURN_TYPES = ("IMAGE", "MASK", "MASK", "STRING")
+    RETURN_TYPES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
     RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
 
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, mask=None, opt_feature=None, **kwargs):
         
+        # Use seed from kwargs (might be from visualizer_settings or direct)
         seed = kwargs.get("seed", 0)
         s_rng = random.Random(seed)
 
-        # Randomization logic
+        # Base class now handles universal randomization and vibrant color picking.
+        # We do node-specific randomization here.
         if kwargs.get("randomize", False):
-            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
-            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
-            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"])
             kwargs["bar_length_mode"] = "relative"
-            
-            # For relative scaling, values are percentages (5.0 to 25.0)
-            if kwargs["visualization_feature"] == "waveform":
-                kwargs["bar_length"] = s_rng.uniform(5.0, 12.0)
+            if kwargs.get("visualization_feature", "frequency") == "waveform":
+                kwargs["bar_length"] = s_rng.uniform(5.0, 10.0)
             else:
+                # Frequency bars on contour look better slightly longer than waveform
                 kwargs["bar_length"] = s_rng.uniform(10.0, 25.0)
                 
-            kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["distribute_by"] = "perimeter"
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 0
             kwargs["contour_smoothing"] = 0
-            kwargs["ghost_mask_strength"] = 0.1
+            kwargs["ghost_mask_strength"] = 0.15
             kwargs["ghost_use_custom_color"] = True
-            kwargs["smoothing"] = 0
-            kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
-            
-            # Seeded random vibrant colors to avoid dull results
-            vibrant_colors = [
-                "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
-                "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6",
-                "#ff9100", "#2979ff", "#ff1744", "#00b0ff", "#00e676",
-                "#ffee58", "#ff4081", "#7c4dff", "#64ffda", "#ffab40"
-            ]
-            kwargs["custom_color"] = s_rng.choice(vibrant_colors)
 
         # Handle optional/missing mask
         if mask is None:
@@ -144,14 +121,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
         
-        # We need the original/target dimensions to pad correctly
-        # If mask was loaded, it might have its own size, but we usually want to fit it to a screen
-        if len(mask.shape) == 3:
-            m_batch, m_height, m_width = mask.shape
-        else:
-            m_height, m_width = mask.shape
-            m_batch = 1
-            mask = mask.unsqueeze(0)
+        m_batch, m_height, m_width = mask.shape if len(mask.shape) == 3 else (1, *mask.shape)
+        if len(mask.shape) == 2: mask = mask.unsqueeze(0)
 
         # Actually resize the mask content
         new_w = int(m_width * mask_scale)
@@ -162,28 +133,19 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             for b in range(m_batch):
                 m_np = mask[b].cpu().numpy()
                 m_resized = cv2.resize(m_np, (new_w, new_h), interpolation=cv2.INTER_AREA)
-                
-                # Create a blank canvas of the original size
                 canvas = np.zeros((m_height, m_width), dtype=np.float32)
-                
-                # Calculate positions
                 x_offset = (m_width - new_w) // 2
                 y_offset = int(m_height * mask_top_margin)
-                
-                # Ensure it fits
                 y_end = min(y_offset + new_h, m_height)
                 x_end = min(x_offset + new_w, m_width)
                 h_to_copy = y_end - y_offset
                 w_to_copy = x_end - x_offset
-                
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
                 resized_masks.append(torch.from_numpy(canvas))
-            
             mask = torch.stack(resized_masks) if m_batch > 1 else resized_masks[0].unsqueeze(0)
 
-        # Get final dimensions
+        # Get final dimensions for processing
         batch_size, screen_height, screen_width = mask.shape
-        
         kwargs['mask'] = mask
 
         # Find contours here so we can use them for adaptive density

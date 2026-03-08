@@ -300,6 +300,14 @@ class LyricRenderer:
 
         return frame_np
 
+VIBRANT_COLORS = [
+    "#00ffff", "#39ff14", "#ff00ff", "#ffea00", "#ff3d00", 
+    "#76ff03", "#00e5ff", "#f50057", "#d500f9", "#1de9b6",
+    "#ff9100", "#2979ff", "#ff1744", "#00b0ff", "#00e676",
+    "#ffee58", "#ff4081", "#7c4dff", "#64ffda", "#ffab40",
+    "#bf00ff", "#7fff00", "#ff1493", "#00ffbf"
+]
+
 class FlexAudioVisualizerBase(FlexBase):
     @classmethod
     def INPUT_TYPES(cls):
@@ -315,15 +323,11 @@ class FlexAudioVisualizerBase(FlexBase):
                 "screen_height": ("INT", {"default": 464, "min": 100, "max": 1080, "step": 1}),
                 "position_x": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "position_y": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "color_mode": (["white", "spectrum", "custom"], {"default": "spectrum"}),
-                "custom_color": ("COLOR", {"default": "#00ffff"}),
-                "color_shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "saturation": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
                 "opt_video": ("IMAGE",),
                 "lyric_settings": ("LYRIC_SETTINGS",),
+                "visualizer_settings": ("VISUALIZER_SETTINGS",),
             }
         }
 
@@ -435,7 +439,45 @@ class FlexAudioVisualizerBase(FlexBase):
                      strength, feature_param, feature_mode, feature_threshold,
                      opt_feature=None, opt_video=None, **kwargs):
         
+        # Unpack visualizer settings if provided
+        ext_settings = kwargs.get("visualizer_settings", {})
+        if isinstance(ext_settings, dict):
+            for k, v in ext_settings.items():
+                kwargs[k] = v
+
+        # Get random generator if randomize is active
+        s_rng = None
+        if kwargs.get("randomize", False):
+            import random
+            s_rng = random.Random(kwargs.get("seed", 0))
+
+        # Base Randomization Logic (shared across nodes)
+        if s_rng:
+            # Only randomize core features if they aren't explicitly locked
+            if "visualization_method" not in ext_settings:
+                kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
+            if "visualization_feature" not in ext_settings:
+                kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
+            if "color_mode" not in ext_settings:
+                # Some nodes might not support all color modes, but base class picks safely
+                kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
+            
+            kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
+            kwargs["line_width"] = s_rng.randint(1, 10)
+            kwargs["smoothing"] = 0.0 # Force low smoothing for responsive randoms
+
+        # Waveform Color Fix: Waveforms have no frequency data, so "spectrum" mode 
+        # ends up white. We force "custom" mode for waveforms if spectrum was selected.
+        if kwargs.get("visualization_feature") == "waveform" and kwargs.get("color_mode") == "spectrum":
+            kwargs["color_mode"] = "custom"
+
+        # Vibrant Color Randomization: If randomize is on and we are in custom mode, 
+        # pick a guaranteed vibrant color.
+        if s_rng and kwargs.get("color_mode") == "custom":
+            kwargs["custom_color"] = s_rng.choice(VIBRANT_COLORS)
+
         # Unpack lyric settings if provided
+        lyric_settings = kwargs.get("lyric_settings", {})
         lyric_settings = kwargs.get("lyric_settings", {})
         if isinstance(lyric_settings, dict):
             for k, v in lyric_settings.items():
