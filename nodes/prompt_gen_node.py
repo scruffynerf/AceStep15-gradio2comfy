@@ -116,9 +116,9 @@ class AceStepPromptGen:
 
 
 NODE_CLASS_MAPPINGS = {
-    "AceStepPromptGen": AceStepPromptGen,
+    "ScromfyAceStepPromptGen": ScromfyAceStepPromptGen,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepPromptGen": "Prompt Generator",
+    "ScromfyAceStepPromptGen": "Scromfy Prompt Generator",
 }
