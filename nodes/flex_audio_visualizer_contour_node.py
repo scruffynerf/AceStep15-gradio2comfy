@@ -30,6 +30,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         new_inputs = {
             "required": {
                 "installed_mask": (installed_masks, {"default": "random"}),
+                "color_mode": (["white", "spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"], {"default": "spectrum"}),
                 "mask_scale": ("FLOAT", {"default": 0.60, "min": 0.01, "max": 1.0, "step": 0.01}),
                 "mask_top_margin": ("FLOAT", {"default": 0.05, "min": 0.0, "max": 0.5, "step": 0.01}),
                 "randomize": ("BOOLEAN", {"default": False}),
@@ -81,8 +82,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         if kwargs.get("randomize", False):
             kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
-            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
-            kwargs["bar_length"] = s_rng.uniform(5.0, 100.0)
+            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"])
+            kwargs["bar_length"] = 1.0 + (s_rng.random() ** 2.5) * 99.0
             kwargs["line_width"] = s_rng.randint(2, 10)
             kwargs["distribute_by"] = s_rng.choice(["area", "perimeter"])
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
@@ -230,6 +231,14 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         contours, _ = cv2.findContours(mask_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours: return image
 
+        # For geometric color modes, find the center of the mask
+        M = cv2.moments(mask_uint8)
+        if M["m00"] > 0:
+            cx, cy = int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
+        else:
+            cx, cy = screen_width // 2, screen_height // 2
+        max_dist = np.sqrt(cx**2 + cy**2) # Max possible distance from center
+
         valid_contours = [c for c in contours if cv2.contourArea(c) >= min_contour_area]
         valid_contours.sort(key=cv2.contourArea, reverse=True)
         valid_contours = valid_contours[:max_contours]
@@ -282,9 +291,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     x2, y2 = int(x1 + normals_x[i] * bar_h), int(y1 + normals_y[i] * bar_h)
                     
                     # Determine color
+                    color = (1.0, 1.0, 1.0) # Default
+                    
                     if color_mode == "spectrum" and item_freqs is not None:
                         color = get_color_for_frequency(item_freqs[start_idx + i], color_shift, saturation, brightness)
-                    elif color_mode == "custom":
+                    elif color_mode == "custom" or (color_mode == "spectrum" and item_freqs is None):
                         base_color = parse_color(kwargs.get("custom_color", "#00ffff"))
                         color_shift_val = kwargs.get("contour_color_shift", 0.0)
                         if color_shift_val > 0 and total_contours > 1:
@@ -294,7 +305,22 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                         else:
                             color = base_color
                     else:
-                        color = (1.0, 1.0, 1.0)
+                        # Advanced mapping modes
+                        import colorsys
+                        val = 0.0
+                        if color_mode == "amplitude":
+                            val = amplitude # Naturally 0-1
+                        elif color_mode == "radial":
+                            val = np.sqrt((x1 - cx)**2 + (y1 - cy)**2) / max_dist
+                        elif color_mode == "angular":
+                            val = (np.arctan2(y1 - cy, x1 - cx) / (2 * np.pi)) + 0.5
+                        elif color_mode == "path":
+                            val = i / num_pts
+                        elif color_mode == "screen":
+                            val = (x1 / screen_width + y1 / screen_height) / 2.0
+                        
+                        hue = (val + color_shift) % 1.0
+                        color = colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
                         
                     cv2.line(image, (x1, y1), (x2, y2), color, thickness=line_width)
             else:
@@ -311,7 +337,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     # Close the loop if needed (contour is closed)
                     color = get_color_for_frequency(item_freqs[end_idx - 1], color_shift, saturation, brightness)
                     cv2.line(image, tuple(pts[-1]), tuple(pts[0]), color, line_width)
-                elif color_mode == "custom":
+                elif color_mode == "custom" or (color_mode == "spectrum" and item_freqs is None):
                     base_color = parse_color(kwargs.get("custom_color", "#00ffff"))
                     color_shift_val = kwargs.get("contour_color_shift", 0.0)
                     if color_shift_val > 0 and total_contours > 1:
@@ -322,7 +348,26 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                         color = base_color
                     cv2.polylines(image, [pts.astype(np.int32)], True, color, thickness=line_width)
                 else:
-                    cv2.polylines(image, [pts.astype(np.int32)], True, (1.0, 1.0, 1.0), thickness=line_width)
+                    # Advanced mapping modes
+                    import colorsys
+                    # For performance in polyline mode, we'll pick the color based on the first point's geometry
+                    # or the average amplitude
+                    val = 0.0
+                    av_x, av_y = np.mean(x_coords), np.mean(y_coords)
+                    if color_mode == "amplitude":
+                        val = np.mean(contour_data)
+                    elif color_mode == "radial":
+                        val = np.sqrt((av_x - cx)**2 + (av_y - cy)**2) / max_dist
+                    elif color_mode == "angular":
+                        val = (np.arctan2(av_y - cy, av_x - cx) / (2 * np.pi)) + 0.5
+                    elif color_mode == "path":
+                        val = start_idx / total_pts # Use start position on path
+                    elif color_mode == "screen":
+                        val = (av_x / screen_width + av_y / screen_height) / 2.0
+                    
+                    hue = (val + color_shift) % 1.0
+                    color = colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
+                    cv2.polylines(image, [pts.astype(np.int32)], True, color, thickness=line_width)
 
         start_idx = 0
         total_pts = len(data)
