@@ -45,7 +45,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "bar_length": ("FLOAT", {"default": 20.0, "min": 1.0, "max": 100.0, "step": 1.0}),
                 "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
                 "contour_smoothing": ("INT", {"default": 0, "min": 0, "max": 50, "step": 1}),
-                "draw_ghost_contours": ("BOOLEAN", {"default": False}),
+                "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "direction": (["outward", "inward", "both"], {"default": "outward"}),
@@ -69,7 +69,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         return ["smoothing", "rotation", "num_points", "fft_size", 
                 "min_frequency", "max_frequency", "bar_length", "line_width",
                 "contour_smoothing", "min_contour_area", "max_contours", 
-                "color_shift", "saturation", "brightness", "draw_ghost_contours", "adaptive_point_density", "None"]
+                "color_shift", "saturation", "brightness", "ghost_mask_strength", "adaptive_point_density", "None"]
 
     RETURN_TYPES = ("IMAGE", "MASK", "MASK", "STRING")
     RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
@@ -92,7 +92,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 0
             kwargs["contour_smoothing"] = 0
-            kwargs["draw_ghost_contours"] = True
+            kwargs["ghost_mask_strength"] = 0.15
             kwargs["smoothing"] = s_rng.uniform(0.0, 0.1)
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
@@ -276,17 +276,23 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             valid_contours = valid_contours[:max_contours]
         
         if not valid_contours: return image
-
-        # Option 1: Draw ghost contours (thin lines) if enabled
-        if kwargs.get("draw_ghost_contours", False):
+        
+        # Option 1: Draw ghost mask (filled dimmed area) if enabled
+        ghost_mask_strength = kwargs.get("ghost_mask_strength", 0.0)
+        if ghost_mask_strength > 0:
             ghost_color = (0.2, 0.2, 0.2) # Default subtle gray
-            # If we have a custom color, use a very dimmed version of it
+            # If we have a custom color, use a dimmed version of it
             if color_mode == "custom":
                 c = parse_color(kwargs.get("custom_color", "#00ffff"))
-                ghost_color = tuple(val * 0.2 for val in c)
+                ghost_color = tuple(val * ghost_mask_strength for val in c)
+            elif color_mode != "white":
+                # For spectrum etc, just use gray but at the requested strength
+                ghost_color = (ghost_mask_strength, ghost_mask_strength, ghost_mask_strength)
+            else:
+                ghost_color = (ghost_mask_strength, ghost_mask_strength, ghost_mask_strength)
             
-            for c in valid_contours:
-                cv2.polylines(image, [c.astype(np.int32)], True, ghost_color, 1)
+            # Fill the mask area in the image
+            image[mask_uint8 > 0] = ghost_color
 
         if distribute_by == 'area':
             weights = [cv2.contourArea(c) for c in valid_contours]
