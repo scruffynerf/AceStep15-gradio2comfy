@@ -69,9 +69,16 @@ class BaseAudioProcessor:
             # Apply logarithmic scaling
             spectrum = np.log1p(spectrum)
 
-            # Normalize
+            # Apply low-frequency roll-off (fade in first 3 bins to mitigate noise/DC offset)
+            if len(spectrum) > 3:
+                spectrum[0] *= 0.1
+                spectrum[1] *= 0.4
+                spectrum[2] *= 0.7
+
+            # Normalize with noise floor threshold
             max_spectrum = np.max(spectrum)
-            if max_spectrum != 0:
+            noise_floor = 0.05 # Prevent tiny noise from being blown up
+            if max_spectrum > noise_floor:
                 spectrum = spectrum / max_spectrum
             else:
                 spectrum = np.zeros_like(spectrum)
@@ -146,6 +153,7 @@ class LyricRenderer:
         self.y_position = y_position
         self.max_lines = max_lines
         self.line_spacing = line_spacing
+        self.font_name = font_name
 
         # Parse lyrics
         if "-->" in lrc_text:
@@ -158,7 +166,7 @@ class LyricRenderer:
         self.norm_rgb = parse_color(normal_color, fallback=(156, 163, 175), to_float=False)
 
         # Load font from root /fonts directory
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         base_font_dir = os.path.join(base_dir, "fonts")
         
         def try_load_font(name, size):
@@ -179,6 +187,7 @@ class LyricRenderer:
             return ImageFont.load_default()
 
         self.f_reg = try_load_font(font_name, font_size)
+        self.font_path = self.f_reg.path if hasattr(self.f_reg, 'path') else None
         
         # Determine bold version name
         bold_name = font_name.replace("-Regular", "-Bold").replace("Regular", "Bold")
@@ -271,7 +280,14 @@ class LyricRenderer:
                         if tw > b_w - 40: # 20px padding on each side
                             scale = (b_w - 40) / tw
                             new_size = int(current_f.size * scale)
-                            current_f = ImageFont.truetype(current_f.path, new_size) if hasattr(current_f, 'path') else current_f
+                            try:
+                                if self.font_path:
+                                    current_f = ImageFont.truetype(self.font_path, new_size)
+                                elif hasattr(current_f, 'path'):
+                                    current_f = ImageFont.truetype(current_f.path, new_size)
+                            except:
+                                pass # Keep original font size / object if resizing fails
+                            
                             bbox = self.scratch_draw.textbbox((0, 0), item["txt"], font=current_f)
                             tw, th = bbox[2]-bbox[0], bbox[3]-bbox[1]
 
@@ -393,8 +409,8 @@ class FlexAudioVisualizerBase(FlexBase):
         }
 
     CATEGORY = "Scromfy/Ace-Step/Visualizers"
-    RETURN_TYPES = ("IMAGE", "MASK", "MASK", "STRING")
-    RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
     FUNCTION = "apply_effect"
 
     @classmethod
@@ -699,10 +715,10 @@ class FlexAudioVisualizerBase(FlexBase):
             if source_mask is None:
                 source_mask = torch.zeros((1, actual_height, actual_width), dtype=torch.float32)
             
-            return (result_tensor, mask, source_mask, settings_str)
+            return (result_tensor, mask, settings_str, source_mask)
         else:
             empty_tensor = torch.zeros((1, actual_height, actual_width, 3), dtype=torch.float32)
             empty_mask = torch.zeros((1, actual_height, actual_width), dtype=torch.float32)
             if source_mask is None:
                 source_mask = empty_mask
-            return (empty_tensor, empty_mask, source_mask, settings_str)
+            return (empty_tensor, empty_mask, settings_str, source_mask)

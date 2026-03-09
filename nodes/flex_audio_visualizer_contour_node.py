@@ -64,8 +64,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "color_shift", "saturation", "brightness", "ghost_mask_strength", 
                 "ghost_use_custom_color", "adaptive_point_density", "bar_length_mode", "None"]
 
-    RETURN_TYPES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
-    RETURN_NAMES = ("IMAGE", "MASK", "SOURCE_MASK", "SETTINGS")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
 
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, mask=None, opt_feature=None, **kwargs):
@@ -182,13 +182,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         else:
             kwargs["_mask_scale"] = 100.0 # Fallback
 
-        images, masks, source_mask_out, settings = super().apply_effect(
+        images, masks, settings, source_mask_out = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
             opt_feature, source_mask=source_mask, **kwargs
         )
         
-        return (images, masks, source_mask_out, settings)
+        return (images, masks, settings, source_mask_out)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')

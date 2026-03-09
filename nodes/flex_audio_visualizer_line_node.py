@@ -49,9 +49,8 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                 "curve_smoothing", "fft_size", "min_frequency", "max_frequency", 
                 "color_shift", "saturation", "brightness", "bar_length_mode", "None"]
 
-    def get_point_count(self, kwargs):
-        # Line wants num_bars
-        return kwargs.get('num_bars', 64)
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS")
 
     def apply_effect(self, audio, frame_rate, strength, feature_param, feature_mode,
                      feature_threshold, opt_feature=None, **kwargs):
@@ -74,13 +73,14 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         screen_width = kwargs.get("screen_width", 512)
         screen_height = kwargs.get("screen_height", 512)
         
-        images, masks, source_mask, settings = super().apply_effect(
+        # images, masks, settings, _ (source_mask ignored)
+        images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
             opt_feature, **kwargs
         )
         
-        return (images, masks, source_mask, settings)
+        return (images, masks, settings)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
