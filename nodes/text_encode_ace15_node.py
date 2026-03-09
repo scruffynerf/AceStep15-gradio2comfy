@@ -116,6 +116,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
                    timesignature="4/4", language="English", llm_audio_codes=True, seed=0, 
                    cfg_scale=2.0, temperature=0.85, top_p=0.9, top_k=0, min_p=0.0, 
                    repetition_penalty=1.3):
+        seed = seed % 0x100000000
         # Return a hash of all inputs (except clip which is handled by Comfy's graph)
         import hashlib
         m = hashlib.sha256()
@@ -143,6 +144,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
                min_p=0.0,
                repetition_penalty=1.3,
                ):
+        seed = seed % 0x100000000
         # Convert display name to ISO code
         language_code = self.LANGUAGE_MAP.get(language, language)
 

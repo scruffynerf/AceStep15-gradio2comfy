@@ -20,7 +20,7 @@ class ScromfyFlexVisualizerSettingsNode:
                 "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
-                "direction": (["outward", "inward", "both"], {"default": "outward"}),
+                "direction": (["outward", "inward", "both", "centroid", "starburst"], {"default": "outward"}),
                 "sequence_direction": (["left", "right", "centered", "both ends"], {"default": "right"}),
             }
         }

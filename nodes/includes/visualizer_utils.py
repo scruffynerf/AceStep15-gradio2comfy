@@ -590,7 +590,7 @@ class FlexAudioVisualizerBase(FlexBase):
             kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["smoothing"] = 0.0 # Force low smoothing for responsive randoms
             
-            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
+            kwargs["direction"] = s_rng.choice(["outward", "inward", "both", "centroid", "starburst"])
             kwargs["sequence_direction"] = s_rng.choice(["left", "right"])
 
         # Waveform Color Fix: Waveforms have no frequency data, so "spectrum" mode 

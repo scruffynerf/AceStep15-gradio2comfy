@@ -355,6 +355,17 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             normals_x = -dy / lengths
             normals_y = dx / lengths
 
+            # Override normals for centroid/starburst: vector between point and mask center
+            if direction in ("centroid", "starburst"):
+                cdx = cx - x_coords
+                cdy = cy - y_coords
+                clens = np.sqrt(cdx**2 + cdy**2)
+                clens = np.where(clens > 0, clens, 1.0)
+                # centroid = toward center, starburst = away from center
+                sign = 1.0 if direction == "centroid" else -1.0
+                normals_x = sign * cdx / clens
+                normals_y = sign * cdy / clens
+
             if visualization_method == 'bar':
                 for i, amplitude in enumerate(contour_data):
                     x1, y1 = int(x_coords[i]), int(y_coords[i])
@@ -412,6 +423,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 process_contour(cnt, start_idx, end_idx, 0.5, i, total_contours)
                 process_contour(cnt, start_idx, end_idx, -0.5, i, total_contours)
             else:
+                # centroid/starburst encode direction in normals; inward flips normals
                 mul = -1.0 if direction == "inward" else 1.0
                 process_contour(cnt, start_idx, end_idx, mul, i, total_contours)
             start_idx = end_idx
