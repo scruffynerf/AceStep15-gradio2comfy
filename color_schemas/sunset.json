@@ -1,0 +1,30 @@
+{
+    "name": "Sunset",
+    "stops": [
+        [
+            0.00,
+            "#1a0033",
+            "deep purple / dusk"
+        ],
+        [
+            0.30,
+            "#990080",
+            "magenta / twilight"
+        ],
+        [
+            0.60,
+            "#ff5900",
+            "burnt orange / horizon"
+        ],
+        [
+            0.85,
+            "#ffcc1a",
+            "golden yellow / last light"
+        ],
+        [
+            1.00,
+            "#ffffb3",
+            "pale gold / peak"
+        ]
+    ]
+}

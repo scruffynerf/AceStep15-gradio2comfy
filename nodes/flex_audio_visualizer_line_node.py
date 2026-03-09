@@ -36,10 +36,11 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
 
         # Combine, putting new specific inputs first
         all_required = {**base_required, **new_inputs["required"]}
+        all_optional = {**base_optional, "mask": ("MASK",)}
         
         return {
             "required": all_required,
-            "optional": base_optional
+            "optional": all_optional
         }
 
     @classmethod
@@ -53,7 +54,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
     RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS")
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, strength, feature_param,
-                     feature_mode, feature_threshold, opt_feature=None, **kwargs):
+                     feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
         
         seed = kwargs.get("seed", 0)
         import random
@@ -77,7 +78,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
-            opt_feature, **kwargs
+            opt_feature, source_mask=mask, **kwargs
         )
         
         return (images, masks, settings)
@@ -146,6 +147,32 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         padded_height = int(max(screen_height, effective_max_height) + 2 * padding)
         padded_image = np.zeros((padded_height, padded_width, 3), dtype=np.float32)
 
+        # Baseline point calculation (unpadded)
+        center_x = screen_width * position_x
+        center_y = screen_height * position_y
+
+        # For geometric color/direction logic, find the center of the mask if provided
+        mask = kwargs.get("source_mask")
+        if mask is not None:
+            # mask is likely a torch tensor [batch, height, width]
+            frame_idx = min(kwargs.get("frame_index", 0), mask.shape[0] - 1)
+            mask_np = (mask[frame_idx].cpu().numpy() * 255).astype(np.uint8)
+            M = cv2.moments(mask_np)
+            if M["m00"] > 0:
+                cx_rel, cy_rel = M["m10"] / M["m00"], M["m01"] / M["m00"]
+            else:
+                cx_rel, cy_rel = center_x, center_y
+        else:
+            cx_rel, cy_rel = center_x, center_y
+
+        # Apply user-specified CoM offset
+        cx_rel += kwargs.get("centroid_offset_x", 0.0) * screen_width
+        cy_rel += kwargs.get("centroid_offset_y", 0.0) * screen_height
+
+        # Final cx/cy in the PADDED coordinate space for drawing
+        cx = cx_rel + (padded_width - screen_width) // 2
+        cy = cy_rel + (padded_height - screen_height) // 2
+
         data = self.transform_sequence(processor.spectrum, sequence_direction)
         if item_freqs is not None:
             item_freqs = self.transform_sequence(item_freqs, sequence_direction)
@@ -159,49 +186,84 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             baseline_y_padded = baseline_y + padding
             x_offset = (padded_width - visualization_length) // 2
 
+            direction_skew = kwargs.get("direction_skew", 0.0)
+
             for i, bar_value in enumerate(data):
-                x = int(x_offset + i * (bar_width + separation))
+                x_base = x_offset + i * (bar_width + separation) + bar_width / 2
+                y_base = baseline_y_padded
+                
                 bar_h = effective_min_height + (effective_max_height - effective_min_height) * bar_value
-                if direction == 'inward':
-                    y_start = int(baseline_y_padded)
-                    y_end = int(baseline_y_padded + bar_h)
-                elif direction == 'both':
-                    half_h = bar_h / 2.0
-                    y_start = int(baseline_y_padded - half_h)
-                    y_end = int(baseline_y_padded + half_h)
-                else: # outward
-                    y_start = int(baseline_y_padded - bar_h)
-                    y_end = int(baseline_y_padded)
                 
-                y_start = max(0, y_start)
-                y_end = min(padded_height - 1, y_end)
-                if y_start > y_end: y_start, y_end = y_end, y_start
-                x_end = int(x + bar_width)
-                
+                # Determine direction vector (vx, vy)
+                if direction in ('centroid', 'starburst'):
+                    dx_com, dy_com = cx - x_base, cy - y_base
+                    dist_com = np.sqrt(dx_com**2 + dy_com**2)
+                    if dist_com > 0:
+                        vx, vy = dx_com / dist_com, dy_com / dist_com
+                    else:
+                        vx, vy = 0, -1
+                    if direction == 'starburst':
+                        vx, vy = -vx, -vy
+                else:
+                    # upward/downward
+                    vx, vy = 0, -1
+                    if direction == 'inward':
+                        vx, vy = 0, 1
+
+                # Apply skew
+                if direction_skew != 0:
+                    skew_rad = np.deg2rad(direction_skew)
+                    s_cos, s_sin = np.cos(skew_rad), np.sin(skew_rad)
+                    vx, vy = vx * s_cos - vy * s_sin, vx * s_sin + vy * s_cos
+
+                # Draw point calculation
+                if direction == 'both':
+                    half = bar_h / 2.0
+                    # For 'both', we use the vertical radial-like expansion on the baseline
+                    x1, y1 = int(x_base), int(y_base - half)
+                    x2, y2 = int(x_base), int(y_base + half)
+                    # We override vx, vy for color mapping below if needed, but for 'both' 
+                    # we stick to standard rectangle logic if no skew
+                else:
+                    x1, y1 = int(x_base), int(y_base)
+                    x2, y2 = int(x_base + vx * bar_h), int(y_base + vy * bar_h)
+
                 # Determine color using shared helper
+                # Pass cx, cy (potentially offset) to get_draw_color
                 color = self.get_draw_color(i, num_bars, bar_value,
-                                            x, y_start, padded_width // 2, padded_height // 2, 
+                                            x1, y1, cx, cy, 
                                             max(screen_width, screen_height), **kwargs)
                 
-                rect_width = max(1, int(bar_width))
-                rect_height = max(1, int(y_end - y_start))
-
-                if curvature > 0 and rect_width > 1 and rect_height > 1:
-                    radius = max(1, min(int(curvature), rect_width // 2, rect_height // 2))
-                    mask = np.zeros((rect_height, rect_width), dtype=np.uint8)
-                    r = radius
-                    # 4 corner circles
-                    cv2.circle(mask, (r, r), r, 255, -1)
-                    cv2.circle(mask, (rect_width - r, r), r, 255, -1)
-                    cv2.circle(mask, (r, rect_height - r), r, 255, -1)
-                    cv2.circle(mask, (rect_width - r, rect_height - r), r, 255, -1)
-                    # 2 overlapping rectangles to fill the middle
-                    cv2.rectangle(mask, (r, 0), (rect_width - r, rect_height), 255, -1)
-                    cv2.rectangle(mask, (0, r), (rect_width, rect_height - r), 255, -1)
-                    
-                    padded_image[y_start:y_start+rect_height, x:x+rect_width][mask > 0] = color
+                # Draw logic: if we have skew or centroid, we MUST use cv2.line.
+                # If we have curvature and it's vertical, we use the original mask logic.
+                is_vertical = (vx == 0 and direction_skew == 0 and direction != 'both') or (direction == 'both' and direction_skew == 0)
+                
+                if not is_vertical:
+                    thickness = max(1, int(bar_width))
+                    cv2.line(padded_image, (x1, y1), (x2, y2), color, thickness)
                 else:
-                    cv2.rectangle(padded_image, (x, y_start), (x_end, y_end), color, thickness=-1)
+                    # Original rectangle/curvature logic
+                    rect_x_start = int(x_base - bar_width / 2)
+                    rect_x_end = int(rect_x_start + bar_width)
+                    rect_y_start, rect_y_end = y1, y2
+                    if rect_y_start > rect_y_end: rect_y_start, rect_y_end = rect_y_end, rect_y_start
+                    
+                    rect_w = max(1, int(rect_x_end - rect_x_start))
+                    rect_h = max(1, int(rect_y_end - rect_y_start))
+                    
+                    if curvature > 0 and rect_w > 1 and rect_h > 1:
+                        radius = max(1, min(int(curvature), rect_w // 2, rect_h // 2))
+                        mask = np.zeros((rect_h, rect_w), dtype=np.uint8)
+                        r = radius
+                        cv2.circle(mask, (r, r), r, 255, -1)
+                        cv2.circle(mask, (rect_w - r, r), r, 255, -1)
+                        cv2.circle(mask, (r, rect_h - r), r, 255, -1)
+                        cv2.circle(mask, (rect_w - r, rect_h - r), r, 255, -1)
+                        cv2.rectangle(mask, (r, 0), (rect_w - r, rect_h), 255, -1)
+                        cv2.rectangle(mask, (0, r), (rect_w, rect_h - r), 255, -1)
+                        padded_image[rect_y_start:rect_y_start+rect_h, rect_x_start:rect_x_start+rect_w][mask > 0] = color
+                    else:
+                        cv2.rectangle(padded_image, (rect_x_start, rect_y_start), (rect_x_end, rect_y_end), color, thickness=-1)
 
         elif visualization_method == 'line':
             curve_smoothing = kwargs.get('curve_smoothing', 0.0)
@@ -225,7 +287,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                     p1 = points[i]
                     p2 = points[i+1]
                     color = self.get_draw_color(i, num_pts, data[i],
-                                                p1[0], p1[1], padded_width // 2, baseline_y,
+                                                p1[0], p1[1], cx, cy,
                                                 max(visualization_length, effective_max_height), **kwargs)
                     cv2.line(padded_image, tuple(p1), tuple(p2), color, line_width)
 

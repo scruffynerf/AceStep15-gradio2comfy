@@ -9,6 +9,70 @@ from abc import abstractmethod
 from PIL import Image, ImageDraw, ImageFont
 from .flex_utils import FlexBase
 
+# ---------------------------------------------------------------------------
+# Color schema system – JSON files from /color_schemas/ directory
+# ---------------------------------------------------------------------------
+_SCHEMAS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "color_schemas")
+_COLOR_SCHEMAS: dict = {}  # populated by load_color_schemas()
+
+def load_color_schemas() -> dict:
+    """Load all .json schema files from the color_schemas directory."""
+    schemas = {}
+    if not os.path.isdir(_SCHEMAS_DIR):
+        return schemas
+    for fname in sorted(os.listdir(_SCHEMAS_DIR)):
+        if not fname.lower().endswith(".json"):
+            continue
+        stem = os.path.splitext(fname)[0]  # e.g. "fire"
+        try:
+            with open(os.path.join(_SCHEMAS_DIR, fname), "r", encoding="utf-8") as f:
+                data = json.load(f)
+            stops = []
+            for s in data["stops"]:
+                t = float(s[0])
+                color_val = s[1]
+                if isinstance(color_val, str) and color_val.startswith("#"):
+                    # Parse hex: #rrggbb -> (r, g, b) in 0-1 range
+                    h = color_val.lstrip("#")
+                    rgb = tuple(int(h[i:i+2], 16) / 255.0 for i in (0, 2, 4))
+                else:
+                    # Legacy float array format
+                    rgb = tuple(float(v) for v in color_val)
+                stops.append((t, rgb))
+            schemas[stem] = stops
+        except Exception:
+            pass  # silently skip malformed files
+    return schemas
+
+def get_schema_color(schema_name: str, t: float, color_shift: float = 0.0,
+                     saturation: float = 1.0, brightness: float = 1.0):
+    """Interpolate gradient stops for a schema at position t in [0, 1]."""
+    global _COLOR_SCHEMAS
+    if not _COLOR_SCHEMAS:
+        _COLOR_SCHEMAS = load_color_schemas()
+    stops = _COLOR_SCHEMAS.get(schema_name)
+    if not stops:
+        return (1.0, 1.0, 1.0)  # fallback to white
+    t = max(0.0, min(1.0, t))
+    # Find bracketing stops
+    for idx in range(len(stops) - 1):
+        t0, c0 = stops[idx]
+        t1, c1 = stops[idx + 1]
+        if t <= t1:
+            alpha = (t - t0) / max(t1 - t0, 1e-9)
+            r = c0[0] + alpha * (c1[0] - c0[0])
+            g = c0[1] + alpha * (c1[1] - c0[1])
+            b = c0[2] + alpha * (c1[2] - c0[2])
+            # Apply brightness / saturation via HLS
+            import colorsys
+            h, l, s = colorsys.rgb_to_hls(r, g, b)
+            h = (h + color_shift) % 1.0
+            l = max(0.0, min(1.0, l * brightness))
+            s = max(0.0, min(1.0, s * saturation))
+            return colorsys.hls_to_rgb(h, l, s)
+    # Past the last stop — return last color
+    return stops[-1][1]
+
 class BaseAudioProcessor:
     def __init__(self, audio, num_frames, height, width, frame_rate):
         """
@@ -475,12 +539,23 @@ class FlexAudioVisualizerBase(FlexBase):
             return param_value
 
     def get_draw_color(self, i, num_pts, amplitude, x, y, cx, cy, max_dist, **kwargs):
+        color_schema = kwargs.get('color_schema', 'none')
         color_mode = kwargs.get('color_mode', 'white')
         color_shift = kwargs.get('color_shift', 0.0)
         saturation = kwargs.get('saturation', 1.0)
         brightness = kwargs.get('brightness', 1.0)
         item_freqs = kwargs.get('item_freqs')
-        
+
+        # Apply CoM offset to cx/cy for geometric color modes
+        screen_width  = kwargs.get('screen_width', 512)
+        screen_height = kwargs.get('screen_height', 512)
+        cx = cx + kwargs.get('centroid_offset_x', 0.0) * screen_width
+        cy = cy + kwargs.get('centroid_offset_y', 0.0) * screen_height
+
+        # Schema overrides color_mode entirely
+        if color_schema and color_schema != 'none':
+            return get_schema_color(color_schema, float(amplitude), color_shift, saturation, brightness)
+
         if color_mode == "white":
             return (1.0, 1.0, 1.0)
         elif color_mode == "spectrum" and item_freqs is not None:
@@ -502,9 +577,8 @@ class FlexAudioVisualizerBase(FlexBase):
                 sw = kwargs.get("screen_width", 512)
                 sh = kwargs.get("screen_height", 512)
                 val = (x / max(1, sw) + y / max(1, sh)) / 2.0
-            
+
             hue = (val + color_shift) % 1.0
-            # Normalize to 0-1 for colorsys
             return colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
 
     def rotate_image(self, image, angle):

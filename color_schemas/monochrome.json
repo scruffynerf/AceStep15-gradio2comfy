@@ -1,0 +1,20 @@
+{
+    "name": "Monochrome",
+    "stops": [
+        [
+            0.00,
+            "#000000",
+            "black / silence"
+        ],
+        [
+            0.50,
+            "#808080",
+            "grey / mid"
+        ],
+        [
+            1.00,
+            "#ffffff",
+            "white / peak"
+        ]
+    ]
+}

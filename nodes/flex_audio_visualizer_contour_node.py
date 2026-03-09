@@ -287,6 +287,10 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             cx, cy = int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
         else:
             cx, cy = screen_width // 2, screen_height // 2
+
+        # Apply user-specified CoM offset (as fraction of screen size)
+        cx = int(cx + kwargs.get("centroid_offset_x", 0.0) * screen_width)
+        cy = int(cy + kwargs.get("centroid_offset_y", 0.0) * screen_height)
         max_dist = np.sqrt(cx**2 + cy**2) # Max possible distance from center
 
         # Prioritize pre-calculated contours from apply_effect
@@ -365,6 +369,17 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 sign = 1.0 if direction == "centroid" else -1.0
                 normals_x = sign * cdx / clens
                 normals_y = sign * cdy / clens
+
+            # Apply angular skew (rotate direction vectors by N degrees)
+            direction_skew = kwargs.get("direction_skew", 0.0)
+            if direction_skew != 0.0:
+                skew_rad = np.deg2rad(direction_skew)
+                cos_s = np.cos(skew_rad)
+                sin_s = np.sin(skew_rad)
+                nx_rot = normals_x * cos_s - normals_y * sin_s
+                ny_rot = normals_x * sin_s + normals_y * cos_s
+                normals_x = nx_rot
+                normals_y = ny_rot
 
             if visualization_method == 'bar':
                 for i, amplitude in enumerate(contour_data):

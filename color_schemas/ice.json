@@ -1,0 +1,25 @@
+{
+    "name": "Ice",
+    "stops": [
+        [
+            0.00,
+            "#000d33",
+            "midnight blue / frozen dark"
+        ],
+        [
+            0.40,
+            "#3380e6",
+            "steel blue / deep ice"
+        ],
+        [
+            0.75,
+            "#a6d9ff",
+            "ice blue / crystal"
+        ],
+        [
+            1.00,
+            "#ffffff",
+            "white / bright ice / peak"
+        ]
+    ]
+}

@@ -30,10 +30,11 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         }
 
         all_required = {**base_required, **new_inputs["required"]}
+        all_optional = {**base_optional, "mask": ("MASK",)}
         
         return {
             "required": all_required,
-            "optional": base_optional
+            "optional": all_optional
         }
 
     @classmethod
@@ -47,7 +48,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
     RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS")
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, strength, feature_param,
-                     feature_mode, feature_threshold, opt_feature=None, **kwargs):
+                     feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
         
         seed = kwargs.get("seed", 0)
         import random
@@ -72,7 +73,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
-            opt_feature, **kwargs
+            opt_feature, source_mask=mask, **kwargs
         )
         
         return (images, masks, settings)
@@ -123,9 +124,25 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         center_x = screen_width * position_x
         center_y = screen_height * position_y
 
+        # For geometric color/direction logic, find the center of the mask if provided
+        mask = kwargs.get("source_mask")
+        if mask is not None:
+            # mask is likely a torch tensor [batch, height, width]
+            frame_idx = min(kwargs.get("frame_index", 0), mask.shape[0] - 1)
+            mask_np = (mask[frame_idx].cpu().numpy() * 255).astype(np.uint8)
+            M = cv2.moments(mask_np)
+            if M["m00"] > 0:
+                cx, cy = int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
+            else:
+                cx, cy = center_x, center_y
+        else:
+            cx, cy = center_x, center_y
+
+        # Apply user-specified CoM offset
+        cx = int(cx + kwargs.get("centroid_offset_x", 0.0) * screen_width)
+        cy = int(cy + kwargs.get("centroid_offset_y", 0.0) * screen_height)
+
         # Angles logic based on sequence_direction. 
-        # For 'centered' and 'both ends', we use standard clockwise distribution 
-        # and transform the data instead.
         if sequence_direction == "left":
             # Anticlockwise: start 0, end -2PI
             angles = np.linspace(0, -2 * np.pi, num_points, endpoint=False)
@@ -146,31 +163,61 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
 
         if visualization_method == 'bar':
             for i, (angle, amplitude) in enumerate(zip(angles, data)):
-                if direction == 'inward':
-                    x_start = center_x + base_radius * np.cos(angle)
-                    y_start = center_y + base_radius * np.sin(angle)
-                    x_end = center_x + (base_radius - amplitude * effective_amplitude_scale) * np.cos(angle)
-                    y_end = center_y + (base_radius - amplitude * effective_amplitude_scale) * np.sin(angle)
-                elif direction == 'both':
-                    half_amp = (amplitude * effective_amplitude_scale) / 2.0
-                    x_start = center_x + (base_radius - half_amp) * np.cos(angle)
-                    y_start = center_y + (base_radius - half_amp) * np.sin(angle)
-                    x_end = center_x + (base_radius + half_amp) * np.cos(angle)
-                    y_end = center_y + (base_radius + half_amp) * np.sin(angle)
-                else: # outward
-                    x_start = center_x + base_radius * np.cos(angle)
-                    y_start = center_y + base_radius * np.sin(angle)
-                    x_end = center_x + (base_radius + amplitude * effective_amplitude_scale) * np.cos(angle)
-                    y_end = center_y + (base_radius + amplitude * effective_amplitude_scale) * np.sin(angle)
+                # Base radial vector
+                rx, ry = np.cos(angle), np.sin(angle)
+                x_base = center_x + base_radius * rx
+                y_base = center_y + base_radius * ry
+
+                # Determine direction vector (vx, vy)
+                if direction in ('centroid', 'starburst'):
+                    dx_com, dy_com = cx - x_base, cy - y_base
+                    dist_com = np.sqrt(dx_com**2 + dy_com**2)
+                    if dist_com > 0:
+                        vx, vy = dx_com / dist_com, dy_com / dist_com
+                    else:
+                        vx, vy = rx, ry
+                    if direction == 'starburst':
+                        vx, vy = -vx, -vy
+                else:
+                    # inward/outward/both use radial vector
+                    vx, vy = rx, ry
+                    if direction == 'inward':
+                        vx, vy = -vx, -vy
+
+                # Apply skew to the chosen vector
+                skew = kwargs.get("direction_skew", 0.0)
+                if skew != 0:
+                    skew_rad = np.deg2rad(skew)
+                    s_cos, s_sin = np.cos(skew_rad), np.sin(skew_rad)
+                    vx_new = vx * s_cos - vy * s_sin
+                    vy_new = vx * s_sin + vy * s_cos
+                    vx, vy = vx_new, vy_new
+
+                bar_len = amplitude * effective_amplitude_scale
+                
+                if direction == 'both':
+                    half = bar_len / 2.0
+                    x_start, y_start = x_base - half * rx, y_base - half * ry
+                    x_end, y_end = x_base + half * rx, y_base + half * ry
+                else:
+                    x_start, y_start = x_base, y_base
+                    x_end, y_end = x_base + bar_len * vx
+                    y_end = y_base + bar_len * vy
                 
                 # Determine color using shared helper
+                # Pass cx, cy (potentially offset) to get_draw_color
                 color = self.get_draw_color(i, num_points, amplitude,
-                                            x_start, y_start, center_x, center_y, max_dist, **kwargs)
+                                            x_start, y_start, cx, cy, max_dist, **kwargs)
                 
                 cv2.line(image, (int(x_start), int(y_start)), (int(x_end), int(y_end)),
                          color, thickness=line_width)
         elif visualization_method == 'line':
-            radii = base_radius + data * amplitude_scale
+            # Radial expansion logic for circular lines
+            if direction == 'inward':
+                radii = base_radius - data * effective_amplitude_scale
+            else: # outward and others by default
+                radii = base_radius + data * effective_amplitude_scale
+                
             x_values = center_x + radii * np.cos(angles)
             y_values = center_y + radii * np.sin(angles)
             points = np.array([x_values, y_values]).T.astype(np.int32)
@@ -184,7 +231,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                     
                     # Determine color for this segment
                     color = self.get_draw_color(i, num_points, data[i],
-                                                p1[0], p1[1], center_x, center_y, max_dist, **kwargs)
+                                                p1[0], p1[1], cx, cy, max_dist, **kwargs)
                     
                     cv2.line(image, tuple(p1), tuple(p2), color, line_width)
 

@@ -1,0 +1,30 @@
+{
+    "name": "Water",
+    "stops": [
+        [
+            0.00,
+            "#000026",
+            "deep navy / still depths"
+        ],
+        [
+            0.35,
+            "#004d8c",
+            "ocean blue / mid depths"
+        ],
+        [
+            0.65,
+            "#00b3d9",
+            "teal / surface shimmer"
+        ],
+        [
+            0.85,
+            "#66e5ff",
+            "cyan / bright surface"
+        ],
+        [
+            1.00,
+            "#e6ffff",
+            "near white / foam / peak"
+        ]
+    ]
+}

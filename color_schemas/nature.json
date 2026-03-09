@@ -1,0 +1,30 @@
+{
+    "name": "Nature",
+    "stops": [
+        [
+            0.00,
+            "#140d00",
+            "dark brown / earth / silence"
+        ],
+        [
+            0.25,
+            "#40330d",
+            "olive / dry grass"
+        ],
+        [
+            0.55,
+            "#1a8c1a",
+            "forest green / canopy"
+        ],
+        [
+            0.80,
+            "#66e633",
+            "lime green / sunlit leaf"
+        ],
+        [
+            1.00,
+            "#ccff99",
+            "bright spring green / peak"
+        ]
+    ]
+}

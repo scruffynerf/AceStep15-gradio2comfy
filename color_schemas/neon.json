@@ -1,0 +1,30 @@
+{
+    "name": "Neon",
+    "stops": [
+        [
+            0.00,
+            "#05000d",
+            "near black / silence"
+        ],
+        [
+            0.30,
+            "#8000ff",
+            "electric purple / low"
+        ],
+        [
+            0.55,
+            "#ff0099",
+            "hot pink / mid"
+        ],
+        [
+            0.75,
+            "#00ffcc",
+            "neon green / high"
+        ],
+        [
+            1.00,
+            "#ffff00",
+            "electric yellow / peak"
+        ]
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "name": "Fire",
+    "stops": [
+        [
+            0.00,
+            "#000000",
+            "black / silence"
+        ],
+        [
+            0.25,
+            "#800000",
+            "deep red / ember"
+        ],
+        [
+            0.55,
+            "#ff4d00",
+            "orange / flame"
+        ],
+        [
+            0.80,
+            "#ffd900",
+            "yellow / bright flame"
+        ],
+        [
+            1.00,
+            "#ffffff",
+            "white / peak"
+        ]
+    ]
+}
