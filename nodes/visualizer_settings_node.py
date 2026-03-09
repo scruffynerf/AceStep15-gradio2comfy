@@ -21,6 +21,7 @@ class ScromfyFlexVisualizerSettingsNode:
                 "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
                 "direction": (["outward", "inward", "both"], {"default": "outward"}),
+                "sequence_direction": (["left", "right"], {"default": "right"}),
             }
         }
 

@@ -437,6 +437,38 @@ class FlexAudioVisualizerBase(FlexBase):
         else:
             return param_value
 
+    def get_draw_color(self, i, num_pts, amplitude, item_freqs, x, y, cx, cy, max_dist, **kwargs):
+        color_mode = kwargs.get('color_mode', 'white')
+        color_shift = kwargs.get('color_shift', 0.0)
+        saturation = kwargs.get('saturation', 1.0)
+        brightness = kwargs.get('brightness', 1.0)
+        
+        if color_mode == "white":
+            return (1.0, 1.0, 1.0)
+        elif color_mode == "spectrum" and item_freqs is not None:
+            return get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
+        elif color_mode == "custom" or (color_mode == "spectrum" and item_freqs is None):
+            return parse_color(kwargs.get("custom_color", "#00ffff"))
+        else:
+            import colorsys
+            val = 0.0
+            if color_mode == "amplitude":
+                val = amplitude
+            elif color_mode == "radial":
+                val = np.sqrt((x - cx)**2 + (y - cy)**2) / max(1.0, max_dist)
+            elif color_mode == "angular":
+                val = (np.arctan2(y - cy, x - cx) / (2 * np.pi)) + 0.5
+            elif color_mode == "path":
+                val = i / max(1, num_pts)
+            elif color_mode == "screen":
+                sw = kwargs.get("screen_width", 512)
+                sh = kwargs.get("screen_height", 512)
+                val = (x / max(1, sw) + y / max(1, sh)) / 2.0
+            
+            hue = (val + color_shift) % 1.0
+            # Normalize to 0-1 for colorsys
+            return colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
+
     def rotate_image(self, image, angle):
         (h, w) = image.shape[:2]
         center = (w / 2, h / 2)
@@ -511,18 +543,17 @@ class FlexAudioVisualizerBase(FlexBase):
 
         # Base Randomization Logic (shared across nodes)
         if s_rng:
-            # Only randomize core features if they aren't explicitly locked
-            if "visualization_method" not in ext_settings:
-                kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
-            if "visualization_feature" not in ext_settings:
-                kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
-            if "color_mode" not in ext_settings:
-                # Some nodes might not support all color modes, but base class picks safely
-                kwargs["color_mode"] = s_rng.choice(["spectrum", "custom"])
+            # Randomize core features
+            kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
+            kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
+            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "path"])
             
             kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
             kwargs["line_width"] = s_rng.randint(1, 10)
             kwargs["smoothing"] = 0.0 # Force low smoothing for responsive randoms
+            
+            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
+            kwargs["sequence_direction"] = s_rng.choice(["left", "right"])
 
         # Waveform Color Fix: Waveforms have no frequency data, so "spectrum" mode 
         # ends up white. We force "custom" mode for waveforms if spectrum was selected.
@@ -535,7 +566,6 @@ class FlexAudioVisualizerBase(FlexBase):
             kwargs["custom_color"] = s_rng.choice(VIBRANT_COLORS)
 
         # Unpack lyric settings if provided
-        lyric_settings = kwargs.get("lyric_settings", {})
         lyric_settings = kwargs.get("lyric_settings", {})
         if isinstance(lyric_settings, dict):
             for k, v in lyric_settings.items():

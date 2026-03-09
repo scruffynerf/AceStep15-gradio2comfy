@@ -26,7 +26,6 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                 "base_radius": ("FLOAT", {"default": 200.0, "min": 10.0, "max": 1000.0, "step": 10.0}),
                 "amplitude_scale": ("FLOAT", {"default": 100.0, "min": 1.0, "max": 1000.0, "step": 10.0}),
                 "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
-                "direction": (["outward", "inward", "both"], {"default": "outward"}),
             }
         }
 
@@ -42,7 +41,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         return ["smoothing", "rotation", "num_points", "fft_size", 
                 "min_frequency", "max_frequency", "radius", "line_width",
                 "amplitude_scale", "base_radius", "position_x", "position_y", 
-                "color_shift", "saturation", "brightness", "bar_length_mode", "direction", "None"]
+                "color_shift", "saturation", "brightness", "bar_length_mode", "None"]
 
     def get_point_count(self, kwargs):
         # Circular usually wants num_points
@@ -65,7 +64,6 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             
             kwargs["base_radius"] = s_rng.uniform(50.0, 300.0)
             kwargs["radius"] = kwargs["base_radius"]
-            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
 
         # Get screen dimensions from base or defaults
         screen_width = kwargs.get("screen_width", 512)
@@ -105,6 +103,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         amplitude_scale = kwargs.get('amplitude_scale', 100.0)
         bar_length_mode = kwargs.get('bar_length_mode', 'absolute')
         direction = kwargs.get('direction', 'outward')
+        sequence_direction = kwargs.get('sequence_direction', 'right')
         
         if bar_length_mode == "relative":
             # Treat amplitude_scale as a percentage of base_radius (consistent with contour scaling)
@@ -124,11 +123,22 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         center_x = screen_width * position_x
         center_y = screen_height * position_y
 
-        angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+        # Angles logic based on sequence_direction
+        if sequence_direction == "left":
+            # Anticlockwise: start 0, end -2PI
+            angles = np.linspace(0, -2 * np.pi, num_points, endpoint=False)
+        else:
+            # Clockwise (right): standard 0 to 2PI
+            angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
+            
+        # Offset by -90 degrees (-PI/2) to start at top
+        angles -= np.pi / 2.0
+        
         rotation_rad = np.deg2rad(rotation)
         angles += rotation_rad
 
         data = processor.spectrum
+        max_dist = base_radius + effective_amplitude_scale
 
         if visualization_method == 'bar':
             for i, (angle, amplitude) in enumerate(zip(angles, data)):
@@ -149,13 +159,9 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                     x_end = center_x + (base_radius + amplitude * effective_amplitude_scale) * np.cos(angle)
                     y_end = center_y + (base_radius + amplitude * effective_amplitude_scale) * np.sin(angle)
                 
-                # Determine color
-                if color_mode == "spectrum" and item_freqs is not None:
-                    color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
-                elif color_mode == "custom":
-                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
-                else:
-                    color = (1.0, 1.0, 1.0)
+                # Determine color using shared helper
+                color = self.get_draw_color(i, num_points, amplitude, item_freqs, 
+                                            x_start, y_start, center_x, center_y, max_dist, **kwargs)
                 
                 cv2.line(image, (int(x_start), int(y_start)), (int(x_end), int(y_end)),
                          color, thickness=line_width)
@@ -166,19 +172,17 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             points = np.array([x_values, y_values]).T.astype(np.int32)
             
             if len(points) > 2:
-                if color_mode == "spectrum" and item_freqs is not None:
-                    # Draw segments with colors
-                    num_pts = len(points)
-                    for i in range(num_pts):
-                        p1 = points[i]
-                        p2 = points[(i+1) % num_pts]
-                        color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
-                        cv2.line(image, tuple(p1), tuple(p2), color, line_width)
-                elif color_mode == "custom":
-                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
-                    cv2.polylines(image, [points], isClosed=True, color=color, thickness=line_width)
-                else:
-                    cv2.polylines(image, [points], isClosed=True, color=(1.0, 1.0, 1.0), thickness=line_width)
+                # For line mode, we draw segments to allow multi-color
+                num_pts = len(points)
+                for i in range(num_pts):
+                    p1 = points[i]
+                    p2 = points[(i+1) % num_pts]
+                    
+                    # Determine color for this segment
+                    color = self.get_draw_color(i, num_points, data[i], item_freqs,
+                                                p1[0], p1[1], center_x, center_y, max_dist, **kwargs)
+                    
+                    cv2.line(image, tuple(p1), tuple(p2), color, line_width)
 
         return image.copy()
 

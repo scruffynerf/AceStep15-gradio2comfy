@@ -41,7 +41,6 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "ghost_use_custom_color": ("BOOLEAN", {"default": True}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
-                "direction": (["outward", "inward", "both"], {"default": "outward"}),
                 "min_contour_area": ("FLOAT", {"default": 100.0, "min": 0.0, "max": 10000.0, "step": 10.0}),
                 "max_contours": ("INT", {"default": 5, "min": 1, "max": 50, "step": 1}),
                 "distribute_by": (["area", "perimeter", "equal"], {"default": "perimeter"}),
@@ -86,7 +85,6 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 kwargs["bar_length"] = s_rng.uniform(10.0, 25.0)
                 
             kwargs["distribute_by"] = "perimeter"
-            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 0
             kwargs["contour_smoothing"] = 0
@@ -158,6 +156,10 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         valid_contours.sort(key=cv2.contourArea, reverse=True)
         valid_contours = valid_contours[:max_contours]
 
+        if sequence_direction == "left":
+            # Reverse point order for all selected contours
+            valid_contours = [c[::-1] for c in valid_contours]
+
         # Scale num_points if adaptive density is enabled
         if kwargs.get("adaptive_point_density", False) and valid_contours:
             # Calculate total perimeter of selected contours
@@ -210,6 +212,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         bar_length = kwargs.get('bar_length', 20.0)
         bar_length_mode = kwargs.get('bar_length_mode', 'absolute')
         mask_scale = kwargs.get('_mask_scale', 100.0)
+        direction = kwargs.get('direction', 'outward')
+        sequence_direction = kwargs.get('sequence_direction', 'right')
         
         if bar_length_mode == "relative":
             # Treat bar_length as a percentage (e.g. 5.0 means 5% of mask scale)
@@ -319,83 +323,45 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                     x2, y2 = int(x1 + normals_x[i] * bar_h), int(y1 + normals_y[i] * bar_h)
                     
                     # Determine color
-                    color = (1.0, 1.0, 1.0) # Default
+                    color = self.get_draw_color(start_idx + i, total_pts, amplitude, item_freqs,
+                                                x1, y1, cx, cy, max_dist, **kwargs)
                     
-                    if color_mode == "spectrum" and item_freqs is not None:
-                        color = get_color_for_frequency(item_freqs[start_idx + i], color_shift, saturation, brightness)
-                    elif color_mode == "custom" or (color_mode == "spectrum" and item_freqs is None):
-                        base_color = parse_color(kwargs.get("custom_color", "#00ffff"))
+                    # Apply contour-specific color shift if in custom/spectrum mode
+                    if color_mode in ["custom", "spectrum"] and total_contours > 1:
                         color_shift_val = kwargs.get("contour_color_shift", 0.0)
-                        if color_shift_val > 0 and total_contours > 1:
+                        if color_shift_val > 0:
                             import colorsys
-                            h, l, s = colorsys.rgb_to_hls(*base_color)
+                            h, l, s = colorsys.rgb_to_hls(*color)
                             color = colorsys.hls_to_rgb((h + (contour_idx / total_contours) * color_shift_val) % 1.0, l, s)
-                        else:
-                            color = base_color
-                    else:
-                        # Advanced mapping modes
-                        import colorsys
-                        val = 0.0
-                        if color_mode == "amplitude":
-                            val = amplitude # Naturally 0-1
-                        elif color_mode == "radial":
-                            val = np.sqrt((x1 - cx)**2 + (y1 - cy)**2) / max_dist
-                        elif color_mode == "angular":
-                            val = (np.arctan2(y1 - cy, x1 - cx) / (2 * np.pi)) + 0.5
-                        elif color_mode == "path":
-                            val = i / num_pts
-                        elif color_mode == "screen":
-                            val = (x1 / screen_width + y1 / screen_height) / 2.0
-                        
-                        hue = (val + color_shift) % 1.0
-                        color = colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
                         
                     cv2.line(image, (x1, y1), (x2, y2), color, thickness=line_width)
             else:
                 pts = np.column_stack([
                     x_coords + normals_x * contour_data * effective_bar_length * direction_multiplier,
                     y_coords + normals_y * contour_data * effective_bar_length * direction_multiplier
-                ]).astype(np.int16) # Use int16 for coordinates
+                ]).astype(np.int16)
                 
-                if color_mode == "spectrum" and item_freqs is not None:
-                    # Draw segments with colors
-                    for i in range(len(pts) - 1):
-                        color = get_color_for_frequency(item_freqs[start_idx + i], color_shift, saturation, brightness)
-                        cv2.line(image, tuple(pts[i]), tuple(pts[i+1]), color, line_width)
-                    # Close the loop if needed (contour is closed)
-                    color = get_color_for_frequency(item_freqs[end_idx - 1], color_shift, saturation, brightness)
-                    cv2.line(image, tuple(pts[-1]), tuple(pts[0]), color, line_width)
-                elif color_mode == "custom" or (color_mode == "spectrum" and item_freqs is None):
-                    base_color = parse_color(kwargs.get("custom_color", "#00ffff"))
-                    color_shift_val = kwargs.get("contour_color_shift", 0.0)
-                    if color_shift_val > 0 and total_contours > 1:
-                        import colorsys
-                        h, l, s = colorsys.rgb_to_hls(*base_color)
-                        color = colorsys.hls_to_rgb((h + (contour_idx / total_contours) * color_shift_val) % 1.0, l, s)
-                    else:
-                        color = base_color
-                    cv2.polylines(image, [pts.astype(np.int32)], True, color, thickness=line_width)
-                else:
-                    # Advanced mapping modes
-                    import colorsys
-                    # For performance in polyline mode, we'll pick the color based on the first point's geometry
-                    # or the average amplitude
-                    val = 0.0
-                    av_x, av_y = np.mean(x_coords), np.mean(y_coords)
-                    if color_mode == "amplitude":
-                        val = np.mean(contour_data)
-                    elif color_mode == "radial":
-                        val = np.sqrt((av_x - cx)**2 + (av_y - cy)**2) / max_dist
-                    elif color_mode == "angular":
-                        val = (np.arctan2(av_y - cy, av_x - cx) / (2 * np.pi)) + 0.5
-                    elif color_mode == "path":
-                        val = start_idx / total_pts # Use start position on path
-                    elif color_mode == "screen":
-                        val = (av_x / screen_width + av_y / screen_height) / 2.0
+                # Draw segments to support multi-color modes
+                for i in range(len(pts) - 1):
+                    p1 = pts[i]
+                    p2 = pts[i+1]
+                    color = self.get_draw_color(start_idx + i, total_pts, contour_data[i], item_freqs,
+                                                p1[0], p1[1], cx, cy, max_dist, **kwargs)
                     
-                    hue = (val + color_shift) % 1.0
-                    color = colorsys.hls_to_rgb(hue, brightness * 0.5, saturation)
-                    cv2.polylines(image, [pts.astype(np.int32)], True, color, thickness=line_width)
+                    # Apply contour-specific color shift
+                    if color_mode in ["custom", "spectrum"] and total_contours > 1:
+                        color_shift_val = kwargs.get("contour_color_shift", 0.0)
+                        if color_shift_val > 0:
+                            import colorsys
+                            h, l, s = colorsys.rgb_to_hls(*color)
+                            color = colorsys.hls_to_rgb((h + (contour_idx / total_contours) * color_shift_val) % 1.0, l, s)
+                            
+                    cv2.line(image, tuple(p1), tuple(p2), color, line_width)
+                
+                # Close loop
+                color = self.get_draw_color(end_idx - 1, total_pts, contour_data[-1], item_freqs,
+                                            pts[-1][0], pts[-1][1], cx, cy, max_dist, **kwargs)
+                cv2.line(image, tuple(pts[-1]), tuple(pts[0]), color, line_width)
 
         start_idx = 0
         total_pts = len(data)

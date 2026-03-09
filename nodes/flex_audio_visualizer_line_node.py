@@ -27,7 +27,6 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                 "max_height": ("FLOAT", {"default": 200.0, "min": 10.0, "max": 2000.0, "step": 10.0}),
                 "min_height": ("FLOAT", {"default": 10.0, "min": 0.0, "max": 500.0, "step": 5.0}),
                 "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
-                "direction": (["outward", "inward", "both"], {"default": "outward"}),
                 "length": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 4000.0, "step": 10.0}),
                 "separation": ("FLOAT", {"default": 5.0, "min": 0.0, "max": 100.0, "step": 1.0}),
                 "curvature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 50.0, "step": 1.0}),
@@ -48,7 +47,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         return ["smoothing", "rotation", "position_y", "position_x",
                 "num_bars", "max_height", "min_height", "separation", "curvature", 
                 "curve_smoothing", "fft_size", "min_frequency", "max_frequency", 
-                "color_shift", "saturation", "brightness", "bar_length_mode", "direction", "None"]
+                "color_shift", "saturation", "brightness", "bar_length_mode", "None"]
 
     def get_point_count(self, kwargs):
         # Line wants num_bars
@@ -70,7 +69,6 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                 kwargs["max_height"] = s_rng.uniform(30.0, 70.0)
             
             kwargs["num_bars"] = s_rng.choice([16, 32, 64, 128])
-            kwargs["direction"] = s_rng.choice(["outward", "inward", "both"])
 
         # Get screen dimensions
         screen_width = kwargs.get("screen_width", 512)
@@ -108,6 +106,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         num_bars = self.get_point_count(kwargs)
         length = kwargs.get('length', 0.0)
         direction = kwargs.get('direction', 'outward')
+        sequence_direction = kwargs.get('sequence_direction', 'right')
         
         max_height = kwargs.get('max_height', 200.0)
         min_height = kwargs.get('min_height', 10.0)
@@ -148,6 +147,11 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
         padded_image = np.zeros((padded_height, padded_width, 3), dtype=np.float32)
 
         data = processor.spectrum
+        if sequence_direction == "left":
+            # Right-to-Left: reverse the data array
+            data = data[::-1]
+            if item_freqs is not None:
+                item_freqs = item_freqs[::-1]
 
         if visualization_method == 'bar':
             curvature = kwargs.get('curvature', 0.0)
@@ -177,13 +181,10 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
                 if y_start > y_end: y_start, y_end = y_end, y_start
                 x_end = int(x + bar_width)
                 
-                # Determine color
-                if color_mode == "spectrum" and item_freqs is not None:
-                    color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
-                elif color_mode == "custom":
-                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
-                else:
-                    color = (1.0, 1.0, 1.0)
+                # Determine color using shared helper
+                color = self.get_draw_color(i, num_bars, bar_value, item_freqs,
+                                            x, y_start, padded_width // 2, padded_height // 2, 
+                                            max(screen_width, screen_height), **kwargs)
                 
                 rect_width = max(1, int(bar_width))
                 rect_height = max(1, int(y_end - y_start))
@@ -215,16 +216,14 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             points = np.array([x_values, y_values]).T.astype(np.int32)
             
             if len(points) > 1:
-                if color_mode == "spectrum" and item_freqs is not None:
-                    # For line mode, we draw segments with different colors
-                    for i in range(len(points) - 1):
-                        color = get_color_for_frequency(item_freqs[i], color_shift, saturation, brightness)
-                        cv2.line(padded_image, tuple(points[i]), tuple(points[i+1]), color, 1)
-                elif color_mode == "custom":
-                    color = parse_color(kwargs.get("custom_color", "#00ffff"))
-                    cv2.polylines(padded_image, [points], False, color)
-                else:
-                    cv2.polylines(padded_image, [points], False, (1.0, 1.0, 1.0))
+                # Draw segments to support multi-color modes
+                for i in range(len(points) - 1):
+                    p1 = points[i]
+                    p2 = points[i+1]
+                    color = self.get_draw_color(i, num_pts, data[i], item_freqs,
+                                                p1[0], p1[1], padded_width // 2, baseline_y,
+                                                max(visualization_length, effective_max_height), **kwargs)
+                    cv2.line(padded_image, tuple(p1), tuple(p2), color, line_width)
 
         if rotation != 0:
             M = cv2.getRotationMatrix2D((padded_width // 2, padded_height // 2), rotation, 1.0)
