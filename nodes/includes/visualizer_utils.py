@@ -496,16 +496,16 @@ class FlexAudioVisualizerBase(FlexBase):
         if sequence_direction == "left":
             return data[::-1]
         elif sequence_direction == "centered":
-            # [High...Low | Low...High] -> Low in middle
-            half = len(data) // 2
-            left_half = data[:half][::-1]
-            right_half = data[:len(data) - half]
+            # [High...Low...High] -> uses all data by interleaving
+            # left half gets odd indices reversed, right gets even indices
+            left_half = data[1::2][::-1]
+            right_half = data[0::2]
             return np.concatenate([left_half, right_half])
         elif sequence_direction == "both ends":
-            # [Low...High | High...Low] -> Low at ends
-            half = (len(data) + 1) // 2
-            left_half = data[:half]
-            right_half = data[:len(data) // 2][::-1]
+            # [Low...High...Low] -> uses all data by interleaving
+            # left half gets even indices, right gets odd indices reversed
+            left_half = data[0::2]
+            right_half = data[1::2][::-1]
             return np.concatenate([left_half, right_half])
         return data # right (default)
 

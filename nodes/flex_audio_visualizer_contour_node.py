@@ -348,7 +348,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             num_pts = len(contour_data)
             if num_pts == 0: return
 
-            indices = (np.linspace(0, contour_length - 1, num_pts) + rotation_offset) % (contour_length - 1)
+            indices = (np.linspace(0, contour_length - 1, num_pts, endpoint=False) + rotation_offset) % (contour_length - 1)
             x_coords = np.interp(indices, range(contour_length), contour[:, 0])
             y_coords = np.interp(indices, range(contour_length), contour[:, 1])
             
