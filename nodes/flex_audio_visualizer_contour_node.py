@@ -16,7 +16,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         base_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
         
         # Remove parameters not used by contour or handled by base
-        for param in ["screen_width", "screen_height", "position_x", "position_y",
+        for param in ["position_x", "position_y",
                       "color_mode", "randomize", "seed", "visualization_method",
                       "visualization_feature", "smoothing", "num_points", "fft_size",
                       "min_frequency", "max_frequency", "line_width", "rotation"]:

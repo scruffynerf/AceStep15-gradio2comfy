@@ -71,9 +71,9 @@ class BaseAudioProcessor:
 
             # Apply low-frequency roll-off (fade in first 3 bins to mitigate noise/DC offset)
             if len(spectrum) > 3:
-                spectrum[0] *= 0.1
-                spectrum[1] *= 0.4
-                spectrum[2] *= 0.7
+                spectrum[0] *= 0.35
+                spectrum[1] *= 0.75
+                spectrum[2] *= 0.95
 
             # Normalize with noise floor threshold
             max_spectrum = np.max(spectrum)
