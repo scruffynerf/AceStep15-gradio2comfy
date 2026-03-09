@@ -44,6 +44,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "min_contour_area": ("FLOAT", {"default": 100.0, "min": 0.0, "max": 10000.0, "step": 10.0}),
                 "max_contours": ("INT", {"default": 5, "min": 1, "max": 50, "step": 1}),
                 "distribute_by": (["area", "perimeter", "equal"], {"default": "perimeter"}),
+                "contour_layers": ("STRING", {"default": "0"}),
                 "contour_color_shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
             }
         }
@@ -67,6 +68,34 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
     RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
     RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
 
+    @staticmethod
+    def filter_contours_by_hierarchy(contours, hierarchy, target_layers="0"):
+        if hierarchy is None:
+            return contours
+        
+        hierarchy = hierarchy[0] # [Next, Previous, First_Child, Parent]
+        depths = np.zeros(len(contours), dtype=int)
+        
+        # Calculate depths
+        for i in range(len(contours)):
+            parent = hierarchy[i][3]
+            depth = 0
+            while parent != -1:
+                depth += 1
+                parent = hierarchy[parent][3]
+            depths[i] = depth
+            
+        if target_layers.lower() == "all":
+            return contours
+            
+        try:
+            allowed_depths = [int(x.strip()) for x in target_layers.split(",")]
+        except (ValueError, AttributeError):
+            allowed_depths = [0]
+            
+        filtered_indices = [i for i in range(len(contours)) if depths[i] in allowed_depths]
+        return [contours[i] for i in filtered_indices]
+
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, strength, feature_param,
                      feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
         
@@ -86,11 +115,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 
             kwargs["distribute_by"] = "perimeter"
             kwargs["max_contours"] = 50
-            kwargs["min_contour_area"] = 0
+            kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
             kwargs["ghost_mask_strength"] = 0.15
             kwargs["ghost_use_custom_color"] = True
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
+            # Randomly pick between outer only and all
+            kwargs["contour_layers"] = s_rng.choice(["0", "0", "0,1", "all"])
 
         # Handle optional/missing mask
         if mask is None:
@@ -148,14 +179,17 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
         # Find contours here so we can use them for adaptive density
         mask_uint8 = (mask[0].cpu().numpy() * 255).astype(np.uint8)
-        contours, _ = cv2.findContours(mask_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Switch to RETR_TREE for hierarchy support
+        contours, hierarchy = cv2.findContours(mask_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        contour_layers = kwargs.get("contour_layers", "0")
+        filtered_contours = self.filter_contours_by_hierarchy(contours, hierarchy, contour_layers)
         
         min_contour_area = kwargs.get('min_contour_area', 100.0)
         max_contours = kwargs.get('max_contours', 5)
-        valid_contours = [c for c in contours if cv2.contourArea(c) >= min_contour_area]
+        valid_contours = [c for c in filtered_contours if cv2.contourArea(c) >= min_contour_area]
         valid_contours.sort(key=cv2.contourArea, reverse=True)
         valid_contours = valid_contours[:max_contours]
-
         sequence_direction = kwargs.get("sequence_direction", "right")
         if sequence_direction == "left":
             # Reverse point order for all selected contours
@@ -241,8 +275,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         frame_idx = min(frame_index, batch_size - 1)
         mask_uint8 = (mask[frame_idx].cpu().numpy() * 255).astype(np.uint8)
         
-        contours, _ = cv2.findContours(mask_uint8, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(mask_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if not contours: return image
+        
+        contour_layers = kwargs.get("contour_layers", "0")
+        filtered_contours = self.filter_contours_by_hierarchy(contours, hierarchy, contour_layers)
 
         # For geometric color modes, find the center of the mask
         M = cv2.moments(mask_uint8)
@@ -255,7 +292,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Prioritize pre-calculated contours from apply_effect
         valid_contours = kwargs.get("_valid_contours")
         if valid_contours is None:
-            valid_contours = [c for c in contours if cv2.contourArea(c) >= min_contour_area]
+            valid_contours = [c for c in filtered_contours if cv2.contourArea(c) >= min_contour_area]
             valid_contours.sort(key=cv2.contourArea, reverse=True)
             valid_contours = valid_contours[:max_contours]
         
