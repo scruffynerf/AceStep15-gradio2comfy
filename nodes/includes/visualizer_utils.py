@@ -651,6 +651,10 @@ class FlexAudioVisualizerBase(FlexBase):
                      strength, feature_param, feature_mode, feature_threshold,
                      opt_feature=None, opt_video=None, source_mask=None, **kwargs):
         
+        # Normalize mask parameters (ComfyUI often passes optional inputs as keywords)
+        if source_mask is None:
+            source_mask = kwargs.get("mask") or kwargs.get("opt_mask")
+        
         # Unpack visualizer settings if provided
         ext_settings = kwargs.get("visualizer_settings", {})
         if isinstance(ext_settings, dict):
@@ -754,17 +758,28 @@ class FlexAudioVisualizerBase(FlexBase):
         for i in range(num_frames):
             if i % 100 == 0: gc.collect()
             
-            # Get video frame for background if available
+            # 1. Prepare Background
             background_np = None
             if opt_video is not None:
                 num_v_frames = opt_video.shape[0]
-                if kwargs.get("loop_background", True):
-                    v_idx = i % num_v_frames
-                else:
-                    v_idx = min(i, num_v_frames - 1)
+                v_idx = (i % num_v_frames) if kwargs.get("loop_background", True) else min(i, num_v_frames - 1)
                 background_np = (opt_video[v_idx].cpu().numpy() * 255).astype(np.uint8)
+                if background_np.shape[0] != actual_height or background_np.shape[1] != actual_width:
+                    background_np = cv2.resize(background_np, (actual_width, actual_height))
 
-            processor.current_frame = i
+            # 2. Prepare Mask for this frame
+            f_mask = None
+            if source_mask is not None:
+                m_idx = i % source_mask.shape[0]
+                f_mask = source_mask[m_idx].cpu().numpy()
+                if f_mask.shape[:2] != (actual_height, actual_width):
+                    f_mask = cv2.resize(f_mask, (actual_width, actual_height))
+                # Ensure mask is [0, 1] for multiplication
+                if f_mask.max() > 1.0: f_mask = f_mask / 255.0
+                if len(f_mask.shape) == 2:
+                    f_mask = f_mask[:, :, np.newaxis]
+
+            # 3. Process Parameters
             processed_kwargs = self.process_parameters(
                 frame_index=i,
                 feature_value=self.get_feature_value(i, opt_feature) if opt_feature is not None else None,
@@ -772,15 +787,19 @@ class FlexAudioVisualizerBase(FlexBase):
                 feature_mode=feature_mode,
                 strength=strength,
                 feature_threshold=feature_threshold,
+                source_mask=source_mask, # Pass raw tensor for centroid logic etc
+                mask=source_mask,        # Alias often used in Contour
                 **kwargs
             )
+            
+            # ALWAYS call internal with background=None to get ONLY the visualizer drawing
             processed_kwargs.update({
                 "frame_index": i, "screen_width": actual_width, "screen_height": actual_height,
-                "background": background_np
+                "background": None
             })
             
             num_points = self.get_point_count(processed_kwargs)
-            spectrum, _, item_freqs = self.process_audio_data(
+            _, _, item_freqs = self.process_audio_data(
                 processor, i,
                 processed_kwargs.get('visualization_feature', 'frequency'),
                 num_points,
@@ -791,25 +810,29 @@ class FlexAudioVisualizerBase(FlexBase):
             )
             processed_kwargs["item_freqs"] = item_freqs
 
-            image = self.apply_effect_internal(processor, **processed_kwargs)
+            # 4. Generate Visualizer Layer
+            visualizer_layer = self.apply_effect_internal(processor, **processed_kwargs)
             
-            # Ensure image is exactly screen size for lyric renderer
-            if image.shape[0] != actual_height or image.shape[1] != actual_width:
-                image = cv2.resize(image, (actual_width, actual_height))
-            
-            # Ensure image is uint8 [0, 255] for lyric renderer and efficient processing
-            if image.dtype != np.uint8:
-                # Force to [0, 1] range then to [0, 255] for consistency
-                if np.max(image) <= 1.05 and np.min(image) >= -0.05:
-                    image = np.clip(image, 0, 1)
-                    image = (image * 255.0).astype(np.uint8)
+            # Ensure visualizer_layer is uint8 [0, 255]
+            if visualizer_layer.dtype != np.uint8:
+                if np.max(visualizer_layer) <= 1.05:
+                    visualizer_layer = (np.clip(visualizer_layer, 0, 1) * 255).astype(np.uint8)
                 else:
-                    # Already seems to be in 0-255 range but float?
-                    image = np.clip(image, 0, 255).astype(np.uint8)
+                    visualizer_layer = np.clip(visualizer_layer, 0, 255).astype(np.uint8)
+
+            # 5. Apply Mask Blocking to Visualizer Layer
+            if f_mask is not None:
+                visualizer_layer = (visualizer_layer.astype(np.float32) * f_mask).astype(np.uint8)
+
+            # 6. Composite onto Background
+            if background_np is not None:
+                # Use max (lighten) or add for visualizer lines over video
+                image = cv2.add(background_np, visualizer_layer)
+            else:
+                image = visualizer_layer
             
-            # Apply lyrics if enabled
+            # 7. Apply Lyrics
             if lyric_renderer:
-                # Calculate the exact time for this frame
                 frame_time = i / frame_rate
                 image = lyric_renderer.render(image, frame_time)
                 
