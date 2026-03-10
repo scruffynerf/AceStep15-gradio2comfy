@@ -14,12 +14,17 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         base_optional = base_inputs.get("optional", {})
         
         base_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
+        base_required["num_points"] = ("INT", {"default": 128, "min": 4, "max": 4000, "step": 1})
         
-        # Remove parameters not used by contour or handled by base
-        for param in ["position_x", "position_y",
+        # Remove ALL global parameters handled by Settings node
+        for param in [
                       "color_mode", "randomize", "seed", "visualization_method",
                       "visualization_feature", "smoothing", "fft_size",
-                      "min_frequency", "max_frequency", "line_width", "rotation"]:
+                      "min_frequency", "max_frequency", "line_width",
+                      "direction", "sequence_direction", "direction_skew",
+                      "centroid_offset_x", "centroid_offset_y", "num_points",
+                      "color_shift", "saturation", "brightness", "custom_color",
+                      "position_x", "position_y", "rotation"]:
             if param in base_required:
                 del base_required[param]
 
@@ -65,8 +70,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "color_shift", "saturation", "brightness", "ghost_mask_strength", 
                 "ghost_use_custom_color", "adaptive_point_density", "bar_length_mode", "None"]
 
-    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
-    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK", "LAYER_MAP")
 
     @staticmethod
     def filter_contours_by_hierarchy(contours, hierarchy, target_layers="0"):
@@ -217,13 +222,63 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         else:
             kwargs["_mask_scale"] = 100.0 # Fallback
 
+        # Generate the Layer Map Visualization
+        layer_maps = []
+        # Define a helpful palette for layers (B, G, R)
+        layer_colors = [
+            (255, 100, 100), # L0: Light Blueish
+            (100, 255, 100), # L1: Light Green
+            (100, 100, 255), # L2: Light Red
+            (255, 255, 100), # L3: Yellow
+            (255, 100, 255), # L4: Magenta
+            (100, 255, 255), # L5: Cyan
+            (255, 255, 255), # L6+: White
+        ]
+
+        for b in range(batch_size):
+            # Use the mask for this frame
+            m_idx = min(b, mask.shape[0] - 1)
+            f_mask = (mask[m_idx].cpu().numpy() * 255).astype(np.uint8)
+            f_contours, f_hierarchy = cv2.findContours(f_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            
+            # Create colored canvas
+            l_map = np.zeros((screen_height, screen_width, 3), dtype=np.uint8)
+            
+            if f_contours and f_hierarchy is not None:
+                f_hierarchy = f_hierarchy[0]
+                for i, cnt in enumerate(f_contours):
+                    # Find depth
+                    parent = f_hierarchy[i][3]
+                    depth = 0
+                    while parent != -1:
+                        depth += 1
+                        parent = f_hierarchy[parent][3]
+                    
+                    color = layer_colors[min(depth, len(layer_colors)-1)]
+                    # Draw contour outline and filled with low alpha (or just outline + label)
+                    cv2.drawContours(l_map, [cnt], -1, color, 2)
+                    
+                    # Label with "L{depth}" at centroid
+                    M = cv2.moments(cnt)
+                    if M["m00"] > 0:
+                        lcx, lcy = int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"])
+                        # Small drop shadow for text
+                        txt = f"L{depth}"
+                        cv2.putText(l_map, txt, (lcx+1, lcy+1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 2)
+                        cv2.putText(l_map, txt, (lcx, lcy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+            l_map_tensor = torch.from_numpy(l_map.astype(np.float32) / 255.0).unsqueeze(0)
+            layer_maps.append(l_map_tensor)
+        
+        layer_map_out = torch.cat(layer_maps, dim=0)
+
         images, masks, settings, source_mask_out = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
             opt_feature, source_mask=source_mask, **kwargs
         )
         
-        return (images, masks, settings, source_mask_out)
+        return (images, masks, settings, source_mask_out, layer_map_out)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
@@ -273,7 +328,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Use background if provided, else black
         background = kwargs.get("background")
         if background is not None:
-            image = background.copy().astype(np.float32)
+            image = background.copy().astype(np.float32) / 255.0
             if image.shape[0] != screen_height or image.shape[1] != screen_width:
                 image = cv2.resize(image, (screen_width, screen_height))
         else:

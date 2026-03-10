@@ -454,6 +454,7 @@ class FlexAudioVisualizerBase(FlexBase):
                 "frame_rate": ("FLOAT", {"default": 24.0, "min": 1.0, "max": 240.0, "step": 1.0}),
                 "screen_width": ("INT", {"default": 768, "min": 100, "max": 1920, "step": 1}),
                 "screen_height": ("INT", {"default": 464, "min": 100, "max": 1080, "step": 1}),
+                "num_points": ("INT", {"default": 64, "min": 4, "max": 1024, "step": 1}),
                 "position_x": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "position_y": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             },

@@ -18,30 +18,35 @@ class ScromfyFlexVisualizerSettingsNode:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                # --- System & Setup ---
                 "randomize": ("BOOLEAN", {"default": False}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "visualization_method": (["bar", "line"], {"default": "bar"}),
+                "loop_background": ("BOOLEAN", {"default": True}),
+                
+                # --- Audio Analysis ---
                 "visualization_feature": (["frequency", "waveform"], {"default": "frequency"}),
                 "num_points": ("INT", {"default": 64, "min": 4, "max": 1024, "step": 1}),
-                "color_mode": (["white", "spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"], {"default": "spectrum"}),
-                "color_schema": (cls._get_schema_names(), {"default": "none"}),
-                "custom_color": ("COLOR", {"default": "#00ffff"}),
                 "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "fft_size": ("INT", {"default": 2048, "min": 256, "max": 8192, "step": 256}),
                 "min_frequency": ("FLOAT", {"default": 20.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
                 "max_frequency": ("FLOAT", {"default": 8000.0, "min": 20.0, "max": 20000.0, "step": 10.0}),
+
+                # --- Color & Style ---
+                "visualization_method": (["bar", "line"], {"default": "bar"}),
+                "color_mode": (["white", "spectrum", "custom", "amplitude", "radial", "angular", "path", "screen"], {"default": "spectrum"}),
+                "color_schema": (cls._get_schema_names(), {"default": "none"}),
+                "custom_color": ("COLOR", {"default": "#00ffff"}),
                 "color_shift": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "saturation": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "brightness": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "rotation": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 360.0, "step": 1.0}),
                 "line_width": ("INT", {"default": 2, "min": 1, "max": 10, "step": 1}),
+
+                # --- Motion & Direction ---
                 "direction": (["outward", "inward", "both", "centroid", "starburst"], {"default": "outward"}),
                 "sequence_direction": (["left", "right", "centered", "both ends"], {"default": "right"}),
+                "direction_skew": ("FLOAT", {"default": 0.0, "min": -180.0, "max": 180.0, "step": 0.5}),
                 "centroid_offset_x": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01}),
                 "centroid_offset_y": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01}),
-                "direction_skew": ("FLOAT", {"default": 0.0, "min": -180.0, "max": 180.0, "step": 0.5,
-                                             "tooltip": "Rotate direction vectors by this many degrees. Positive=clockwise, negative=counter-clockwise. Works on all direction modes."}),
-                "loop_background": ("BOOLEAN", {"default": True}),
             }
         }
 

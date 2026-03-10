@@ -9,15 +9,18 @@ class ScromfyFlexLyricsNode(FlexAudioVisualizerBase):
         base = super().INPUT_TYPES()
         required = base["required"]
         
-        # Keep audio, video, frame_rate, dimensions, and ALL lyric settings
+        # Keep audio, video, frame_rate, dimensions, and audio sync logic
+        # explicitly remove any leaked visualizer globals from base
+        exclude = ["color_mode", "randomize", "seed", "visualization_method",
+                   "visualization_feature", "smoothing", "fft_size",
+                   "min_frequency", "max_frequency", "line_width",
+                   "direction", "sequence_direction", "direction_skew",
+                   "centroid_offset_x", "centroid_offset_y", "num_points",
+                   "color_shift", "saturation", "brightness", "custom_color",
+                   "position_x", "position_y", "rotation"]
+        
         cleaned_required = {
-            "audio": required["audio"],
-            "frame_rate": required["frame_rate"],
-            "screen_width": required["screen_width"],
-            "screen_height": required["screen_height"],
-            "strength": required["strength"],
-            "feature_threshold": required["feature_threshold"],
-            "feature_mode": required["feature_mode"],
+            k: v for k, v in required.items() if k not in exclude
         }
         
         # Add modifiable feature param

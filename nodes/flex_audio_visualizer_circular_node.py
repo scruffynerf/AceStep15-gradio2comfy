@@ -12,11 +12,14 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         
         base_required["feature_param"] = (cls.get_modifiable_params(), {"default": "None"})
 
-        # Remove parameters handled by base/settings
-        for param in ["position_x", "position_y",
+        # Remove ALL global parameters handled by Settings node
+        for param in [
                       "color_mode", "randomize", "seed", "visualization_method",
                       "visualization_feature", "smoothing", "fft_size",
-                      "min_frequency", "max_frequency", "line_width", "rotation"]:
+                      "min_frequency", "max_frequency", "line_width",
+                      "direction", "sequence_direction", "direction_skew",
+                      "centroid_offset_x", "centroid_offset_y", "num_points",
+                      "color_shift", "saturation", "brightness", "custom_color"]:
             if param in base_required:
                 del base_required[param]
         
@@ -123,7 +126,7 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         # Use background if provided, else black
         background = kwargs.get("background")
         if background is not None:
-            image = background.copy().astype(np.float32)
+            image = background.copy().astype(np.float32) / 255.0
             if image.shape[0] != screen_height or image.shape[1] != screen_width:
                 image = cv2.resize(image, (screen_width, screen_height))
         else:
