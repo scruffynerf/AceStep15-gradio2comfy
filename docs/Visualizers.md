@@ -6,7 +6,7 @@ The Scromfy Flex Visualizer suite follows a strict **Global vs. Local** paramete
 
 - **Global Settings (Master Node)**: Defines audio analysis, color logic, and global motion.
 - **Local Settings (Individual Nodes)**: Defines the physical shape (radius, height, curvature) and placement (position, rotation).
-- **Reference Mask (Blocking)**: If a `source_mask` is provided to any Flex node, it acts as a visibility filter—visualizer elements will only appear where the mask is non-black. This allows you to "confine" a visualizer to a specific region of the screen while keeping the background clean.
+- **Reference Mask**: If a `source_mask` is provided to any Flex node, it defines the geometric area. By enabling **Use Mask as Visibility Filter** in the Settings node, it also acts as a strict clipping filter—visualizer elements will only appear where the mask is non-black. This allows you to "confine" a visualizer to a specific region of the screen while keeping the background clean.
 
 ---
 
@@ -19,6 +19,7 @@ The Scromfy Flex Visualizer suite follows a strict **Global vs. Local** paramete
 | `randomize` | Automatically vary parameters for each batch. |
 | `seed` | Deterministic seed for randomization. |
 | `loop_background` | Toggle between looping the background (True) or clamping to the last frame (False). |
+| `use_mask_as_visibility_filter` | **Blocking**: If True, visualizer elements only appear where the `source_mask` is white. (Default: False). |
 
 ### Audio Processing
 | Parameter | Description |

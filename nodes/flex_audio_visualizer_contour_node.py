@@ -459,8 +459,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             num_pts = len(contour_data) # Update num_pts to reflect actual data points used
             if num_pts == 0: return
 
-            dx = np.gradient(x_coords)
-            dy = np.gradient(y_coords)
+            if len(x_coords) < 2:
+                # Degenerate case: single point, use a default normal
+                dx = np.zeros_like(x_coords)
+                dy = np.ones_like(y_coords)
+            else:
+                dx = np.gradient(x_coords)
+                dy = np.gradient(y_coords)
             lengths = np.sqrt(dx**2 + dy**2)
             lengths = np.where(lengths > 0, lengths, 1.0)
             normals_x = -dy / lengths
