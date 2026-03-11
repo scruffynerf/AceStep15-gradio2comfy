@@ -44,7 +44,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
                 "contour_smoothing": ("INT", {"default": 0, "min": 0, "max": 50, "step": 1}),
                 "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "ghost_use_custom_color": ("BOOLEAN", {"default": True}),
+                "ghost_mode": (["None", "White", "Color", "Outline White", "Outline Color"], {"default": "White"}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
                 "min_contour_area": ("FLOAT", {"default": 100.0, "min": 0.0, "max": 10000.0, "step": 10.0}),
                 "max_contours": ("INT", {"default": 5, "min": 1, "max": 50, "step": 1}),
@@ -130,7 +130,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
             kwargs["ghost_mask_strength"] = 0.25
-            kwargs["ghost_use_custom_color"] = True
+            kwargs["ghost_mode"] = s_rng.choice(["Color", "Outline Color"])
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
             kwargs["contour_layers"] = "all"
             
@@ -404,21 +404,29 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             
             valid_contours.sort(key=get_contour_angle)
         
-        # Option 1: Draw ghost mask (filled dimmed area) if enabled
+        # Option 1: Draw ghost mask if enabled
+        ghost_mode = kwargs.get("ghost_mode", "White")
         ghost_mask_strength = kwargs.get("ghost_mask_strength", 0.0)
-        if ghost_mask_strength > 0:
-            # Determine ghost color
-            if kwargs.get("ghost_use_custom_color", True):
+        
+        if ghost_mode != "None" and ghost_mask_strength > 0:
+            # 1. Determine base color
+            if "Color" in ghost_mode:
                 base_ghost_color = parse_color(kwargs.get("custom_color", "#00ffff"))
-            elif color_mode == "white":
-                base_ghost_color = (1.0, 1.0, 1.0)
             else:
-                base_ghost_color = (1.0, 1.0, 1.0) # Fallback to white/gray
+                base_ghost_color = (1.0, 1.0, 1.0)
                 
+            # 2. Scale by strength
             ghost_color = tuple(val * ghost_mask_strength for val in base_ghost_color)
             
-            # Fill the mask area in the image
-            image[mask_uint8 > 0] = ghost_color
+            # 3. Render (Solid vs Outline)
+            if "Outline" in ghost_mode:
+                # Draw outlines of ALL mask contours (not just filtered ones)
+                # Use line_width for thickness if available, else default to 2
+                thick = kwargs.get("line_width", 2)
+                cv2.drawContours(image, contours, -1, ghost_color, thick)
+            else:
+                # Solid fill
+                image[mask_uint8 > 0] = ghost_color
 
         if distribute_by == 'area':
             weights = [cv2.contourArea(c) for c in valid_contours]

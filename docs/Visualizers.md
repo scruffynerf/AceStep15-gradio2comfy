@@ -113,7 +113,7 @@ The `color_mode` setting defines how colors are assigned to individual points or
 | `min_contour_area` | Ignores shapes smaller than this area in **square pixels**. |
 | `max_contours` | Maximum number of individual shapes to process. |
 | `ghost_mask_strength` | Opacity of the original mask shape preview (0.0 to 1.0). |
-| `ghost_use_custom_color`| If True, ghost uses `custom_color`; else defaults to white/gray. |
+| `ghost_mode` | `None`, `White`, `Color`, `Outline White`, or `Outline Color`. |
 | `contour_smoothing` | Level of geometric simplification (0 to 50). |
 
 #### Contour Outputs
