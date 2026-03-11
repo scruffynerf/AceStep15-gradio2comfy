@@ -676,19 +676,34 @@ class FlexAudioVisualizerBase(FlexBase):
             # Randomize core features
             kwargs["visualization_method"] = s_rng.choice(["bar", "line"])
             kwargs["visualization_feature"] = s_rng.choice(["frequency", "waveform"])
-            kwargs["color_mode"] = s_rng.choice(["spectrum", "custom", "amplitude", "path"])
             
-            kwargs["rotation"] = s_rng.uniform(0.0, 360.0)
+            # Full list of color modes
+            kwargs["color_mode"] = s_rng.choice(["white", "spectrum", "custom", "schema", "amplitude", "radial", "angular", "path", "screen"])
+            
+            # If schema mode is picked, pick a random schema
+            if kwargs["color_mode"] == "schema":
+                from .visualizer_utils import _COLOR_SCHEMAS
+                if _COLOR_SCHEMAS:
+                    kwargs["color_schema"] = s_rng.choice(list(_COLOR_SCHEMAS.keys()))
+                else:
+                    kwargs["color_mode"] = "spectrum"
+
             kwargs["line_width"] = s_rng.randint(1, 10)
-            kwargs["smoothing"] = 0.0 # Force low smoothing for responsive randoms
             
             kwargs["direction"] = s_rng.choice(["outward", "inward", "both", "centroid", "starburst"])
-            kwargs["sequence_direction"] = s_rng.choice(["left", "right"])
+            kwargs["sequence_direction"] = s_rng.choice(["left", "right", "centered", "both ends"])
 
         # Waveform Color Fix: Waveforms have no frequency data, so "spectrum" mode 
-        # ends up white. We force "custom" mode for waveforms if spectrum was selected.
+        # ends up white. We only force a fallback if spectrum was selected with waveform.
         if kwargs.get("visualization_feature") == "waveform" and kwargs.get("color_mode") == "spectrum":
-            kwargs["color_mode"] = "custom"
+            # Other modes like amplitude, radial, angular, path, screen all work with waveform!
+            kwargs["color_mode"] = s_rng.choice(["white", "custom", "schema", "amplitude", "radial", "angular", "path", "screen"])
+            if kwargs["color_mode"] == "schema":
+                from .visualizer_utils import _COLOR_SCHEMAS
+                if _COLOR_SCHEMAS:
+                    kwargs["color_schema"] = s_rng.choice(list(_COLOR_SCHEMAS.keys()))
+                else:
+                    kwargs["color_mode"] = "custom"
 
         # Vibrant Color Randomization: If randomize is on and we are in custom mode, 
         # pick a guaranteed vibrant color.

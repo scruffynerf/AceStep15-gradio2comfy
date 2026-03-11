@@ -57,6 +57,11 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
         import random
         s_rng = random.Random(seed)
 
+        # Get screen dimensions from base or defaults
+        screen_width = kwargs.get("screen_width", 512)
+        screen_height = kwargs.get("screen_height", 512)
+        min_dim = min(screen_width, screen_height)
+
         if kwargs.get("randomize", False):
             kwargs["bar_length_mode"] = "relative"
             # amplitude_scale is the "bar" height equivalent here
@@ -65,13 +70,10 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             else:
                 kwargs["amplitude_scale"] = s_rng.uniform(15.0, 40.0)
             
-            kwargs["base_radius"] = s_rng.uniform(50.0, 300.0)
+            # Base radius relative to screen size (10% to 40% of min dimension)
+            kwargs["base_radius"] = s_rng.uniform(min_dim * 0.1, min_dim * 0.4)
             kwargs["radius"] = kwargs["base_radius"]
 
-        # Get screen dimensions from base or defaults
-        screen_width = kwargs.get("screen_width", 512)
-        screen_height = kwargs.get("screen_height", 512)
-        
         # images, masks, settings, _ (source_mask ignored)
         images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,

@@ -129,11 +129,14 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
-            kwargs["ghost_mask_strength"] = 0.15
+            kwargs["ghost_mask_strength"] = 0.25
             kwargs["ghost_use_custom_color"] = True
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
-            # Randomly pick between outer only and all
-            kwargs["contour_layers"] = s_rng.choice(["0", "0", "0,1", "all"])
+            kwargs["contour_layers"] = "all"
+            
+            # Use adaptive density to ensure enough points for complex shapes
+            kwargs["adaptive_point_density"] = True
+            kwargs["num_points"] = 512 # Baseline before adaptive scaling
 
         # Handle optional/missing mask
         if mask is None:

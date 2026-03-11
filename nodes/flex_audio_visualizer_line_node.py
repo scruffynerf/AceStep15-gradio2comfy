@@ -70,7 +70,7 @@ class ScromfyFlexAudioVisualizerLineNode(FlexAudioVisualizerBase):
             else:
                 kwargs["max_height"] = s_rng.uniform(30.0, 70.0)
             
-            kwargs["num_bars"] = s_rng.choice([16, 32, 64, 128])
+            kwargs["num_bars"] = s_rng.choice([64, 128, 256])
 
         # Get screen dimensions
         screen_width = kwargs.get("screen_width", 512)
