@@ -296,13 +296,14 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         
         layer_map_out = torch.cat(layer_maps, dim=0)
 
-        images, masks, settings, source_mask_out = super().apply_effect(
+        images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
-            opt_feature, source_mask=source_mask, **kwargs
+            opt_feature, source_mask=mask, **kwargs
         )
         
-        return (images, masks, settings, source_mask_out, layer_map_out)
+        # We return the transformed 'mask' as the source_mask_out
+        return (images, masks, settings, mask, layer_map_out)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
