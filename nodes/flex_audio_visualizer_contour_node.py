@@ -105,6 +105,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                      feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
         
         # Unpack visualizer settings if provided (to get the seed for mask selection)
+        # We ensure local settings already in kwargs are NOT overwritten.
         ext_settings = kwargs.get("visualizer_settings", {})
         if isinstance(ext_settings, dict):
             for k, v in ext_settings.items():
@@ -172,6 +173,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         new_w = int(m_width * mask_scale)
         new_h = int(m_height * mask_scale)
         
+        transformed_mask = mask # Fallback
         if new_w > 0 and new_h > 0:
             resized_masks = []
             for b in range(m_batch):
@@ -186,14 +188,15 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 w_to_copy = x_end - x_offset
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
                 resized_masks.append(torch.from_numpy(canvas))
-            mask = torch.stack(resized_masks) if m_batch > 1 else resized_masks[0].unsqueeze(0)
+            transformed_mask = torch.stack(resized_masks) if m_batch > 1 else resized_masks[0].unsqueeze(0)
 
         # Get final dimensions for processing
-        batch_size, screen_height, screen_width = mask.shape
-        kwargs['mask'] = mask
+        batch_size, screen_height, screen_width = transformed_mask.shape
+        kwargs['mask'] = transformed_mask
 
         # Find contours here so we can use them for adaptive density
-        mask_uint8 = (mask[0].cpu().numpy() * 255).astype(np.uint8)
+        # CRITICAL: We MUST use the transformed_mask here, not the original 'mask'
+        mask_uint8 = (transformed_mask[0].cpu().numpy() * 255).astype(np.uint8)
         # Switch to RETR_TREE for hierarchy support
         contours, hierarchy = cv2.findContours(mask_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         
@@ -227,10 +230,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             # Get combined bounding box of all valid contours
             all_pts = np.vstack([c.reshape(-1, 2) for c in valid_contours])
             x, y, w, h = cv2.boundingRect(all_pts)
-            mask_scale = (w + h) / 2.0
-            kwargs["_mask_scale"] = mask_scale
+            current_mask_scale = (w + h) / 2.0
+            kwargs["_mask_scale"] = current_mask_scale
+            # PASS THE VALID CONTOURS TO THE ENGINE to prevent re-calculation from unresized mask
+            kwargs["_valid_contours"] = valid_contours
         else:
             kwargs["_mask_scale"] = 100.0 # Fallback
+            kwargs["_valid_contours"] = []
 
         # Generate the Layer Map Visualization
         layer_maps = []
@@ -247,8 +253,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
         for b in range(batch_size):
             # Use the mask for this frame
-            m_idx = min(b, mask.shape[0] - 1)
-            f_mask = (mask[m_idx].cpu().numpy() * 255).astype(np.uint8)
+            m_idx = min(b, transformed_mask.shape[0] - 1)
+            f_mask = (transformed_mask[m_idx].cpu().numpy() * 255).astype(np.uint8)
             f_contours, f_hierarchy = cv2.findContours(f_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             
             # Create colored canvas
@@ -299,11 +305,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
-            opt_feature, source_mask=mask, **kwargs
+            opt_feature, source_mask=transformed_mask, **kwargs
         )
         
-        # We return the transformed 'mask' as the source_mask_out
-        return (images, masks, settings, mask, layer_map_out)
+        # We return the transformed_mask as the SOURCE_MASK output
+        return (images, masks, settings, transformed_mask, layer_map_out)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')

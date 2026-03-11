@@ -659,11 +659,12 @@ class FlexAudioVisualizerBase(FlexBase):
             kwargs.pop("mask", None)
             kwargs.pop("opt_mask", None)
         
-        # Unpack visualizer settings if provided
+        # Unpack visualizer settings if provided (MASTER SETTINGS)
         ext_settings = kwargs.get("visualizer_settings", {})
         if isinstance(ext_settings, dict):
             for k, v in ext_settings.items():
-                kwargs[k] = v
+                if k not in kwargs:
+                    kwargs[k] = v
 
         # Get random generator if randomize is active
         s_rng = None
