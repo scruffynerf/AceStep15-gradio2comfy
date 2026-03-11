@@ -44,7 +44,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 "bar_length_mode": (["absolute", "relative"], {"default": "absolute"}),
                 "contour_smoothing": ("INT", {"default": 0, "min": 0, "max": 50, "step": 1}),
                 "ghost_mask_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "ghost_mode": (["None", "White", "Color", "Outline White", "Outline Color"], {"default": "White"}),
+                "ghost_mode": (["None", "White", "Color", "Outline White", "Outline Color", "Outline White (Thin)", "Outline Color (Thin)"], {"default": "White"}),
                 "adaptive_point_density": ("BOOLEAN", {"default": False}),
                 "min_contour_area": ("FLOAT", {"default": 100.0, "min": 0.0, "max": 10000.0, "step": 10.0}),
                 "max_contours": ("INT", {"default": 5, "min": 1, "max": 50, "step": 1}),
@@ -78,6 +78,9 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         if hierarchy is None:
             return contours
         
+        if target_layers.lower() == "all":
+            return contours
+
         hierarchy = hierarchy[0] # [Next, Previous, First_Child, Parent]
         depths = np.zeros(len(contours), dtype=int)
         
@@ -89,10 +92,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 depth += 1
                 parent = hierarchy[parent][3]
             depths[i] = depth
-            
-        if target_layers.lower() == "all":
-            return contours
-            
+        
         try:
             allowed_depths = [int(x.strip()) for x in target_layers.split(",")]
         except (ValueError, AttributeError):
@@ -131,7 +131,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
             kwargs["ghost_mask_strength"] = 0.25
-            kwargs["ghost_mode"] = s_rng.choice(["Color", "Outline Color"])
+            kwargs["ghost_mode"] = "Outline Color (Thin)"
             kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
             kwargs["contour_layers"] = "all"
             
@@ -200,7 +200,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Switch to RETR_TREE for hierarchy support
         contours, hierarchy = cv2.findContours(mask_uint8, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         
-        contour_layers = kwargs.get("contour_layers", "0")
+        contour_layers = kwargs.get("contour_layers", "all")
         filtered_contours = self.filter_contours_by_hierarchy(contours, hierarchy, contour_layers)
         
         min_contour_area = kwargs.get('min_contour_area', 100.0)
@@ -428,8 +428,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             # 3. Render (Solid vs Outline)
             if "Outline" in ghost_mode:
                 # Draw outlines of ALL mask contours (not just filtered ones)
-                # Use line_width for thickness if available, else default to 2
-                thick = kwargs.get("line_width", 2)
+                # Check for "Thin" variant (fixed 1px)
+                if "(Thin)" in ghost_mode:
+                    thick = 1
+                else:
+                    thick = kwargs.get("line_width", 2)
                 cv2.drawContours(image, contours, -1, ghost_color, thick)
             else:
                 # Solid fill
