@@ -5,26 +5,40 @@ import os
 import random
 import math
 import pyconify
-from .includes.emoji_utils import get_emoji_icon_names, load_icon_as_image, pil_to_tensor, tensor_to_pil
+from .includes.emoji_utils import get_emoji_icon_names, load_icon_as_image, pil_to_tensor
+
+# Try to import the full list of collections from the user-editable file
+try:
+    from .includes.icon_collections import ICON_COLLECTIONS
+except ImportError:
+    ICON_COLLECTIONS = []
 
 class ScromfyEmojiSpinnerNode:
     @classmethod
     def INPUT_TYPES(cls):
-        collections = pyconify.collections()
-        # Find emoji sets again for the dropdown
-        emoji_sets = sorted([p for p in collections.keys() if 'emoji' in p or p in ['noto', 'twemoji', 'fluent']])
-        if not emoji_sets:
-            emoji_sets = ["fluent-emoji-flat"]
-            
+        # Curated fallback list
+        fallback_collections = [
+            "fluent-emoji-flat", "fluent-emoji", "fluent-color", "fluent-emoji-high-contrast",
+            "noto", "noto-v1", "twemoji", "openmoji", "emojione", "emojione-monotone",
+            "streamline-emojis", "fxemoji", "blob-emoji", "material-symbols", "material-symbols-light"
+        ]
+        
+        # Merge external list if available, prioritizing the user's list but ensuring it's not empty
+        collection_list = ICON_COLLECTIONS if ICON_COLLECTIONS else fallback_collections
+        
+        # Ensure "local" is in the list and unique
+        if "local" not in collection_list:
+            collection_list = ["local"] + list(collection_list) 
+        
         return {
             "required": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "icon_set": (emoji_sets, {"default": "fluent-emoji-flat"}),
+                "seed": ("INT", {"default": 1, "min": 0, "max": 0xffffffffffffffff}),
+                "icon_set": (collection_list, {"default": "fluent-emoji-flat"}),
                 "width": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 64}),
-                "height": ("INT", {"default": 512, "min": 128, "max": 1024, "step": 64}),
-                "fps": ("INT", {"default": 30, "min": 10, "max": 60}),
-                "spin_duration": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.5}),
-                "stop_stagger": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 2.0, "step": 0.1}),
+                "height": ("INT", {"default": 512, "min": 64, "max": 2048, "step": 64}),
+                "fps": ("INT", {"default": 30, "min": 1, "max": 120}),
+                "spin_duration": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 10.0, "step": 0.1}),
+                "stop_stagger": ("FLOAT", {"default": 0.2, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "render_size": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 64}),
                 "slot_icon_size": ("INT", {"default": 128, "min": 64, "max": 512, "step": 8}),
                 "reel_padding": ("INT", {"default": 10, "min": 0, "max": 100, "step": 2}),
@@ -44,28 +58,24 @@ class ScromfyEmojiSpinnerNode:
         rng = random.Random(seed)
         
         # 1. Fetch icons
-        all_names = get_emoji_icon_names(icon_set, count=25, seed=seed)
-        if not all_names:
-            return (torch.zeros((1, height, width, 3)), torch.zeros((1, 64, 64, 3)), torch.zeros((1, 64, 64, 3)), torch.zeros((1, 64, 64, 3)), "", "", "", torch.zeros((1, 64, 64)), torch.zeros((1, 64, 64)), torch.zeros((1, 64, 64)), torch.zeros((1, 128, width)), "Error fetching icons")
+        icon_refs = get_emoji_icon_names(icon_set, count=25, seed=seed)
+        if not icon_refs:
+            return (torch.zeros((1, 128, width, 3)), torch.zeros((1, 64, 64, 3)), torch.zeros((1, 64, 64, 3)), torch.zeros((1, 64, 64, 3)), "", "", "", torch.zeros((1, 64, 64)), torch.zeros((1, 64, 64)), torch.zeros((1, 64, 64)), torch.zeros((1, 128, width)), "Error fetching icons")
 
         # 2. Assign to 3 wheels
         wheel_count = 3
         wheels_icons = []
-        icons_per_wheel = 25
+        icons_per_wheel = len(icon_refs)
         for i in range(wheel_count):
-            wheel_icons = list(all_names)
+            wheel_icons = list(icon_refs)
             rng.shuffle(wheel_icons)
             wheels_icons.append(wheel_icons)
 
-        # 3. Layout: Reels are focused on icon size + padding
+        # 3. Layout
         reel_width = slot_icon_size + 2 * reel_inner_padding
-        # Viewport height is now focused on one icon + top/bottom padding
         viewport_height = slot_icon_size + 2 * reel_top_padding
-        
-        # Total content width for centering
         total_content_width = wheel_count * reel_width + (wheel_count - 1) * reel_padding
         start_x = (width - total_content_width) // 2
-        
         wheel_centers_x = [start_x + i * (reel_width + reel_padding) + reel_width // 2 for i in range(wheel_count)]
         
         target_indices = [rng.randint(0, icons_per_wheel - 1) for i in range(wheel_count)]
@@ -74,12 +84,12 @@ class ScromfyEmojiSpinnerNode:
         frames = []
         
         # Prepare target images and masks for output (High quality)
-        target_pil_images = [load_icon_as_image(f"{icon_set}:{name}", size=render_size, render_mode=render_mode, stroke_width=bw_stroke_width) for name in target_names]
+        target_pil_images = [load_icon_as_image(ref, size=render_size, render_mode=render_mode, stroke_width=bw_stroke_width) for ref in target_names]
         e1_img, m1 = pil_to_tensor(target_pil_images[0])
         e2_img, m2 = pil_to_tensor(target_pil_images[1])
         e3_img, m3 = pil_to_tensor(target_pil_images[2])
         
-        # Create combined mask (result frame) using the focused viewport
+        # Create combined mask (pure black background)
         combined_result_pil = Image.new("RGBA", (width, viewport_height), (0, 0, 0, 0))
         for i, img in enumerate(target_pil_images):
             fit_img = img.copy()
@@ -102,13 +112,15 @@ class ScromfyEmojiSpinnerNode:
         
         for f in range(num_frames):
             time_at_f = f / fps
-            frame_img = Image.new("RGBA", (width, viewport_height), (20, 20, 20, 255)) 
+            # Pure black background (0,0,0,255) to avoid gray lines
+            frame_img = Image.new("RGBA", (width, viewport_height), (0, 0, 0, 255)) 
             draw = ImageDraw.Draw(frame_img)
             
-            # Draw dividers
-            for i in range(1, wheel_count):
-                x_mid = start_x + i * (reel_width + reel_padding) - reel_padding // 2
-                draw.line([x_mid, 0, x_mid, viewport_height], fill=(40, 40, 40, 255), width=max(1, reel_padding))
+            # Draw dividers only if reel_padding > 0
+            if reel_padding > 0:
+                for i in range(1, wheel_count):
+                    x_mid = start_x + i * (reel_width + reel_padding) - reel_padding // 2
+                    draw.line([x_mid, 0, x_mid, viewport_height], fill=(20, 20, 20, 255), width=reel_padding)
 
             for i in range(wheel_count):
                 wheel_duration = spin_duration + i * stop_stagger
@@ -128,11 +140,11 @@ class ScromfyEmojiSpinnerNode:
                     y_offset = (item_idx - center_item_idx_float) * total_item_stride
                     
                     actual_idx = item_idx % icons_per_wheel
-                    icon_name = wheels_icons[i][actual_idx]
+                    icon_ref = wheels_icons[i][actual_idx]
                     
-                    icon_key = f"{icon_name}_{slot_icon_size}_{render_mode}_{bw_stroke_width}"
+                    icon_key = f"{icon_ref}_{slot_icon_size}_{render_mode}_{bw_stroke_width}"
                     if icon_key not in slot_icons_cache:
-                        full_img = load_icon_as_image(f"{icon_set}:{icon_name}", size=render_size, render_mode=render_mode, stroke_width=bw_stroke_width)
+                        full_img = load_icon_as_image(icon_ref, size=render_size, render_mode=render_mode, stroke_width=bw_stroke_width)
                         if slot_icon_size != render_size:
                             slot_icons_cache[icon_key] = full_img.resize((slot_icon_size, slot_icon_size), Image.LANCZOS)
                         else:

@@ -20,35 +20,79 @@ def ensure_cache_dir(subdir=None):
         os.makedirs(path, exist_ok=True)
     return path
 
+def get_local_icon_names(icon_set=None, count=25, seed=None):
+    """
+    Fetch a list of already-cached icon names from the masks directory.
+    Format: 'collection:name' or just 'name' if at root.
+    """
+    if not os.path.exists(CACHE_DIR):
+        return []
+    
+    local_icons = []
+    
+    # Check root level of masks/
+    if not icon_set or icon_set == "local":
+        for f in os.listdir(CACHE_DIR):
+            if f.endswith(".png") and not any(x in f for x in ["_ws", "_wo", "_wb"]):
+                name = f[:-4]
+                # If there's no collection prefix, we can just use the name
+                local_icons.append(name)
+    
+    # Check subdirs
+    possible_subdirs = [icon_set] if icon_set and icon_set != "local" else os.listdir(CACHE_DIR)
+    for subdir in possible_subdirs:
+        subdir_path = os.path.join(CACHE_DIR, subdir)
+        if not os.path.isdir(subdir_path):
+            continue
+        for f in os.listdir(subdir_path):
+            if f.endswith(".png") and not any(x in f for x in ["_ws", "_wo", "_wb"]):
+                name = f[:-4]
+                local_icons.append(f"{subdir}:{name}")
+    
+    if not local_icons:
+        return []
+        
+    rng = random.Random(seed)
+    if len(local_icons) > count:
+        return rng.sample(local_icons, count)
+    else:
+        rng.shuffle(local_icons)
+        return local_icons
+
 def get_emoji_icon_names(collection_prefix="fluent-emoji-flat", count=25, seed=None):
     """
     Fetch a random set of icon names from an Iconify collection.
+    Falls back to local icons if API fails.
     """
+    if collection_prefix == "local":
+        return get_local_icon_names(count=count, seed=seed)
+
     try:
         info = pyconify.collection(collection_prefix)
+        icon_names = []
+        if 'uncategorized' in info:
+            icon_names = info['uncategorized']
+        elif 'icons' in info:
+            icon_names = list(info['icons'].keys())
+        elif 'categories' in info:
+            for cat_icons in info['categories'].values():
+                icon_names.extend(cat_icons)
+        
+        if not icon_names:
+            raise ValueError(f"No icons found in collection {collection_prefix}")
+
+        rng = random.Random(seed)
+        if len(icon_names) > count:
+            selection = rng.sample(icon_names, count)
+        else:
+            rng.shuffle(icon_names)
+            selection = icon_names
+            
+        return [f"{collection_prefix}:{n}" for n in selection]
+
     except Exception as e:
-        print(f"Error fetching collection {collection_prefix}: {e}")
-        return []
-
-    icon_names = []
-    if 'uncategorized' in info:
-        icon_names = info['uncategorized']
-    elif 'icons' in info:
-        icon_names = list(info['icons'].keys())
-    elif 'categories' in info:
-        for cat_icons in info['categories'].values():
-            icon_names.extend(cat_icons)
-    
-    if not icon_names:
-        return []
-
-    rng = random.Random(seed)
-    if len(icon_names) > count:
-        return rng.sample(icon_names, count)
-    else:
-        # If not enough, shuffle and return all
-        rng.shuffle(icon_names)
-        return icon_names
+        print(f"Warning: Error fetching Iconify collection {collection_prefix} ({e}). Falling back to local icons.")
+        return get_local_icon_names(count=count, seed=seed)
 
 def _make_drawing_bw(obj, mode="white_outline", stroke_width=0.3):
     """
@@ -56,13 +100,16 @@ def _make_drawing_bw(obj, mode="white_outline", stroke_width=0.3):
     """
     # Safe handling: if color is a string (like 'url(#...)'), reportlab might complain.
     # We overwrite them regardless if they exist.
+    # Explicitly clear any existing complex color objects (gradients)
     if hasattr(obj, 'fillColor'):
+        obj.fillColor = shapes.colors.black # Default fallback
         if mode == "white_solid" or mode == "white_solid_black_outline":
              obj.fillColor = shapes.colors.white
         elif mode == "white_outline":
              obj.fillColor = shapes.colors.black
 
     if hasattr(obj, 'strokeColor'):
+        obj.strokeColor = None # Clear first
         if mode == "white_solid":
             obj.strokeColor = shapes.colors.white
         elif mode == "white_outline":
