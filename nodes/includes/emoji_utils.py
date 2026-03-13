@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import pyconify
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM, shapes
@@ -177,9 +178,19 @@ def load_icon_as_image(icon_full_name, size=512, render_mode="color", stroke_wid
     try:
         # Fetch SVG via pyconify
         svg_data = pyconify.svg(icon_full_name)
+        if isinstance(svg_data, bytes):
+            svg_data = svg_data.decode("utf-8")
+        
+        # Aggressively scrub all gradient references to avoid console warnings ("Can't handle color: url(...)")
+        # ReportLab (via svglib) often fails to resolve these, resulting in spam.
+        # Replacing with 'black' ensures a solid fallback that svglib can parse.
+        # We only really care about this for B&W modes, but silencing it for color mode
+        # is also cleaner since the gradient was likely failing anyway.
+        if "url(#" in svg_data:
+            svg_data = re.sub(r'url\(#.*?\)', 'black', svg_data)
         
         # Convert SVG to PNG via svglib
-        svg_file = io.BytesIO(svg_data)
+        svg_file = io.BytesIO(svg_data.encode("utf-8"))
         drawing = svg2rlg(svg_file)
         
         if render_mode != "color":
