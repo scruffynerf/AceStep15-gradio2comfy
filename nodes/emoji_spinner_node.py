@@ -46,15 +46,16 @@ class ScromfyEmojiSpinnerNode:
                 "reel_top_padding": ("INT", {"default": 15, "min": 0, "max": 100, "step": 2}),
                 "render_mode": (["color", "white_solid", "white_outline", "white_solid_black_outline"], {"default": "white_outline"}),
                 "bw_stroke_width": ("FLOAT", {"default": 0.3, "min": 0.1, "max": 2.0, "step": 0.1}),
+                "sample_rate": ("INT", {"default": 44100, "min": 8000, "max": 192000, "step": 100}),
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", "STRING", "STRING", "STRING", "MASK", "MASK", "MASK", "MASK", "STRING")
-    RETURN_NAMES = ("IMAGE", "emoji_1_image", "emoji_2_image", "emoji_3_image", "emoji_1_name", "emoji_2_name", "emoji_3_name", "emoji_1_mask", "emoji_2_mask", "emoji_3_mask", "combined_mask", "combined_description")
+    RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "IMAGE", "STRING", "STRING", "STRING", "MASK", "MASK", "MASK", "MASK", "STRING", "AUDIO")
+    RETURN_NAMES = ("IMAGE", "emoji_1_image", "emoji_2_image", "emoji_3_image", "emoji_1_name", "emoji_2_name", "emoji_3_name", "emoji_1_mask", "emoji_2_mask", "emoji_3_mask", "combined_mask", "combined_description", "AUDIO")
     FUNCTION = "spin"
     CATEGORY = "Scromfy/Ace-Step/Visualizers"
 
-    def spin(self, seed, icon_set, width, height, fps, spin_duration, stop_stagger, render_size, slot_icon_size, reel_padding, reel_inner_padding=15, reel_top_padding=15, render_mode="white_outline", bw_stroke_width=0.3):
+    def spin(self, seed, icon_set, width, height, fps, spin_duration, stop_stagger, render_size, slot_icon_size, reel_padding, reel_inner_padding=15, reel_top_padding=15, render_mode="white_outline", bw_stroke_width=0.3, sample_rate=44100):
         rng = random.Random(seed)
         
         # 1. Fetch icons
@@ -186,7 +187,13 @@ class ScromfyEmojiSpinnerNode:
         clean_names = [name.split(":")[-1] if ":" in name else name for name in target_names]
         desc = f"{clean_names[0]}, {clean_names[1]}, {clean_names[2]}"
         
-        return (final_images, e1_img, e2_img, e3_img, clean_names[0], clean_names[1], clean_names[2], m1, m2, m3, combined_mask, desc)
+        # Generate silent audio to match frame length
+        num_samples = int((len(frames) / fps) * sample_rate)
+        # ComfyUI audio format: {"waveform": tensor(batch, channel, sample), "sample_rate": int}
+        audio_waveform = torch.zeros((1, 2, num_samples))
+        audio = {"waveform": audio_waveform, "sample_rate": sample_rate}
+        
+        return (final_images, e1_img, e2_img, e3_img, clean_names[0], clean_names[1], clean_names[2], m1, m2, m3, combined_mask, desc, audio)
 
 NODE_CLASS_MAPPINGS = {
     "ScromfyEmojiSpinner": ScromfyEmojiSpinnerNode,
