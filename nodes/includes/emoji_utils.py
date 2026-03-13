@@ -2,7 +2,7 @@ import os
 import io
 import pyconify
 from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
+from reportlab.graphics import renderPM, shapes
 from PIL import Image
 import numpy as np
 import torch
@@ -54,8 +54,6 @@ def _make_drawing_bw(obj, mode="white_outline", stroke_width=0.3):
     """
     Transform a reportlab drawing for different B&W/Mask styles.
     """
-    from reportlab.graphics import shapes
-    
     if mode == "color":
         return
         

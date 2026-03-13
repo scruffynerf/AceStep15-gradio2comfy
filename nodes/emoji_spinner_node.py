@@ -4,12 +4,12 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import random
 import math
+import pyconify
 from .includes.emoji_utils import get_emoji_icon_names, load_icon_as_image, pil_to_tensor, tensor_to_pil
 
 class ScromfyEmojiSpinnerNode:
     @classmethod
     def INPUT_TYPES(cls):
-        import pyconify
         collections = pyconify.collections()
         # Find emoji sets again for the dropdown
         emoji_sets = sorted([p for p in collections.keys() if 'emoji' in p or p in ['noto', 'twemoji', 'fluent']])

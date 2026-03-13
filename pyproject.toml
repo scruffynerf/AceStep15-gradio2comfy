@@ -12,7 +12,12 @@ dependencies = [
     "librosa",
     "lovely-tensors",
     "safetensors",
-    "lyricsgenius"
+    "lyricsgenius",
+    "wikipedia-api",
+    "pyconify",
+    "svglib",
+    "reportlab",
+    "Pillow"
 ]
 readme = "README.md"
 keywords = ["comfyui", "custom-nodes", "music-generation", "ace-step"]

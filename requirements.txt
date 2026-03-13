@@ -6,3 +6,7 @@ lovely-tensors
 safetensors
 lyricsgenius
 wikipedia-api
+pyconify
+svglib
+reportlab
+Pillow
