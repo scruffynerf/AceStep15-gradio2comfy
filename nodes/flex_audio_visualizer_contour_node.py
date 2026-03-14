@@ -105,7 +105,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         return [contours[i] for i in filtered_indices]
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, strength, feature_param,
-                     feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
+                     feature_mode, feature_threshold, opt_feature=None, opt_video=None, source_mask=None, **kwargs):
         
         # Unpack visualizer settings if provided (to get the seed for mask selection)
         # We ensure local settings already in kwargs are NOT overwritten.
@@ -119,22 +119,25 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         seed = kwargs.get("seed", 0)
         s_rng = random.Random(seed)
 
-        # Base class now handles universal randomization and vibrant color picking.
-        # We do node-specific randomization here.
+        # Handle randomization (moved up so it can affect point density calc)
         if kwargs.get("randomize", False):
             kwargs["bar_length_mode"] = "relative"
             if kwargs.get("visualization_feature", "frequency") == "waveform":
                 kwargs["bar_length"] = s_rng.uniform(5.0, 10.0)
             else:
-                # Frequency bars on contour look better slightly longer than waveform
                 kwargs["bar_length"] = s_rng.uniform(10.0, 25.0)
-                
             kwargs["distribute_by"] = "perimeter"
             kwargs["max_contours"] = 50
             kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
             kwargs["ghost_mask_strength"] = 0.25
-        # Handle optional/missing mask (source_mask is the standard param)
+            kwargs["ghost_mode"] = "Outline Color (Thin)"
+            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
+            kwargs["contour_layers"] = "all"
+            kwargs["adaptive_point_density"] = True
+            kwargs["num_points"] = 512
+
+        # Handle optional/missing mask
         mask = source_mask
         if mask is None:
             mask = kwargs.get("mask")
@@ -221,29 +224,6 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         valid_contours.sort(key=cv2.contourArea, reverse=True)
         valid_contours = valid_contours[:max_contours]
         
-        # Base class now handles universal randomization and vibrant color picking.
-        # We do node-specific randomization here.
-        if kwargs.get("randomize", False):
-            kwargs["bar_length_mode"] = "relative"
-            if kwargs.get("visualization_feature", "frequency") == "waveform":
-                kwargs["bar_length"] = s_rng.uniform(5.0, 10.0)
-            else:
-                # Frequency bars on contour look better slightly longer than waveform
-                kwargs["bar_length"] = s_rng.uniform(10.0, 25.0)
-                
-            kwargs["distribute_by"] = "perimeter"
-            kwargs["max_contours"] = 50
-            kwargs["min_contour_area"] = 100
-            kwargs["contour_smoothing"] = 0
-            kwargs["ghost_mask_strength"] = 0.25
-            kwargs["ghost_mode"] = "Outline Color (Thin)"
-            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
-            kwargs["contour_layers"] = "all"
-            
-            # Use adaptive density to ensure enough points for complex shapes
-            kwargs["adaptive_point_density"] = True
-            kwargs["num_points"] = 512 # Baseline before adaptive scaling
-
         sequence_direction = kwargs.get("sequence_direction", "right")
         if sequence_direction == "left":
             # Reverse point order for all selected contours
@@ -252,9 +232,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Scale num_points if adaptive density is enabled
         if kwargs.get("adaptive_point_density", False) and valid_contours:
             # Calculate total perimeter of selected contours
-            total_perimeter = 0
-            for c in valid_contours:
-                total_perimeter += cv2.arcLength(c, True)
+            total_perimeter = sum(cv2.arcLength(c, True) for c in valid_contours)
             
             if total_perimeter > 0:
                 # Reference: num_points units per 2000 perimeter units
@@ -266,8 +244,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             # Get combined bounding box of all valid contours
             all_pts = np.vstack([c.reshape(-1, 2) for c in valid_contours])
             x, y, w, h = cv2.boundingRect(all_pts)
-            current_mask_scale = (w + h) / 2.0
-            kwargs["_mask_scale"] = current_mask_scale
+            kwargs["_mask_scale"] = (w + h) / 2.0
             # PASS THE VALID CONTOURS TO THE ENGINE to prevent re-calculation from unresized mask
             kwargs["_valid_contours"] = valid_contours
         else:
@@ -277,15 +254,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         # Generate the Layer Map Visualization
         layer_maps = []
         # Define a helpful palette for layers (B, G, R)
-        layer_colors = [
-            (255, 100, 100), # L0: Light Blueish
-            (100, 255, 100), # L1: Light Green
-            (100, 100, 255), # L2: Light Red
-            (255, 255, 100), # L3: Yellow
-            (255, 100, 255), # L4: Magenta
-            (100, 255, 255), # L5: Cyan
-            (255, 255, 255), # L6+: White
-        ]
+        layer_colors = [(255, 100, 100), (100, 255, 100), (100, 100, 255), (255, 255, 100), (255, 100, 255), (100, 255, 255), (255, 255, 255)]
 
         for b in range(proc_batch):
             # Use the mask for this frame
@@ -324,16 +293,13 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                         cv2.putText(l_map, txt, (lcx, lcy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
                 # Overlay Total Counts
-                max_depth = 0
-                if f_contours:
-                    max_depth = max(depths)
+                max_depth = max(depths) if len(depths) > 0 else 0
                 
                 stats_text = f"Contours: {len(f_contours)} | Layers: {max_depth + 1}"
                 cv2.putText(l_map, stats_text, (20, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 4) # Shadow
                 cv2.putText(l_map, stats_text, (20, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2) # Text
 
-            l_map_tensor = torch.from_numpy(l_map.astype(np.float32) / 255.0).unsqueeze(0)
-            layer_maps.append(l_map_tensor)
+            layer_maps.append(torch.from_numpy(l_map.astype(np.float32) / 255.0).unsqueeze(0))
         
         layer_map_out = torch.cat(layer_maps, dim=0)
 
