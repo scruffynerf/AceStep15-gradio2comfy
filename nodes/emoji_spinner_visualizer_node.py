@@ -54,18 +54,24 @@ class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
         phase1_frames = []
         for i in range(spin_num_frames):
             frame_np = spinner_frames[i].cpu().numpy()
+            
+            # Step 1: Scale within spinner frame original size (s_width, s_height) 
             if new_w > 0 and new_h > 0:
                 m_resized = cv2.resize(frame_np, (new_w, new_h), interpolation=cv2.INTER_AREA)
-                canvas = np.zeros((out_h, out_w, 3), dtype=np.float32)
-                x_offset = (out_w - new_w) // 2
-                y_offset = int(out_h * mask_top_margin)
-                y_end = min(y_offset + new_h, out_h)
-                x_end = min(x_offset + new_w, out_w)
+                canvas = np.zeros((s_height, s_width, 3), dtype=np.float32)
+                x_offset = (s_width - new_w) // 2
+                y_offset = int(s_height * mask_top_margin)
+                y_end = min(y_offset + new_h, s_height)
+                x_end = min(x_offset + new_w, s_width)
                 h_to_copy = y_end - y_offset
                 w_to_copy = x_end - x_offset
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
             else:
-                canvas = cv2.resize(frame_np, (out_w, out_h))
+                canvas = frame_np.copy()
+                
+            # Step 2: Stretch to final output dimensions (like the visualizer base does)
+            if s_height != out_h or s_width != out_w:
+                canvas = cv2.resize(canvas, (out_w, out_h))
                 
             # Delta mask from black background. Black is literally 0,0,0
             # Be slightly lenient: sum across RGB channels > 0.05
@@ -84,25 +90,6 @@ class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
             
         phase1_tensor = torch.stack(phase1_frames)
         
-        # Process static spinner_mask for Phase 2
-        m_np = spinner_mask[0].cpu().numpy() # [H, W]
-        new_mw = int(m_np.shape[1] * mask_scale)
-        new_mh = int(m_np.shape[0] * mask_scale)
-        canvas_m = np.zeros((out_h, out_w), dtype=np.float32)
-        if new_mw > 0 and new_mh > 0:
-            m_resized = cv2.resize(m_np, (new_mw, new_mh), interpolation=cv2.INTER_AREA)
-            x_offset = (out_w - new_mw) // 2
-            y_offset = int(out_h * mask_top_margin)
-            y_end = min(y_offset + new_mh, out_h)
-            x_end = min(x_offset + new_mw, out_w)
-            h_to_copy = y_end - y_offset
-            w_to_copy = x_end - x_offset
-            canvas_m[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
-        else:
-            canvas_m = cv2.resize(m_np, (out_w, out_h))
-            
-        final_spinner_mask = torch.from_numpy(canvas_m).unsqueeze(0)
-        
         # Phase 2: Visualize remaining audio
         # Note: opt_video needs to start AFTER the spin phase for Phase 2 to maintain seamless looping
         phase2_opt_video = None
@@ -119,9 +106,11 @@ class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
                     # Last frame repeated
                     phase2_opt_video = opt_video[-1:]
                     
+        # We pass the original unscaled spinner_mask. The Contour node will apply 
+        # mask_scale and mask_top_margin automatically.
         images, masks, settings, source_mask_out, layer_map = super().apply_effect(
             audio, frame_rate, screen_width, screen_height, strength, feature_param,
-            feature_mode, feature_threshold, mask=final_spinner_mask, opt_video=phase2_opt_video,
+            feature_mode, feature_threshold, mask=spinner_mask, opt_video=phase2_opt_video,
             opt_feature=opt_feature, **kwargs
         )
         
