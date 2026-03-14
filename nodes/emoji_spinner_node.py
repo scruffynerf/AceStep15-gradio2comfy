@@ -90,9 +90,9 @@ class ScromfyEmojiSpinnerNode:
         
         # Prepare target images and masks for output (High quality)
         target_pil_images = [load_icon_as_image(ref, size=render_size, render_mode=render_mode, stroke_width=bw_stroke_width) for ref in target_names]
-        e1_img, m1 = pil_to_tensor(target_pil_images[0])
-        e2_img, m2 = pil_to_tensor(target_pil_images[1])
-        e3_img, m3 = pil_to_tensor(target_pil_images[2])
+        e1_img, m1 = pil_to_tensor(target_pil_images[0], extract_luminance_mask=(render_mode != "color"))
+        e2_img, m2 = pil_to_tensor(target_pil_images[1], extract_luminance_mask=(render_mode != "color"))
+        e3_img, m3 = pil_to_tensor(target_pil_images[2], extract_luminance_mask=(render_mode != "color"))
         
         # Create combined mask (pure black background)
         combined_result_pil = Image.new("RGBA", (width, viewport_height), (0, 0, 0, 0))
@@ -105,7 +105,7 @@ class ScromfyEmojiSpinnerNode:
             y = viewport_height // 2 - fit_img.height // 2
             combined_result_pil.paste(fit_img, (int(x), int(y)), fit_img)
         
-        _, combined_mask = pil_to_tensor(combined_result_pil)
+        _, combined_mask = pil_to_tensor(combined_result_pil, extract_luminance_mask=(render_mode != "color"))
 
         # Cache for slot icons (resized ones)
         slot_icons_cache = {}

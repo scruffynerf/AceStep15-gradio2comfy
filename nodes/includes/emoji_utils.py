@@ -216,7 +216,7 @@ def load_icon_as_image(icon_full_name, size=512, render_mode="color", stroke_wid
         # Return a fallback "missing" image (transparent)
         return Image.new("RGBA", (size, size), (0, 0, 0, 0))
 
-def pil_to_tensor(pil_img):
+def pil_to_tensor(pil_img, extract_luminance_mask=False):
     """
     Convert PIL Image to ComfyUI Image Tensor (B, H, W, C)
     """
@@ -230,19 +230,17 @@ def pil_to_tensor(pil_img):
         # RGBA
         image = torch.from_numpy(img_np[:, :, :3]).unsqueeze(0)
         alpha = img_np[:, :, 3]
-        luminance = np.mean(img_np[:, :, :3], axis=2)
         
-        # Combined mask: Alpha * Luminance
-        # This ensures we get transparency AND the interior B&W detail.
-        # For color emojis, luminance is < 1.0, but usually still > 0. 
-        # For B&W output modes, this is exactly what we want.
-        # For standard colorEmojis, alpha alone is usually best, 
-        # but combined logic handles "black interior squares" correctly.
-        combined_mask = alpha * luminance
-        
-        # If luminance is mostly low (dark icon), combined might be too dim.
-        # But if the user chose a white_outline mode, luminance IS the shape.
-        mask = torch.from_numpy(combined_mask).unsqueeze(0)
+        if extract_luminance_mask:
+            luminance = np.mean(img_np[:, :, :3], axis=2)
+            # Combined mask: Alpha * Luminance
+            # This ensures we get transparency AND the interior B&W detail.
+            mask_data = alpha * luminance
+        else:
+            # Standard alpha mask, best for color where luminance varies
+            mask_data = alpha
+            
+        mask = torch.from_numpy(mask_data).unsqueeze(0)
     else:
         # RGB - fallback to luminance
         image = torch.from_numpy(img_np).unsqueeze(0)

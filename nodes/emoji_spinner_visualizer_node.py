@@ -47,31 +47,31 @@ class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
         mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
         
-        new_w = int(s_width * mask_scale)
-        new_h = int(s_height * mask_scale)
+        new_w = int(out_w * mask_scale)
+        new_h = int(out_h * mask_scale)
         
         # Phase 1: Overlay spinner_frames onto background
         phase1_frames = []
         for i in range(spin_num_frames):
             frame_np = spinner_frames[i].cpu().numpy()
             
-            # Step 1: Scale within spinner frame original size (s_width, s_height) 
+            # Step 1: Stretch to target output dimensions (like the visualizer base does)
+            if s_height != out_h or s_width != out_w:
+                frame_np = cv2.resize(frame_np, (out_w, out_h), interpolation=cv2.INTER_AREA)
+            
+            # Step 2: Scale and center on target canvas
             if new_w > 0 and new_h > 0:
                 m_resized = cv2.resize(frame_np, (new_w, new_h), interpolation=cv2.INTER_AREA)
-                canvas = np.zeros((s_height, s_width, 3), dtype=np.float32)
-                x_offset = (s_width - new_w) // 2
-                y_offset = int(s_height * mask_top_margin)
-                y_end = min(y_offset + new_h, s_height)
-                x_end = min(x_offset + new_w, s_width)
+                canvas = np.zeros((out_h, out_w, 3), dtype=np.float32)
+                x_offset = (out_w - new_w) // 2
+                y_offset = int(out_h * mask_top_margin)
+                y_end = min(y_offset + new_h, out_h)
+                x_end = min(x_offset + new_w, out_w)
                 h_to_copy = y_end - y_offset
                 w_to_copy = x_end - x_offset
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
             else:
                 canvas = frame_np.copy()
-                
-            # Step 2: Stretch to final output dimensions (like the visualizer base does)
-            if s_height != out_h or s_width != out_w:
-                canvas = cv2.resize(canvas, (out_w, out_h))
                 
             # Delta mask from black background. Black is literally 0,0,0
             # Be slightly lenient: sum across RGB channels > 0.05

@@ -134,15 +134,11 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             kwargs["min_contour_area"] = 100
             kwargs["contour_smoothing"] = 0
             kwargs["ghost_mask_strength"] = 0.25
-            kwargs["ghost_mode"] = "Outline Color (Thin)"
-            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
-            kwargs["contour_layers"] = "all"
+        # Handle optional/missing mask (source_mask is the standard param)
+        mask = source_mask
+        if mask is None:
+            mask = kwargs.get("mask")
             
-            # Use adaptive density to ensure enough points for complex shapes
-            kwargs["adaptive_point_density"] = True
-            kwargs["num_points"] = 512 # Baseline before adaptive scaling
-
-        # Handle optional/missing mask
         if mask is None:
             masks_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "masks")
             installed_mask = kwargs.get("installed_mask", "random")
@@ -162,19 +158,29 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 mask = torch.zeros((1, 512, 512), dtype=torch.float32)
                 cv2.circle(mask[0].numpy(), (256, 256), 200, (1.0,), -1)
 
-        # Capture the "Source Mask" before we do any resizing/processing
-        if len(mask.shape) == 2:
-            source_mask = mask.unsqueeze(0)
-        else:
-            source_mask = mask
+        # Final output dimensions
+        out_w = screen_width
+        out_h = screen_height
+        if opt_video is not None:
+            out_h, out_w = opt_video.shape[1], opt_video.shape[2]
+
+        m_batch, m_height, m_width = mask.shape if len(mask.shape) == 3 else (1, *mask.shape)
+        if len(mask.shape) == 2: mask = mask.unsqueeze(0)
+
+        # Stretch mask to final dimensions first
+        if m_width != out_w or m_height != out_h:
+            resized_base_masks = []
+            for b in range(m_batch):
+                m_np = mask[b].cpu().numpy()
+                m_res = cv2.resize(m_np, (out_w, out_h), interpolation=cv2.INTER_LINEAR)
+                resized_base_masks.append(torch.from_numpy(m_res))
+            mask = torch.stack(resized_base_masks)
+            m_width, m_height = out_w, out_h
 
         # Resizing and Positioning logic
         mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
         
-        m_batch, m_height, m_width = mask.shape if len(mask.shape) == 3 else (1, *mask.shape)
-        if len(mask.shape) == 2: mask = mask.unsqueeze(0)
-
         # Actually resize the mask content
         new_w = int(m_width * mask_scale)
         new_h = int(m_height * mask_scale)
@@ -196,9 +202,9 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
                 resized_masks.append(torch.from_numpy(canvas))
             transformed_mask = torch.stack(resized_masks) if m_batch > 1 else resized_masks[0].unsqueeze(0)
 
-        # Get final dimensions for processing
-        batch_size, screen_height, screen_width = transformed_mask.shape
-        kwargs['mask'] = transformed_mask
+        # Get final dimensions for processing (Using distinct names to avoid shadowing)
+        proc_batch, proc_h, proc_w = transformed_mask.shape
+        kwargs['_transformed_mask'] = transformed_mask
 
         # Find contours here so we can use them for adaptive density
         # CRITICAL: We MUST use the transformed_mask here, not the original 'mask'
@@ -214,6 +220,30 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         valid_contours = [c for c in filtered_contours if cv2.contourArea(c) >= min_contour_area]
         valid_contours.sort(key=cv2.contourArea, reverse=True)
         valid_contours = valid_contours[:max_contours]
+        
+        # Base class now handles universal randomization and vibrant color picking.
+        # We do node-specific randomization here.
+        if kwargs.get("randomize", False):
+            kwargs["bar_length_mode"] = "relative"
+            if kwargs.get("visualization_feature", "frequency") == "waveform":
+                kwargs["bar_length"] = s_rng.uniform(5.0, 10.0)
+            else:
+                # Frequency bars on contour look better slightly longer than waveform
+                kwargs["bar_length"] = s_rng.uniform(10.0, 25.0)
+                
+            kwargs["distribute_by"] = "perimeter"
+            kwargs["max_contours"] = 50
+            kwargs["min_contour_area"] = 100
+            kwargs["contour_smoothing"] = 0
+            kwargs["ghost_mask_strength"] = 0.25
+            kwargs["ghost_mode"] = "Outline Color (Thin)"
+            kwargs["contour_color_shift"] = s_rng.uniform(0.0, 0.75)
+            kwargs["contour_layers"] = "all"
+            
+            # Use adaptive density to ensure enough points for complex shapes
+            kwargs["adaptive_point_density"] = True
+            kwargs["num_points"] = 512 # Baseline before adaptive scaling
+
         sequence_direction = kwargs.get("sequence_direction", "right")
         if sequence_direction == "left":
             # Reverse point order for all selected contours
@@ -257,25 +287,29 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             (255, 255, 255), # L6+: White
         ]
 
-        for b in range(batch_size):
+        for b in range(proc_batch):
             # Use the mask for this frame
             m_idx = min(b, transformed_mask.shape[0] - 1)
             f_mask = (transformed_mask[m_idx].cpu().numpy() * 255).astype(np.uint8)
             f_contours, f_hierarchy = cv2.findContours(f_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             
             # Create colored canvas
-            l_map = np.zeros((screen_height, screen_width, 3), dtype=np.uint8)
+            l_map = np.zeros((proc_h, proc_w, 3), dtype=np.uint8)
             
             if f_contours and f_hierarchy is not None:
                 f_hierarchy = f_hierarchy[0]
-                for i, cnt in enumerate(f_contours):
-                    # Find depth
+                # Calculate depths for all contours in this frame
+                depths = np.zeros(len(f_contours), dtype=int)
+                for i in range(len(f_contours)):
                     parent = f_hierarchy[i][3]
                     depth = 0
                     while parent != -1:
                         depth += 1
                         parent = f_hierarchy[parent][3]
-                    
+                    depths[i] = depth
+
+                for i, cnt in enumerate(f_contours):
+                    depth = depths[i]
                     color = layer_colors[min(depth, len(layer_colors)-1)]
                     # Draw contour outline and filled with low alpha (or just outline + label)
                     cv2.drawContours(l_map, [cnt], -1, color, 2)
@@ -291,13 +325,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
                 # Overlay Total Counts
                 max_depth = 0
-                for i in range(len(f_contours)):
-                    parent = f_hierarchy[i][3]
-                    d = 0
-                    while parent != -1:
-                        d += 1
-                        parent = f_hierarchy[parent][3]
-                    max_depth = max(max_depth, d)
+                if f_contours:
+                    max_depth = max(depths)
                 
                 stats_text = f"Contours: {len(f_contours)} | Layers: {max_depth + 1}"
                 cv2.putText(l_map, stats_text, (20, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 4) # Shadow
@@ -311,7 +340,7 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         images, masks, settings, _ = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
-            opt_feature, source_mask=transformed_mask, **kwargs
+            opt_feature, opt_video, transformed_mask, **kwargs
         )
         
         # We return the transformed_mask as the SOURCE_MASK output
