@@ -170,23 +170,26 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
         m_batch, m_height, m_width = mask.shape if len(mask.shape) == 3 else (1, *mask.shape)
         if len(mask.shape) == 2: mask = mask.unsqueeze(0)
 
-        # Stretch mask to final dimensions first
-        if m_width != out_w or m_height != out_h:
-            resized_base_masks = []
-            for b in range(m_batch):
-                m_np = mask[b].cpu().numpy()
-                m_res = cv2.resize(m_np, (out_w, out_h), interpolation=cv2.INTER_LINEAR)
-                resized_base_masks.append(torch.from_numpy(m_res))
-            mask = torch.stack(resized_base_masks)
-            m_width, m_height = out_w, out_h
-
-        # Resizing and Positioning logic
+        # Proportional scaling logic
+        # Instead of stretching the mask to fill the screen, we fit it proportionally
         mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
+
+        aspect_ratio = m_width / m_height
+        screen_aspect = out_w / out_h
         
-        # Actually resize the mask content
-        new_w = int(m_width * mask_scale)
-        new_h = int(m_height * mask_scale)
+        if aspect_ratio > screen_aspect:
+            # Mask is wider than screen aspect
+            fit_w = out_w
+            fit_h = int(out_w / aspect_ratio)
+        else:
+            # Mask is taller than screen aspect
+            fit_h = out_h
+            fit_w = int(out_h * aspect_ratio)
+            
+        # Apply user scaling to the proportional fit dimensions
+        new_w = int(fit_w * mask_scale)
+        new_h = int(fit_h * mask_scale)
         
         transformed_mask = mask # Fallback
         if new_w > 0 and new_h > 0:
@@ -194,14 +197,22 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
             for b in range(m_batch):
                 m_np = mask[b].cpu().numpy()
                 m_resized = cv2.resize(m_np, (new_w, new_h), interpolation=cv2.INTER_AREA)
-                canvas = np.zeros((m_height, m_width), dtype=np.float32)
-                x_offset = (m_width - new_w) // 2
-                y_offset = int(m_height * mask_top_margin)
-                y_end = min(y_offset + new_h, m_height)
-                x_end = min(x_offset + new_w, m_width)
+                
+                # Create canvas at final output dimensions
+                canvas = np.zeros((out_h, out_w), dtype=np.float32)
+                
+                # Center horizontally
+                x_offset = (out_w - new_w) // 2
+                # Use top margin vertically
+                y_offset = int(out_h * mask_top_margin)
+                
+                # Safety clip
+                y_end = min(y_offset + new_h, out_h)
+                x_end = min(x_offset + new_w, out_w)
                 h_to_copy = y_end - y_offset
                 w_to_copy = x_end - x_offset
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
+                
                 resized_masks.append(torch.from_numpy(canvas))
             transformed_mask = torch.stack(resized_masks) if m_batch > 1 else resized_masks[0].unsqueeze(0)
 

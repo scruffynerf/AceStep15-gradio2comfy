@@ -47,31 +47,48 @@ class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
         mask_scale = kwargs.get("mask_scale", 0.60)
         mask_top_margin = kwargs.get("mask_top_margin", 0.05)
         
-        new_w = int(out_w * mask_scale)
-        new_h = int(out_h * mask_scale)
-        
         # Phase 1: Overlay spinner_frames onto background
         phase1_frames = []
+        
+        # Calculate proportional "fit" dimensions based on spinner frame aspect ratio
+        aspect_ratio = s_width / s_height
+        screen_aspect = out_w / out_h
+        
+        if aspect_ratio > screen_aspect:
+            # Spinner is wider than screen aspect
+            fit_w = out_w
+            fit_h = int(out_w / aspect_ratio)
+        else:
+            # Spinner is taller than screen aspect
+            fit_h = out_h
+            fit_w = int(out_h * aspect_ratio)
+            
+        # Apply user scaling to the proportional fit dimensions
+        new_w = int(fit_w * mask_scale)
+        new_h = int(fit_h * mask_scale)
+
         for i in range(spin_num_frames):
             frame_np = spinner_frames[i].cpu().numpy()
             
-            # Step 1: Stretch to target output dimensions (like the visualizer base does)
-            if s_height != out_h or s_width != out_w:
-                frame_np = cv2.resize(frame_np, (out_w, out_h), interpolation=cv2.INTER_AREA)
-            
-            # Step 2: Scale and center on target canvas
+            # Step 1: Scale to the final "new" dimensions directly
+            # This avoids an intermediate "stretch-to-full-screen" step that causes distortion
             if new_w > 0 and new_h > 0:
                 m_resized = cv2.resize(frame_np, (new_w, new_h), interpolation=cv2.INTER_AREA)
                 canvas = np.zeros((out_h, out_w, 3), dtype=np.float32)
+                
+                # Center horizontally
                 x_offset = (out_w - new_w) // 2
+                # Use top margin vertically
                 y_offset = int(out_h * mask_top_margin)
+                
+                # Safety clip and copy
                 y_end = min(y_offset + new_h, out_h)
                 x_end = min(x_offset + new_w, out_w)
                 h_to_copy = y_end - y_offset
                 w_to_copy = x_end - x_offset
                 canvas[y_offset:y_end, x_offset:x_end] = m_resized[:h_to_copy, :w_to_copy]
             else:
-                canvas = frame_np.copy()
+                canvas = np.zeros((out_h, out_w, 3), dtype=np.float32)
                 
             # Delta mask from black background. Black is literally 0,0,0
             # Be slightly lenient: sum across RGB channels > 0.05
