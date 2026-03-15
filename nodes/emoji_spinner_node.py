@@ -100,6 +100,9 @@ class ScromfyEmojiSpinnerNode:
             fit_img = img.copy()
             if fit_img.width != slot_icon_size or fit_img.height != slot_icon_size:
                 fit_img.thumbnail((slot_icon_size, slot_icon_size), Image.LANCZOS)
+            
+            # Ensure data is realized before pasting to prevent race conditions or blank areas
+            fit_img.load()
                 
             x = wheel_centers_x[i] - fit_img.width // 2
             y = viewport_height // 2 - fit_img.height // 2
@@ -171,6 +174,9 @@ class ScromfyEmojiSpinnerNode:
                             slot_icons_cache[icon_key] = full_img.resize((slot_icon_size, slot_icon_size), Image.LANCZOS)
                         else:
                             slot_icons_cache[icon_key] = full_img
+                        
+                        # Realize the image data
+                        slot_icons_cache[icon_key].load()
                     
                     icon_img = slot_icons_cache[icon_key]
                     x = wheel_centers_x[i] - icon_img.width // 2
