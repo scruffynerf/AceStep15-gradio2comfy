@@ -1,64 +1,206 @@
-hip hop
-alternative hip hop
-bboy
-boom bap
-bounce
-conscious hip hop
-desi hip hop
-drill
-drill and bass
-dwn trap
-hardcore hip hop
-hyphy
-pop rap
-k-hop
-lgbtq+ hip hop
-lo-fi beats
-trap
-trap music
-turntablism
-underground hip hop
-viral trap
-wonky
+__CULTURES__ hip hop
+__CULTURES__ hip hop
 __CULTURES__ hip hop
 __CULTURES__ trap
+__CULTURES__ trap
+__CULTURES__ trap
+__PLACES__ grime
+__PLACES__ grime
+__PLACES__ grime
+__PLACES__ hip hop
+__PLACES__ hip hop
 __PLACES__ hip hop
 __PLACES__ trap
-__PLACES__ grime
-arabic hip hop
-bay area hip hop
-bc underground hip hop
-czsk hip hop
-dirty south
-flick hop
-flow
-hip hop
-hip hop galsen
-hip hop quebecois
-hip hop tuga
-hong kong hip hop
-manchester hip hop
-minnesota hip hop
-nederhop
-nerdcore
-nigerian hip hop
-nottingham hip hop
-outer hip hop
-phonk
-scratch
-south hip hop
-uk hip hop
-west hip hop
-zim hip hop
-trap
-trap argentino
-trap chileno
-trap espanol
-trap francais
-trap italiana
-trap latino
-trap mexicano
-trap queen
-trap tuga
-traprun
-vapor trap
+__PLACES__ trap
+__PLACES__ trap
+Alternative hip Hop
+Alternative hip-hop
+Alternative Rap
+Arabic hip Hop
+Avant-Garde
+Bay Area hip Hop
+Bboy
+Bc Underground hip Hop
+Boom bap
+Boom Bap
+Bounce
+Bounce
+Bounce
+Brick City Club
+British hip-hop
+Brooklyn drill
+Chap hop
+Chap Hop
+Chicago Hip Hop
+Chicano rap
+Chopped and screwed
+Chopper
+Christian Hip Hop
+Christian hip-hop
+Christian hip-hop
+Cloud rap
+Comedy hip-hop
+Conscious hip Hop
+Conscious Hip Hop
+Conscious hip-hop
+Country rap
+Country-Rap
+Crunk
+Crunkcore
+Crunkcore
+Cumbia Rap
+Czsk hip Hop
+Desi hip Hop
+Detroit Hip Hop
+Digicore
+Dirty rap
+Dirty South
+Dirty South
+Drill
+Drill and Bass
+Drill music
+Dwn Trap
+East Coast
+East Coast hip-hop
+Electro
+Emo rap
+Experimental hip-hop
+Flick Hop
+Flow
+Frat rap
+Freestyle rap
+Freestyle Rap
+Funk carioca
+Funk ostentação
+G-funk
+G-Funk
+Gangsta rap
+Gangsta Rap
+Golden Age
+Grime
+Grunk
+Hardcore hip Hop
+Hardcore Hip Hop
+Hardcore hip-hop
+Hardcore Rap
+Hip Hop
+Hip Hop
+Hip hop Galsen
+Hip hop Quebecois
+Hip hop Tuga
+Hip house
+Hip Pop
+Hip-Hop
+Hip-hop soul
+Hip-Hop/Rap
+Hipdut
+Hipster hop
+Hong Kong hip Hop
+Horrorcore
+Horrorcore
+Horrorcore
+Hyphy
+Hyphy
+Hyphy
+Industrial Hip Hop
+Industrial hip-hop
+Instrumental Hip Hop
+Instrumental hip-hop
+Jazz rap
+Jazz Rap
+Jerk
+Jerkin'
+Jewish hip-hop
+K-hop
+Krushclub
+Latin hip-hop
+Latin Rap
+Latin trap
+Lgbtq+ hip Hop
+Lo-fi Beats
+Lofi hip-hop
+Low Bap
+Lyrical Hip Hop
+Mafioso rap
+Mafioso Rap
+Manchester hip Hop
+Memphis rap
+Merenrap
+Miami bass
+Midwest Hip Hop
+Minnesota hip Hop
+Motswako
+Mumble rap
+Nederhop
+Neo soul
+Nerdcore
+Nerdcore
+Nerdcore
+New jack swing
+New Jack Swing
+New Jersey Hip Hop
+New School Hip Hop
+Nigerian hip Hop
+Nottingham hip Hop
+Old School Rap
+Outer hip Hop
+Phonk
+Phonk
+Plugg
+Pluggnb
+Political hip-hop
+Pop rap
+Pop Rap
+Progressive rap
+Psychedelic rap
+Punk rap
+Rage
+Ragga hip-hop
+Rap
+Rap metal
+Rap opera
+Rap rock
+Rapcore
+Religious hip-hop
+Road rap
+Scratch
+Sigilkore
+Slab music
+Snap music
+South hip Hop
+Southern hip-hop
+St. Louis Hip Hop
+Trap
+Trap
+Trap
+Trap Argentino
+Trap Chileno
+Trap Espanol
+Trap Francais
+Trap Italiana
+Trap Latino
+Trap metal
+Trap Mexicano
+Trap music
+Trap Music
+Trap Queen
+Trap Tuga
+Traprun
+Tread rap
+Trip hop
+Turntablism
+Turntablism
+Turntablism
+Twin Cities Hip Hop
+UK drill
+Uk hip Hop
+Underground hip Hop
+Underground hip-hop
+Underground Rap
+Vapor Trap
+Viral Trap
+West Coast hip-hop
+West Coast Rap
+West hip Hop
+Wonky
+Zim hip Hop

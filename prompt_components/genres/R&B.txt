@@ -1,49 +1,101 @@
-alternative r&b
-blues-rock
-brit funk
-chillhop
-contemporary r&b
-country blues
-disco soul
-electric blues
-g funk
-go-go
-gospel r&b
-harmonica blues
-instrumental funk
-jump blues
-motown
-neo r&b
-neo soul
-new jack smooth
-northern soul
-p funk
-pagode
-philly soul
-pop r&b
+Alternative R&B
+Alternative R&B
+Blue-eyed soul
+Blues
+Blues Band
+Blues Latinoamericano
+Blues-rock
+Boogie
+Boogie-woogie
+Brit Funk
+British rhythm and blues
+British soul
+Brown-eyed soul
+Carolina Beach Music
+Chillhop
+Christian R&B
+Cinematic soul
+Contemporary R&B
+Contemporary R&B
+Contemporary R&B
+Country Blues
+Deep funk
+Disco
+Disco
+Disco Soul
+Doo Wop
+Doo-wop
+Electric Blues
+Freestyle
+Funk
+Funk
+G Funk
+Garage Punk Blues
+Go-go
+Go-go
+Gospel Blues
+Gospel music
+Gospel R&B
+Harmonica Blues
+Hip-hop soul
+Instrumental Funk
+Jamgrass
+Jump Blues
+Latin R&B
+Malian Blues
+Minneapolis Sound
+Modern Soul
+Motown
+Motown
+Neo R&B
+Neo soul
+Neo Soul
+Neo-bluegrass
+Neo-Soul
+New Jack Smooth
+New jack swing
+New Orleans rhythm and blues
+Northern soul
+Northern Soul
+Northern Soul
+P Funk
+Pagode
+Philly Soul
+Pop R&B
 Pop Soul
-quiet storm
+Post-disco
+Progressive soul
+Psychedelic funk
+Psychedelic soul
+Psychedelic Soul
+Quiet storm
+Quiet Storm
+Quiet Storm
 R&B
-r&b en espanol
-rare groove
-retro soul
-rhythm and blues
-smooth soul
-smooth urban r&b
-soul
-soul christmas
-soul flow
+R&B en Espanol
+R&B/Soul
+Rare Groove
+Retro Soul
+Retro-soul
+Rhythm and blues
+Rhythm and Blues
+Rhythm and Boogie
+RnBass
+Smooth soul
+Smooth Soul
+Smooth Urban R&B
+Soul
+Soul
+Soul
+Soul Blues
+Soul Christmas
+Soul Flow
 Soul Pop
-southern soul
-southern soul blues
-trap soul
-jamgrass
-neo-bluegrass
-blues band
-blues latinoamericano
-boogie-woogie
-garage punk blues
-gospel blues
-malian blues
-rhythm and boogie
-blues
+Southern gospel
+Southern soul
+Southern Soul
+Southern Soul
+Southern Soul Blues
+Synth-funk
+Trap Soul
+Urban contemporary gospel

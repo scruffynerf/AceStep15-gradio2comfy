@@ -1,33 +1,114 @@
 __CULTURES__ punk
+__CULTURES__ punk
+__CULTURES__ punk
+__CULTURES__ punk
 __PLACES__ punk
-anarcho-punk
-danspunk
-diy punk
-egg punk
-fast punk
-folk punk
-garage punk
-hardcore punk
-horror punk
-metallic hardcore
-minneapolis punk
-new jersey punk
-noise punk
-oi
-orgcore
-portland punk
-power-pop punk
-protopunk
-punk
-punk blues
-punk christmas
-punk colombiano
-punk urbano
-queercore
-ska revival
-skate punk
-slash punk
-south punk
-street punk
-synth punk
-thrash core
+__PLACES__ punk
+__PLACES__ punk
+__PLACES__ punk
+Afro-punk
+Anarcho Punk
+Anarcho-punk
+Art Punk
+Bardcore
+Beatdown Hardcore
+Celtic Punk
+Christian Hardcore
+Christian Punk
+Cleveland Punk
+Cowpunk
+Cowpunk
+Crabcore
+Crunkcore
+Crust Punk
+Crust Punk
+Crustgrind
+Cyberpunk
+D-beat
+Dance-punk
+Dance-punk
+Danspunk
+Deathrock
+Digital Hardcore
+Diy Punk
+Dreampunk
+Easycore
+Egg Punk
+Egg Punk
+Electrogrind
+Electronicore
+Electropunk
+Emo
+Emo Pop
+Fast Punk
+Folk Punk
+Folk Punk
+Garage Punk
+Garage Punk
+German Punk
+Glam Punk
+Goregrind
+Gothic Punk
+Grindcore
+Gypsy Punk
+Hardcore Punk
+Hardcore Punk
+Horror Punk
+Horror Punk
+Krishnacore
+Latino Punk
+Melodic Hardcore
+Metallic Hardcore
+Minneapolis Punk
+Nazi Punk
+Neon Pop
+New Jersey Punk
+Noise Punk
+Noisecore
+Noisegrind
+Oi
+Oi!
+Orgcore
+Pop Punk
+Pornogrind
+Portland Punk
+Positive Hardcore
+Post-hardcore
+Post-punk
+Post-punk Revival
+Power-pop Punk
+Powerviolence
+Proto-punk
+Protopunk
+Psychobilly
+Punk
+Punk Blues
+Punk Blues
+Punk Christmas
+Punk Colombiano
+Punk Funk
+Punk Jazz
+Punk Pathetique
+Punk Rap
+Punk Urbano
+Queercore
+Queercore
+Reggae Punk
+Riot Grrrl
+Scottish Gaelic Punk
+Screamo
+Ska Punk
+Ska Revival
+Skate Punk
+Skate Punk
+Slash Punk
+South Punk
+Street Punk
+Street Punk
+Surf Punk
+Synth Punk
+Synth Punk
+Taqwacore
+Thrash Core
+Thrashcore
+Trallpunk

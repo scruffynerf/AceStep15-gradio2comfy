@@ -1,26 +1,48 @@
 __PLACES__ reggae
-belly dance
-cumbia
-cumbia pop
+__PLACES__ reggae
+__PLACES__ reggae
+__PLACES__ reggae
+2 Tone
+2-Tone
+Belly Dance
+Cumbia
+Cumbia Pop
+Dancehall
 Dancehall Pop
-dub reggae
-east coast reggae
-euroska
-gospel reggae
-highlife
-jawaiian
-lovers rock
-pacific reggae
-ragga
-reggae
-reggae fusion
-reggae mexicano
-reggae rock
-reggaeton
-reggaeton chileno
-rock steady
-roots reggae
-skinhead reggae
-soca
-trinidadian reggae
-west coast reggae
+Dub
+Dub
+Dub Reggae
+East Coast Reggae
+Euroska
+Gospel Reggae
+Highlife
+Jawaiian
+Lovers Rock
+Lovers Rock
+Pacific Reggae
+Ragga
+Ragga
+Raggamuffin
+Reggae
+Reggae
+Reggae 110
+Reggae Bultrón
+Reggae Dancehall
+Reggae en Español
+Reggae Fusion
+Reggae Fusion
+Reggae Mexicano
+Reggae Rock
+Reggaeton
+Reggaeton Chileno
+Rock Steady
+Rocksteady
+Romantic Flow
+Roots Reggae
+Roots Reggae
+Ska
+Skinhead Reggae
+Soca
+Spanish Reggae
+Trinidadian Reggae
+West Coast Reggae

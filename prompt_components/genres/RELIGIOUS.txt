@@ -1,57 +1,109 @@
-adventista
-bahai
-chant religieux
-christelijk
-coptic
-corridos cristianos
-dansk lovsang
-electronica cristiana
-ilahiler
-islamic recitation
-judaica
-kirtan
-lds youth
-liturgical
-louvor
-mantra
-mariachi cristiano
-messianic praise
-mezmur
-norsk lovsang
-papuri
-psalmen
-rosary
-salsa cristiana
-tagalog worship
-tamil worship
-uwielbienie
-vbs
-world worship
-baptist gospel
-family gospel
-haitian gospel
-naija worship
-south gospel
-southern gospel
-swahili gospel
-zim gospel
-adoracao
-alternative ccm
-ambient worship
-american choir
-anglican liturgy
-anthem worship
-ccm
-children's christmas
+Adoracao
+Adventista
+Alternative CCM
+Ambient Worship
+American Choir
+Anglican Liturgy
+Anthem Worship
+Bahai
+Baptist Gospel
+Buddhist music
+CCM
+CCM
+Chant Religieux
+Chanukah
+Children's Christmas
+Christelijk
 Christian
-contemporary gospel
+Christian & Gospel
+Christian alternative rock
+Christian Metal
+Christian music
+Christian Pop
+Christian Rap
+Christian Rock
+Christian Rock
+Christmas
+Christmas Children’s
+Christmas Classic
+Christmas Classical
+Christmas Comedy
+Christmas Jazz
+Christmas Modern
+Christmas Pop
+Christmas R&B
+Christmas Religious
+Christmas Rock
+Church music
+Classic Christian
+Contemporary Christian music
+Contemporary Gospel
+Contemporary Gospel
 Contemporary Music
-gospel
-gospel singers
-heavy christmas
-lds
-music
-muzica crestina
-praise
-roots worship
-uplift
+Contemporary worship music
+Coptic
+Corridos Cristianos
+Country Gospel
+Dansk Lovsang
+Easter
+Electronica Cristiana
+Family Gospel
+Gospel
+Gospel
+Gospel
+Gospel Singers
+Gregorian chant
+Haitian Gospel
+Halloween
+Heavy Christmas
+Holiday
+Holiday
+Hymns
+Ilahiler
+Inspirational – Christian & Gospel
+Islamic music
+Islamic Recitation
+Jesus Music
+Judaica
+Kirtan
+Lds
+LDS Youth
+Liturgical
+Liturgical music
+Louvor
+Mantra
+Mariachi Cristiano
+Messianic Praise
+Mezmur
+Modern pagan music
+Music of ancient Greece
+Muzica Crestina
+Naija Worship
+New-age music
+Norsk Lovsang
+Papuri
+Praise
+Praise & Worship
+Psalmen
+Qawwali
+Roots Worship
+Rosary
+Salsa Cristiana
+Shamanic music
+Sikh music
+South Gospel
+Southern Gospel
+Southern Gospel
+Spirituals
+Swahili Gospel
+Tagalog Worship
+Tamil Worship
+Thanksgiving
+Traditional Gospel
+Uplift
+Uwielbienie
+VBS
+World Worship
+Worship
+Yarsani
+Zim Gospel

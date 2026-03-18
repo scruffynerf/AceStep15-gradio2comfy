@@ -1,254 +1,859 @@
-16-bit
-2-step
-8-bit
-acousmatic
-aggrotech
-algorave
-ambient dub techno
-ambient fusion
-ambient industrial
-ambient psychill
-atmosphere
-aussietronica
+16-Bit
+2-Step
+2-Step
+2-Step
+2-Step Garage
+4-Beat
+4×4
+8-Bit
+8Bit – aka 8-bit, Bitpop and Chiptune
+Acid Breaks
+Acid Breaks
+Acid House
+Acid House
+Acid Jazz
+Acid Techno
+Acid Techno
+Acid Trance
+Acid Trance
+Acid-house
+Acousmatic
+Acousmatic Music
+Acousmatic Music
+African Electronic Dance Music
+Afro House
+Afro Tech
+Afro Trap
+Afro/Cosmic Music
+Afrobeats
+Afroswing
+Aggrotech
+Aggrotech
+Algorave
+Algorave
+Alternative Dance
+Alternative Dance
+Alternative Dance
+Alternative Hip-hop
+Alternative r&B
+Amapiano
+Ambient
+Ambient
+Ambient Dub
+Ambient Dub
+Ambient dub Techno
+Ambient Fusion
+Ambient House
+Ambient House
+Ambient Industrial
+Ambient Industrial
+Ambient Psychill
+Ambient Techno
+Ambient Techno
+Asian Underground
+Asian Underground
+Atmosphere
+Atmospheric Drum and Bass
+Aussietronica
+Azonto
+Baggy
+Baggy (Madchester)
+Balearic
 Balearic Beat
-ballroom
-bass house
-bass music
-bass trip
-basshall
-bassline
-batida
-beat
-berlin techno
-big beat
-black noise
-bouncy house
-breakbeat
-breakcore
-broken beat
-brostep
-bubble trance
-bubblegum bass
-catstep
-cedm
-chill
-chill beats
-chill groove
-chill guitar
-chill lounge
-chill-out
-chill-out trance
-chillstep
-chillsynth
-chillwave
-chip hop
-chiptune
-cinematic dubstep
-circuit
-cologne electronic
-cosmic uplifting trance
-coverchill
-covertrance
-dancehall
-darkpsy
-deconstructed club
-demoscene
-digital hardcore
-disco
-diva house
-dnb
-doomcore
-downshift
-downtempo
-downtempo fusion
-dreamo
-drift
-drone
-drum and bass
-drumfunk
-dub
-dub techno
-dubstep
-dubstep product
-dubsteppe
-dungeon synth
-dusseldorf electronic
-ebm
+Balearic Beat
+Balearic Beat
+Balearic Trance
+Ballroom
+Ballroom
+Baltimore Club
+Baltimore Club
+Bass House
+Bass House
+Bass Music
+Bass Music
+Bass Trap
+Bass Trip
+Basshall
+Bassline
+Bassline
+Bassline
+Bassline
+Batida
+Beat
+Berlin School
+Berlin School
+Berlin Techno
+Big Beat
+Big Beat
+Big Beat
+Big Room
+Big Room House
+Birmingham Sound
+Bitpop
+Bitpop
+Black MIDI
+Black Noise
+Bleep Techno
+Blog House
+Bmore
+Boogie
+Bouncy House
+Bouncy House
+Bouncy Techno
+Bouncy Techno
+Brazilian Bass
+Brazilian Phonk
+Breakbeat
+Breakbeat
+Breakbeat / Breakstep
+Breakbeat Hardcore
+Breakbeat Hardcore
+Breakcore
+Breakcore
+Breakcore
+Breakcore
+Breakstep
+Broken Beat
+Broken Beat
+Broken Beat
+Brooklyn Drill
+Brostep
+Brostep
+Brostep
+Bubble Trance
+Bubblegum Bass
+Bubblegum Dance
+Bubblegum Dance
+Budots
+Catstep
+Cedm
+Changa Tuki
+Chicago Hard House
+Chicago House
+Chicago House
+Chill
+Chill Beats
+Chill Groove
+Chill Guitar
+Chill Lounge
+Chill Out
+Chill-out
+Chill-out
+Chill-out Trance
+Chillstep
+Chillstep
+Chillsynth
+Chillwave
+Chillwave
+Chillwave
+Chillwave
+Chip Hop
+Chiptune
+Chiptune
+Chiptune
+Cinematic Dubstep
+Circuit
+City Pop
+Classic Trance
+Cloud Rap
+Club / Club Dance
+Cold Wave
+Cologne Electronic
+Complextro
+Computer Music
+Contemporary r&B
+Cosmic Uplifting Trance
+Coupé-décalé
+Coverchill
+Covertrance
+Crunk
+Crunk
+Crunk
+Crunkcore
+Cyber Metal
+Dance
+Dance
+Dance Rock
+Dance-pop
+Dance-punk
+Dance-punk
+Dance-punk
+Dance-rock
+Dance-rock
+Dancehall
+Dancehall Pop
+Danger Music
+Dark Ambient
+Dark Ambient
+Dark Electro
+Dark Psy
+Dark Psytrance
+Dark Psytrance
+Dark Wave
+Dark Wave
+Darkcore
+Darkcore
+Darkpsy
+Darkside Jungle
+Darkstep
+Darkstep
+Darksynth
+Death Industrial
+Deconstructed Club
+Deconstructed Club
+Deep House
+Deep House
+Deep House
+Deep House
+Demoscene
+Denpa Music
+Detroit Techno
+Detroit Techno
+Digital Hardcore
+Digital Hardcore
+Digital Hardcore
+Disco
+Disco Fusion Genres
+Disco House
+Disco House
+Disco Polo
+Diva House
+Diva House
+Diva House
+Dnb
+Doomcore
+Doomcore
+Downshift
+Downtempo
+Downtempo
+Downtempo
+Downtempo Fusion
+Dream Trance
+Dream Trance
+Dreamo
+Dreampunk
+Drift
+Drift Phonk
+Drill
+Drill 'n' Bass
+Drone
+Drone
+Drone Music
+Drum & Bass
+Drum and Bass
+Drum and Bass
+Drumfunk
+Drumfunk
+Drumfunk
+Drumstep
+Drumstep
+Dub
+Dub
+Dub Music
+Dub Poetry
+Dub Techno
+Dub Techno
+Dubstep
+Dubstep
+Dubstep
+Dubstep Product
+Dubsteppe
+Dubstyle
+Dubstyle
+Dubtronica
+Dungeon Synth
+Dungeon Synth
+Dusseldorf Electronic
+Dutch House
+Dutch House
+Early Hardcore
+EBM
 EDM
-electra
-electro
-electro bailando
-electro dub
-electro swing
-electro trash
-electro-industrial
-electro-pop
-electroacoustic
-electroclash
-electrofox
-electroimprovisation
-electronic
-electronic trap
-electronica
-electronicore
-electropunk
-entehno
-ethereal wave
-euro hi-nrg
-eurobeat
-eurodance
-filthstep
-folktronica
-fourth world
-frankfurt electronic
-freakbeat
-freestyle
-funky
-future ambient
-future funk
-future garage
-futurepop
-gabba
-garage
-ghettotech
-ghoststep
-glitch
-glitch beats
-glitch hop
-glitter trance
-grime
-grimewave
-gymcore
-hands up
-happy hardcore
-hard bass
-hard chime
-hard techno
-hard trance
-hardcore breaks
-hardcore techno
-hardstyle
-hardtechno
-hardvapour
-hauntology
-hi-nrg
-hi-tech
-horror synth
-house
-hz
-illbient
-indietronica
-industrial techno
-instrumental grime
-italo beats
-italo dance
-jazztronica
-jersey club
-jump up
-jumpstyle
-jumptek
-jungle
-kawaii future bass
-latintronica
-leipzig electronic
-liquid
-liquid bass
-liquid drum and bass
-liquid funk
-lo-fi
-makina
-mandible
-melbourne bounce
-melbourne bounce international
-minimal
-modular synth
-moog
-munich electronic
-neurostep
-new beat
-new rave
-new romantic
-new touch
-new wave
-nitzhonot
-no wave
-nu age
-nu disco
-nu electro
-nu skool breaks
-organic electronic
-otacore
-outsider house
-plunder
-ragga jungle
-rawstyle
-re:techno
-remix
-retro electro
-riddim
-ringtone
-rominimal
-ruta destroy
-sambass
-schranz
-scorecore
-skweee
-small room
-sound art
-south electronic
-speedcore
-spytrack
-substep
-synth
-synthwave
-techno
-tekno
-telepop
-terrorcore
-tijuana electronic
-tracestep
-trance
-trance house
-tribal house
-trip hop
-trival
-uplifting trance
-vapor house
-vapor twitch
-vaporwave
-video game music
-vocal house
-vocal trance
-warm drone
-witch house
-zapstep
-zolo
-alternative dance
-balearic
-big room
-bmore
-bubblegum dance
-dance
-dance-punk
-disco house
-electro house
-euro house
-fidget house
-filter house
-float house
-fluxwork
-funky tech house
-groove house
-kids dance party
-pop edm
-tech house
-tropical house
-bass trap
-dance rock
-strut
-funk house
-future house
-house argentino
-italo house
-lo-fi house
-lounge house
+EDM
+Electra
+Electro
+Electro
+Electro
+Electro Backbeat
+Electro Bailando
+Electro Dub
+Electro Hop
+Electro House
+Electro House
+Electro House
+Electro House
+Electro Swing
+Electro Swing
+Electro Trash
+Electro-disco
+Electro-grime
+Electro-industrial
+Electro-industrial
+Electro-pop
+Electro-swing
+Electroacoustic
+Electroacoustic
+Electroacoustic Improvisation
+Electroacoustic Improvisation
+Electroacoustic Music
+Electroclash
+Electroclash
+Electroclash
+Electrofox
+Electrogrind
+Electroimprovisation
+Electronic
+Electronic
+Electronic art Music
+Electronic Body Music (EBM)
+Electronic Dance Music
+Electronic Dance Music
+Electronic Pop
+Electronic Rock
+Electronic Rock
+Electronic Trap
+Electronica
+Electronica
+Electronica
+Electronicore
+Electronicore
+Electronicore
+Electropop
+Electropop
+Electropunk
+Electropunk
+Electroswing
+Emo Rap
+Entehno
+Ethereal Wave
+Ethereal Wave
+Ethereal Wave
+Ethnic Electronica
+Ethnic Electronica
+Euphoric Frenchcore
+Euphoric Hardstyle
+Euro Hi-nrg
+Euro House
+Eurobeat
+Eurobeat
+Eurobeat
+Eurodance
+Eurodance
+Eurodance
+Eurodisco
+Eurohouse
+Eurotrance
+Exercise
+Experimental Electronic
+Extratone
+Fidget House
+Fidget House
+Field Recording
+Filter House
+Filthstep
+Flashcore
+Float House
+Florida Breaks
+Florida Breaks
+Fluxwork
+FM Synthesis
+Folktronica
+Folktronica
+Folktronica
+Footwork
+Fourth World
+Frankfurt Electronic
+Freakbeat
+Free Tekno
+Free Tekno
+Freestyle
+Freestyle
+Freestyle House
+Freestyle Music
+French House
+French House
+Frenchcore
+Full On
+Full-on
+Funk Carioca
+Funk Fusion Genres
+Funk House
+Funk Melody
+Funk Ostentação
+Funkstep
+Funktronica
+Funky
+Funky House
+Funky House
+Funky Tech House
+Future Ambient
+Future Bass
+Future Funk
+Future Funk
+Future Garage
+Future Garage
+Future Garage
+Future House
+Future House
+Future Rave
+Futurepop
+Futurepop
+Gabba
+Gabber
+Gabber
+Game Boy
+Garage
+Garage
+Garage House
+Ghetto House
+Ghetto House
+Ghettotech
+Ghettotech
+Ghettotech
+Ghoststep
+Glitch
+Glitch
+Glitch
+Glitch Beats
+Glitch Hop
+Glitch Hop
+Glitch Hop
+Glitch Pop
+Glitter Trance
+Goa Trance
+Goa Trance
+Gqom
+Grime
+Grime
+Grime
+Grime
+Grimewave
+Grindie
+Groove House
+Guaracha (EDM)
+Gymcore
+Hands Up
+Hands Up
+Happy Hardcore
+Happy Hardcore
+Happy Hardcore
+Hard Bass
+Hard Chime
+Hard Dance
+Hard Dance
+Hard Nrg
+Hard NRG
+Hard Techno
+Hard Techno
+Hard Trance
+Hard Trance
+Hard Trance
+Hardbag
+Hardbag
+Hardbass
+Hardcore
+Hardcore
+Hardcore Breaks
+Hardcore Breaks
+Hardcore Techno
+Hardstep
+Hardstep
+Hardstyle
+Hardstyle
+Hardstyle
+Hardstyle
+Hardtechno
+Hardvapour
+Hardvapour
+Hardwave
+Harsh Noise
+Harsh Noise Wall
+Hauntology
+Hauntology
+Hi-nrg
+Hi-nrg
+Hi-NRG
+Hi-NRG / Eurodance
+Hi-tech
+Hip House
+Hip House
+Hip-hop Fusion Genres
+Hipster Hop
+Horror Synth
+Horrorcore
+House
+House
+House Argentino
+House Music
+Hyperpop
+Hypnagogic Pop
+Hyponagogic
+Hz
+Idm
+IDM/Experimental
+Illbient
+Illbient
+Illbient
+Indietronica
+Indietronica
+Indietronica
+Industrial
+Industrial and Post-industrial
+Industrial Hardcore
+Industrial Hip-hop
+Industrial Metal
+Industrial Rock
+Industrial Techno
+Industrial Techno
+Instrumental Grime
+Instrumental Hip-hop
+Intelligent Dance Music (IDM)
+Intelligent Drum and Bass
+Intelligent Drum and Bass
+Isolationism
+Isolationism
+Italo Beats
+Italo Dance
+Italo Dance
+Italo Dance
+Italo Disco
+Italo House
+Italo House
+Italo House
+J-core
+Jackin House
+Jackin House
+Japanoise
+Jazz House
+Jazzstep
+Jazztronica
+Jerk
+Jersey Club
+Jersey Club
+Juke House
+Jump Up
+Jump-up
+Jump-up
+Jumpstyle
+Jumpstyle
+Jumpstyle
+Jumptek
+Jungle
+Jungle
+Jungle / Drum’n’Bass
+Jungle Terror
+Jungletek
+Kawaii Future Bass
+Kawaii Future Bass
+Kidandali
+Kids Dance Party
+Kosmische Musik
+Krautrock
+Kuduro
+Kwaito
+Laptronica
+Laptronica
+Latin House
+Latin House
+Latin Trap
+Latintronica
+Leipzig Electronic
+Lento Violento
+Liquid
+Liquid Bass
+Liquid Drum and Bass
+Liquid Dub
+Liquid Funk
+Liquid Funk
+Liquid Funk
+Live Coding
+Live Electronic (Livetronica)
+Live Electronics
+Lo-fi
+Lo-fi House
+Lo-fi House
+Lofi Hip-hop
+Lounge House
+Lowercase
+Lowercase
+Madchester
+Mahraganat
+Mainstream Hardcore
+Makina
+Makina
+Mákina
+Mallsoft
+Mallsoft
+Mandible
+Manila Sound
+Martial Industrial
+Melbourne Bounce
+Melbourne Bounce
+Melbourne Bounce International
+Melodic House
+Merenhouse
+Miami Bass
+Microhouse
+Microsound
+Midtempo Bass
+Minimal
+Minimal
+Minimal House
+Minimal Psytrance
+Minimal Techno
+Minimal Techno
+Minimal Wave
+Modular Synth
+Moog
+Moombahcore
+Moombahsoul
+Moombahton
+Moombahton
+Mumble Rap
+Munich Electronic
+Musique Concrète
+Neo Soul
+Neoclassical Dark Wave
+Neoclassical New-age
+Neue Deutsche Härte
+Neue Deutsche Todeskunst
+Neue Deutsche Welle
+Neurofunk
+Neurofunk
+Neurostep
+New Beat
+New Beat
+New Beat
+New Jack Swing
+New Jersey Sound
+New Rave
+New Rave
+New Rave
+New Romantic
+New Romantic
+New Touch
+New Wave
+New Wave
+New-age
+Nintendocore
+Nintendocore
+Nitzhonot
+Nitzhonot
+No Wave
+Noise Music
+Nortec
+Nortec
+Nu Age
+Nu Disco
+Nu Electro
+Nu Jazz
+Nu Jazz (Jazztronica)
+Nu Skool Breaks
+Nu Skool Breaks
+Nu Skool Breaks
+Nu-disco
+Nu-gaze
+Nueva Iberica
+Oldschool Jungle:
+Onkyokei
+Orchestral Uplifting
+Organic Electronic
+Otacore
+Outsider House
+Outsider House
+Philly Club
+Phonk
+Plugg
+Plunder
+Plunderphonics
+Pop Edm
+Pop Kreatif
+Post-disco
+Post-dubstep
+Post-rock
+Power Electronics
+Power Noise
+Prog. Trance
+Progressive Breaks
+Progressive Electronic
+Progressive House
+Progressive House
+Progressive Psytrance
+Progressive Trance
+Proibidão
+Protovapor
+Psy-trance
+Psybient
+Psybreaks
+Psychedelic Breakbeat
+Psychedelic Trance
+Psydub
+Psyprog
+Pumping House
+R&b and Soul Fusion Genres
+Rabòday
+Ragga Jungle
+Ragga Jungle
+Ragga Jungle
+Raggacore
+Raggacore
+Raggatek
+Rara Tech
+Rasteirinha
+Rave Music
+Rawstyle
+Rawstyle
+Re:Techno
+Reductionism
+Reggaestep
+Regstep
+Remix
+Retro Electro
+Riddim
+Riddim
+Ringtone
+Rominimal
+Russ Music
+Ruta Destroy
+Sambass
+Sambass
+Sambass
+Sampledelia
+Schaffel
+Schranz
+Schranz
+Scorecore
+Scouse House
+Sequencer Music
+Shamstep
+Shangaan Electro
+Skweee
+Skweee
+Skweee
+Slap House
+Small Room
+Snap Music
+Sophisti-pop
+Soulful House
+Sound Art
+Sound Art
+Soundscape
+Soundscape Composition
+South Electronic
+Sovietwave
+Space Disco
+Space Music
+Space Rock
+Space Rock
+Spacesynth
+Speed Garage
+Speed Garage
+Speedcore
+Speedcore
+Speedcore
+Speedcore
+Splittercore
+Spytrack
+Stadium House
+Strut
+Substep
+Suomisaundi
+Suomisaundi
+Swing House
+Synth
+Synth-funk
+Synth-metal
+Synth-pop
+Synth-punk
+Synthcore
+Synthpop
+Synthpunk
+Synthwave
+Synthwave
+Tape Music
+Tech House
+Tech House
+Tech House
+Tech House
+Tech Trance
+Tech Trance
+Techno
+Techno
+Techno
+Techno-dnb
+Technopop
+Techstep
+Techstep
+Tecno Brega
+Tecnocumbia
+Tekno
+Telepop
+Terrorcore
+Terrorcore
+Tijuana Electronic
+Toytown Techno
+Toytown Techno
+Tracestep
+Trance
+Trance
+Trance House
+Trance Music
+Trap
+Trap
+Trap (EDM)
+Trapstyle
+Tribal Guarachero
+Tribal House
+Tribal House
+Tribal House
+Trip Hop
+Trip Hop
+Trip Hop
+Trip Hop
+Trip Rock
+Trival
+Tropical House
+Tropical House
+Tropical House
+Trouse
+Turbofolk
+UK Bass
+UK Drill
+UK Funky
+UK Garage
+UK Garage
+UK Hard House
+UK Hard House
+Uk Hardcore
+UK Hardcore
+UK Trap
+Uplifting Trance
+Uplifting Trance
+Uplifting Trance
+US Garage
+Vapor House
+Vapor Twitch
+Vaporhop
+Vaportrap
+Vaporwave
+Vaporwave
+Vaporwave
+Vektroid
+Video Game Music
+Video Game Music
+Video Game Music
+Vocal House
+Vocal House
+Vocal Trance
+Vocal Trance
+Vocal Trance
+Warm Drone
+Wave
+Witch House
+Witch House
+Wonky
+Wonky Pop
+Worldbeat
+Yorkshire Bleeps and Bass
+Zapstep
+Zolo

@@ -1,61 +1,94 @@
-american classical
-american contemporary classical
-american romanticism
-american st century classical
-austro-modernism
-ballet class
-baroque
-baroque ensemble
-baroque violin
-bohemian baroque
-brass
-brass ensemble
-byzantine
-cello
-chamber choir
-chamber ensemble
-chamber orchestra
-choral
-classical
-contemporary classical
-early classical
-early music
-early romantic era
-english baroque
-english renaissance
-era
-flute
-galante era
-hindustani classical
-historic classical performance
-historic orchestral performance
-historic piano performance
-historical keyboard
-historically informed performance
-late romantic era
-marcha funebre
-mezzo-soprano
-monastic
-neoclassical
-new zealand classical
-opera
-operetta
-orchestra
-orchestral performance
-pianissimo
-piano cover
-radio symphony
-renaissance
-romantic
-romanticism
-serialism
-sitar
-soprano
-st century classical
-tenor
-violin
-bass
-harp
-piano
-chanson
-performance
+American Classical
+American Contemporary Classical
+American Romanticism
+American 21st Century Classical
+Austro-modernism
+Avant-garde
+Ballet
+Ballet Class
+Baroque
+Baroque
+Baroque Ensemble
+Baroque Violin
+Bass
+Bohemian Baroque
+Brass
+Brass Ensemble
+Byzantine
+Cantata
+Cello
+Chamber Choir
+Chamber Ensemble
+Chamber Music
+Chamber Orchestra
+Chanson
+Chant
+Choral
+Choral
+Classical
+Classical Crossover
+Concerto
+Concerto Grosso
+Contemporary Classical
+Contemporary Classical
+Early Classical
+Early Music
+Early Music
+Early Romantic Era
+English Baroque
+English Renaissance
+Era
+Expressionist
+Flute
+Galante Era
+Harp
+High Classical
+Hindustani Classical
+Historic Classical Performance
+Historic Orchestral Performance
+Historic Piano Performance
+Historical Keyboard
+Historically Informed Performance
+Impressionist
+Late Romantic Era
+Marcha Funebre
+Mass Requiem
+Medieval
+Mezzo-soprano
+Minimalism
+Modern Classical
+Modern Composition
+Monastic
+Neoclassical
+New Zealand Classical
+Opera
+Opera
+Operetta
+Oratorio
+Orchestra
+Orchestral
+Orchestral Performance
+Organum
+Performance
+Pianissimo
+Piano
+Piano Cover
+Radio Symphony
+Renaissance
+Renaissance
+Romantic
+Romantic (Early Period)
+Romantic (Later Period)
+Romanticism
+Serialism
+Sitar
+Sonata
+Soprano
+21st Century Classical
+String Quartet
+Symphonic
+Symphony
+Tenor
+Twelve-tone
+Violin
+Wedding Music

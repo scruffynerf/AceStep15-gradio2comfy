@@ -1,120 +1,326 @@
-active rock
-album rock
-american heavy psych
-american rock
-anadolu rock
-anime rock
-atmospheric post rock
-atmospheric rock
-basque rock
-black thrash
-blues-rock guitar
-bolivian rock
-brutal deathcore
-c86
-cambodian rock
-canterbury scene
-chaotic hardcore
-cinematic rock
-comedy rock
-corrosion
-cowpunk
-crack rock steady
-crust punk
-dreamgaze
-easycore
-electronic rock
-emo rock
-future rock
-galician rock
-garage psych
-garage rock
-geek rock
-glam rock
-gypsy punk
-hard glam
-hard rock
-hard stoner rock
-heartland rock
-heavy gothic rock
-idol rock
-indorock
-industrial rock
-instrumental math rock
-instrumental post rock
-instrumental stoner rock
-j-rock
-jam band
-jangle rock
-k-rock
-kindie rock
-kiwi rock
-kraut rock
-krautrock
-lo-fi rock
-math rock
-math rock latinoamericano
-medieval rock
-minneapolis sound
-mod revival
-neo-industrial rock
-neo-progressive
-neo-rockabilly
-neue deutsche harte
-nu gaze
-nwocr
-ostrock
-paraguayan rock
-permanent wave
-piano rock
-pittsburgh rock
-post rock
-power blues-rock
-preverb
-prog
-psych
-pub rock
-punk rock
-riot grrrl
-rock alternatif francais
-rock alternativo brasileiro
-rock catala
-rock catracho
-rock chapin
-rock cristiano
-rock en asturiano
-rock en espanol
-rock gaucho
-rock gospel brasileiro
-rock italiano
-rock kapak
-rock latinoamericano
-rock nacional
-rock nacional brasileiro
-rock noise
-rock quebecois
-rock tico
-rock urbano mexicano
-rock viet
-rock-and-roll
-rockabilly en espanol
-roots rock
-screamo punk
-serbian alternative rock
-shred
-skinhead oi
-sleaze rock
-soft rock
-south rock
-southeast asian rock
-southern rock
-space rock
-stoner rock
-suomi rock
-surf music
-surf rock
-thrash
-trash rock
-venezuelan rock
-wrock
-yacht rock
+Acid rock
+Acid Rock
+Active rock
+Active Rock
+Adult album alternative
+Adult Alternative
+Adult-Oriented Rock
+Afro Punk
+Afro rock
+Album oriented rock
+Album Rock
+Alternative dance
+Alternative rock
+Alternative Rock
+American Heavy Psych
+American rock
+American Rock
+American Traditional Rock
+Anadolu Rock
+Anatolian rock
+Anatolian Rock
+Anime Rock
+Arabic rock
+Arena rock
+Arena Rock
+Art rock
+Art rock
+Art Rock
+Atmospheric Post Rock
+Atmospheric Rock
+Avant-prog
+Baggy
+Basque Rock
+Beat
+Black Thrash
+Blackgaze
+Blog rock
+Blues rock
+Blues-Rock
+Blues-rock Guitar
+Bolivian Rock
+Boogie rock
+Brazilian rock
+British folk rock
+British Invasion
+British Invasion
+British rock music
+Brutal Deathcore
+Bubblegrunge
+C86
+Cambodian Rock
+Canterbury scene
+Canterbury Scene
+Celtic rock
+Chaotic Hardcore
+Chicano rock
+Chinese rock
+Christian rock
+Cinematic Rock
+Classic alternative
+Classic rock
+Cock Rock
+Cold wave
+College rock
+Comedy rock
+Comedy Rock
+Corrosion
+Country rock
+Cowpunk
+Crack Rock Steady
+Crust Punk
+Dance-punk
+Dance-rock
+Dark cabaret
+Dark wave
+Death 'n' roll
+Death Metal / Black Metal
+Deathrock
+Desert rock
+Doom Metal
+Dream pop
+Dreamgaze
+Dunedin sound
+Easycore
+Electroclash
+Electronic rock
+Electronic Rock
+Electronicore
+Emo
+Emo Rock
+Ethereal wave
+Experimental rock
+Flamenco rock
+Folk rock
+Freak scene
+Freakbeat
+Funk rock
+Future Rock
+Galician Rock
+Garage Psych
+Garage rock
+Garage Rock
+Geek rock
+Geek Rock
+Glam rock
+Glam Rock
+Glam Rock
+Gothabilly
+Gothic Metal
+Gothic rock
+Gothic rock
+Grind Core
+Grunge
+Gypsy Punk
+Hair Metal
+Hard Glam
+Hard rock
+Hard Rock
+Hard Rock
+Hard Stoner Rock
+Heartland rock
+Heartland Rock
+Heavy Gothic Rock
+Heavy metal
+Idol Rock
+Indian rock
+Indie rock
+Indorock
+Industrial rock
+Industrial Rock
+Instrumental Math Rock
+Instrumental Post Rock
+Instrumental rock
+Instrumental Stoner Rock
+Iranian rock
+Italian beat
+J-rock
+Jam Band
+Jam Bands
+Jangle pop
+Jangle Rock
+Japanese rock
+Jazz fusion
+Jazz rock
+K-rock
+Kindie rock
+Kindie Rock
+Kiwi Rock
+Korean rock
+Kraut Rock
+Krautrock
+Krautrock
+Landfill indie
+Latin alternative
+Latin rock
+Lo-fi Rock
+Madchester
+Mainstream rock
+Mangue bit
+Math Metal
+Math rock
+Math Rock
+Math Rock
+Math Rock Latinoamericano
+Medieval folk rock
+Medieval Rock
+Metal
+Metal Core
+Midwest emo
+Minneapolis Sound
+Mod music
+Mod revival
+Mod Revival
+Modern rock
+Nagoya kei
+Nederbeat
+Neo-industrial Rock
+Neo-prog
+Neo-progressive
+Neo-psychedelia
+Neo-rockabilly
+Neue Deutsche Harte
+New prog
+New wave
+New wave of classic rock
+New wave of new wave
+No wave
+Noise pop
+Noise rock
+Noise Rock
+Japanoise
+Nu Gaze
+Nwocr
+Occult rock
+Ostrock
+Pagan rock
+Paisley Underground
+Paraguayan Rock
+Permanent Wave
+Piano Rock
+Pittsburgh Rock
+Pop rock
+Post Punk
+Post Rock
+Post Rock
+Post-grunge
+Post-metal
+Post-progressive
+Post-punk
+Post-punk revival
+Post-rock
+Power Blues-rock
+Power pop
+Preverb
+Prog
+Prog-Rock/Art Rock
+Progressive Metal
+Progressive rock
+Progressive rock (radio format)
+Proto-metal
+Proto-prog
+Proto-punk
+Psych
+Psychedelic
+Psychedelic rock
+Psychobilly
+Pub Rock
+Pub rock (Australia)
+Pub rock (United Kingdom)
+Punk rock
+Punk Rock
+Raga rock
+Rap rock
+Rapcore
+Reggae fusion
+Reggae rock
+Riot Grrrl
+Rock
+Rock & Roll
+Rock Alternatif Francais
+Rock Alternativo Brasileiro
+Rock and roll
+Rock Catala
+Rock Catracho
+Rock Chapin
+Rock Cristiano
+Rock en Asturiano
+Rock en español
+Rock en Espanol
+Rock Gaucho
+Rock Gospel Brasileiro
+Rock in Opposition
+Rock Italiano
+Rock Kapak
+Rock Latinoamericano
+Rock music in France
+Rock music in Mexico
+Rock Nacional
+Rock Nacional Brasileiro
+Rock Noise
+Rock opera
+Rock Quebecois
+Rock Tico
+Rock Urbano Mexicano
+Rock Viet
+Rock-and-roll
+Rockabilly
+Rockabilly
+Rockabilly en Espanol
+Roots rock
+Roots Rock
+Roots Rock
+Sadcore
+Samba rock
+Screamo Punk
+Second British Invasion
+Serbian Alternative Rock
+Shitgaze
+Shoegaze
+Shred
+Singer/Songwriter
+Skinhead Oi
+Slacker rock
+Sleaze Rock
+Slowcore
+Soft grunge
+Soft rock
+Soft Rock
+South Rock
+Southeast Asian Rock
+Southern rock
+Southern Rock
+Southern Rock
+Space rock
+Space Rock
+Spazzcore
+Stoner Metal
+Stoner rock
+Stoner Rock
+Sufi rock
+Suomi Rock
+Surf
+Surf Music
+Surf rock
+Surf Rock
+Swamp rock
+Symphonic rock
+Technical Death Metal
+Tex-Mex
+Thrash
+Thrash Metal
+Time Lord Rock
+Trash Rock
+Trip-hop
+Tropical rock
+Venezuelan Rock
+Viking rock
+Visual kei
+Wizard rock
+World fusion
+Worldbeat
+Wrock
+Yacht rock
+Yacht Rock
+Yacht Rock (soft rock)
+Zeuhl

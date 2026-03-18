@@ -1,53 +1,153 @@
-country quebecois
-manitoba country
-neo honky tonk
-red dirt
-sertanejo gospel
-sertanejo tradicional
-western
-alternative country
-bagpipe
-banjo
-blaskapelle
-bouzouki
-chanson quebecois
-contemporary country
-cosmic american
-country christmas
-country dawn
-country gospel
-country road
-cowboy western
-dance band
-deathgrass
-didgeridoo
-flamenco guitar
-instrumental guitar
-jug band
-light music
-marching band
-mediterranean
-military cadence
-neo-country
-neo-singer-songwriter
-new americana
-oceania soundtrack
-outlaw country
-redneck
-shaabi
-steel guitar
-western swing
-bluegrass
-celtic
-fingerstyle
-stomp and holler
-singer-songwriter
-nashville sound
-flamenco
-native american
-country
-folk rock
-country rock
-lilith
-alternative americana
-mellow gold
+Alternative Americana
+Alternative Country
+Alternative Country
+Alternative Country
+Americana
+Americana
+Australian Country
+Australian Country
+Bagpipe
+Bakersfield Sound
+Bakersfield Sound
+Banjo
+Blaskapelle
+Blue Yodeling
+Bluegrass
+Bluegrass
+Bluegrass
+Blues Country
+Bouzouki
+Bro-country
+Bush Band
+Cajun Fiddle
+Cajun Fiddle Tunes
+Cajun Music
+Canadian Country
+Celtic
+Chanson Quebecois
+Christian Country
+Christian Country
+Classic Country
+Classic Country
+Close Harmony
+Contemporary Bluegrass
+Contemporary Country
+Contemporary Country
+Cosmic American
+Country
+Country
+Country and Irish
+Country Blues
+Country Christmas
+Country Dawn
+Country Folk
+Country Gospel
+Country Gospel
+Country Pop
+Country Pop
+Country Quebecois
+Country Rap
+Country Rap
+Country Road
+Country Rock
+Country Rock
+Country Rock
+Country Soul
+Countrypolitan
+Cowboy / Western
+Cowboy Pop
+Cowboy Western
+Cowpunk
+Cowpunk
+Dance Band
+Dansband
+Dansband
+Deathgrass
+Didgeridoo
+Fingerstyle
+Flamenco
+Flamenco Guitar
+Folk Rock
+Franco-country
+Franco-country
+Gothabilly
+Gothic Country
+Gothic Western
+Gulf and Western
+Gulf and Western
+Hellbilly Music
+Hokum
+Honky Tonk
+Honky Tonk
+Honky Tonk
+Instrumental Country
+Instrumental Guitar
+Jug Band
+Light Music
+Lilith
+Lubbock Sound
+Lubbock Sound
+Manitoba Country
+Marching Band
+Mediterranean
+Mellow Gold
+Military Cadence
+Nashville Sound
+Nashville Sound
+Nashville Sound
+Native American
+Neo Honky Tonk
+Neo-country
+Neo-singer-songwriter
+Neotraditional Country
+Neotraditional Country
+New Americana
+New Mexico Music
+Oceania Soundtrack
+Old-time
+Outlaw Country
+Outlaw Country
+Outlaw Country
+Progressive
+Progressive Bluegrass
+Progressive Bluegrass
+Progressive Country
+Psychobilly
+Psychobilly / Punkabilly
+Reactionary Bluegrass
+Red Dirt
+Red Dirt
+Red Dirt
+Redneck
+Regional Mexican
+Rockabilly
+Roots Rock
+Scrumpy and Western
+Sertanejo
+Sertanejo
+Sertanejo Gospel
+Sertanejo Tradicional
+Shaabi
+Singer-songwriter
+Singing Cowboy
+Southern Rock
+Southern Soul
+Steel Guitar
+Stomp and Holler
+Talking Blues
+Tejano Music
+Texas Country
+Texas County
+Traditional Bluegrass
+Traditional Bluegrass
+Traditional Country
+Truck-driving Country
+Truck-driving Country
+Urban Cowboy
+Western
+Western Music
+Western Swing
+Western Swing
+Western Swing
+Zydeco
+Zydeco

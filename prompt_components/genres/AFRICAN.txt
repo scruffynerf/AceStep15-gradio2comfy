@@ -1,32 +1,149 @@
-benga
-bikutsi
-bongo flava
-cape verdean
-chaabi algerien
-coupe decale
-gnawa
-gqom
-griot
-hiplife
-kizomba
-kora
-kuduro
-kwaito
-makossa
-maloya
-marrabenta
-maskandi
-mbalax
-musique touareg
-nubian traditional
-rumba congolaise
-sega
-sega mauricien
-semba
-soukous
-sungura
-tuareg
-tuareg guitar
-xhosa
-zim urban groove
-zouglou
+African
+African Heavy Metal
+African Heavy Metal
+African hip Hop
+African Hip-hop
+African Popular Music
+Afro House
+Afro Pop
+Afro Tech
+Afro-beat
+Afro-house
+Afro-pop
+Afrobeat
+Afrobeats
+Amapiano
+Apala
+Apala
+Akpala
+Arabesque
+Benga
+Benga
+Benga
+Bikutsi
+Bikutsi
+Bikutsi
+Bongo Flava
+Bongo Flava
+Bongo Flava
+Boomba
+Bubu Music
+Cape Jazz
+Cape Jazz
+Cape Verdean
+Chaabi
+Chaabi Algerien
+Chalga
+Chaoui Music
+Chimurenga
+Chimurenga
+Congolese Rumba
+Coupé-décalé
+Coupé-décalé
+Coupe Decale
+Fuji Music
+Fuji Music
+Genge
+Genge
+Gnawa
+Gnawa
+Gnawa (Hypnotic Trance)
+Gqom
+Gqom
+Griot
+Gumbe
+Highlife
+Highlife
+Hiplife
+Hiplife
+Hiplife
+Igbo Highlife
+Igbo Rap
+Ikorodo
+Ikwokirikwo
+Isicathamiya
+Isicathamiya
+Jùjú
+Jùjú
+Jit
+Jit
+Kadongo Kamu
+Kapuka
+Kizomba
+Kizomba
+Kizomba
+Kora
+Kuduro
+Kuduro
+Kuduro
+Kwaito
+Kwaito
+Kwaito
+Kwassa Kwassa
+Kwela
+Kwela
+Lingala (Rumba Lingala / Congolese Rumba)
+Lingala Music
+Ma'Luf
+Makossa
+Makossa
+Makossa
+Maloya
+Maloya
+Maloya
+Marabi
+Marrabenta
+Marrabenta
+Marrabenta
+Maskandi
+Maskandi
+Mbalax
+Mbalax
+Mbalax
+Mbaqanga
+Mbaqanga
+Mbube
+Mbube
+Morna
+Morna
+Museve
+Egyptian
+Nigerian
+Musique Touareg
+Ndombolo
+Negro Spiritual
+Nubian Traditional
+Ojapiano
+Owerri Bongo
+Palm-wine
+Palm-wine
+Raï
+Raï
+Rumba
+Rumba Congolaise
+Sakara
+Sakara
+Sega
+Sega
+Sega
+Sega Mauricien
+Seggae
+Seggae
+Semba
+Semba
+Semba
+Shangaan Electro
+Soukous
+Soukous
+Soukous
+Sungura
+Taarab
+Taarab
+Tuareg
+Tuareg Guitar
+Xhosa
+Zamrock
+Zim Urban Groove
+Zouglou
+Zouglou
+Zouglou

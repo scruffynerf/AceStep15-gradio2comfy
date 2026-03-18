@@ -1,50 +1,66 @@
-early avant garde
-complextro
-ambeat
-compositional ambient
-darkstep
-destroy techno
-ectofolk
-ambient
-escape room
-ambient techno
-american shoegaze
-avant-garde
-cyberpunk
-dakke dak
-denpa-kei
-experimental
-fake
-focus
-hyperpop
-laboratorio
-neo-classical
-new tribe
-nightrun
-outsider
-slam poetry
-sleep
-song poem
-spacewave
-trancecore
-tzadik
-wave
-beats
-instrumental rock
-anti-folk
-neurofunk
-avantgarde metal
-doom
-industrial
-mathcore
-melancholia
-shibuya-kei
-neo-psychedelic
-art rock
-noise rock
-nintendocore
-iranian experimental
-microtonal
-musique concrete
-neo-proto
-new weird finland
+Acoustic Music
+Ambeat
+Ambient
+Ambient Techno
+American Shoegaze
+Anti-folk
+Art Rock
+Avant-garde
+Avant-garde
+Avantgarde Metal
+Beats
+Complextro
+Compositional Ambient
+Crossover Music
+Cyberpunk
+Dakke Dak
+Danger Music
+Darkstep
+Denpa-kei
+Destroy Techno
+Doom
+Drone Music
+Early Avant Garde
+Ectofolk
+Electroacoustic
+Escape Room
+Experimental
+Fake
+Focus
+Hyperpop
+Industrial
+Industrial Music
+Instrumental
+Instrumental Rock
+Iranian Experimental
+Laboratorio
+Lo-fi
+Mathcore
+Melancholia
+Microtonal
+Musical Improvisation
+Musique Concrète
+Musique Concrete
+Neo-classical
+Neo-proto
+Neo-psychedelic
+Neurofunk
+New Tribe
+New Weird Finland
+Nightrun
+Nintendocore
+Noise
+Noise Rock
+Outsider
+Outsider Music
+Progressive Music
+Psychedelic Music
+Shibuya-kei
+Slam Poetry
+Sleep
+Song Poem
+Spacewave
+Trancecore
+Tzadik
+Underground Music
+Wave

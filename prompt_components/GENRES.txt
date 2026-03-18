@@ -17,6 +17,8 @@ __RELIGIOUS__
 __ROCK
 __SOUNDTRACK__
 __WORLD__
+__ALTERNATIVE__
+__MISC__
 ambient
 blues
 children's

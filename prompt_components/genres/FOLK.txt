@@ -1,55 +1,139 @@
-string folk
-freak folk
-ambient folk
-american folk revival
-folk christmas
-folkmusik
-anthem-folk
-medieval folk
-pop folk
-folk
-drone folk
-balfolk
-children's folk
-folk pop
-contemporary folk
-country folk
-free folk
-geek folk
-neofolk
-rune folk
-turbo folk
-viking folk
+__CULTURES__ folk
+__CULTURES__ folk
 __CULTURES__ folk
 __PLACES__ folk
-cajun
-cante alentejano
-cante flamenco
-canto popular uruguayo
-catala
-ceilidh
-chant basque
-cymraeg
-folclore portugues
-galego
-goralski
-jig and reel
-lezginka
-neo-traditional
-oberkrainer
-old-time
-pirate
-polka
-shanty
-skiffle
-streektaal
-string band
-stubenmusik
-szanty
-tanci
-tanzlmusi
-trad quebecois
-trikiti
-volksmusik
-volkstumliche musik
-zillertal
+__PLACES__ folk
+__PLACES__ folk
+Alternative Folk
+Ambient Folk
+American folk revival
+American Folk Revival
+American Folk Revival
+American patriotic music
+American rock
+Americana
+Anthem-folk
+Anti-folk
+Anti-Folk
+Balfolk
+British folk revival
+British Folk Revival
+Cajun
+Cajun music
+Cakewalk
+Canadian folk music
+Cante Alentejano
+Cante Flamenco
+Canto Popular Uruguayo
+Catala
+Ceilidh
+Celtic music
+Celtic rock
+Chalga
+Chant Basque
+Children's Folk
+Christmas music
+Classic rag
+Contemporary Folk
+Contemporary Folk
+Contemporary Folk
+Contemporary Singer/Songwriter
+Corrido
+Country Folk
+Creole music
+Cymraeg
+Drone Folk
+Fado
+Filk
+Filk Music
+Folclore Portugues
+Folk
+Folk Christmas
+Folk Music
+Folk noir
+Folk Pop
+Folk ragtime
+Folk rock
+Folk-Rock
+Folkmusik
+Folktronica
+Freak folk
+Freak Folk
+Freak Folk
+Free Folk
+Galego
+Geek Folk
+German Folk
+Goralski
+Honky-tonk piano
+Huayno
+Indie folk
+Indie Folk
+Indie Folk
+Indigenous music of Canada
+Indigenous music of North America
+Industrial folk
+Industrial Folk
+Inuit music
+Jig and Reel
+Lezginka
+Love Song (Chanson)
+Música criolla
+Mariachi
+Medieval Folk
+Mele
+Music of Alaska
+Music of Greenland
+Neo-traditional
+Neofolk
+Neofolk
+Neofolk
+New Acoustic
+New Weird America
+Novelty piano
+Nueva canción
+Oberkrainer
+Old-time
+Pastorale
+Pirate
+Polka
+Polka
+Pop Folk
+Progressive folk
+Progressive Folk
+Protest song
+Psychedelic folk
+Psychedelic Folk
+Ragtime
+Ragtime
+Ranchera
+Rune Folk
+Shanty
+Singer-songwriter
+Singer/Songwriter
+Skiffle
+Skiffle
+Son mexicano
+Stomp
+Streektaal
+Stride piano
+String Band
+String Folk
+Stubenmusik
+Sung poetry
+Sung Poetry
+Swing music
+Szanty
+Tanci
+Tanzlmusi
+Tarantella/Pizzica
+Techno-Folk
+Trad Quebecois
+Traditional blues verses
+Traditional Folk
+Trikiti
+Turbo Folk
+Viking Folk
+Volksmusik
+Volkstumliche Musik
+Zillertal

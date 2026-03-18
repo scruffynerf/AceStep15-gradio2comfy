@@ -1,80 +1,261 @@
-axe
-banda
-banda caliente
-bolero
-brega
-brega funk
-cantautor
-canzone napoletana
-chamame
-champeta
-chicha
-choro
-chunchaca
-chutney
-corrido
-cuarteto
-cubaton
-cueca chilena
-cumbia andina mexicana
-cumbia boliviana
-cumbia chilena
-cumbia ecuatoriana
-cumbia funk
-cumbia paraguaya
-cumbia peruana
-cumbia ranchera
-cumbia salvadorena
-cumbia santafesina
-cumbia sonidera
-cumbia uruguaya
-cumbia villera
-dembow
-duranguense
-electro latino
-folclor colombiano
-forro
-funana
-grupera
-gruperas inmortales
-huayno
-latin
-latincore
-marimba orquesta
-merengue
-merengue tipico
-moombahton
-mpb
-murga
-musica llanera
-nica
-nordeste argentino
-norteno
-nueva ola chilena
-nueva ola peruana
-nueva trova chilena
-orquesta cubana
-orquesta tropical
-paracana
-pasodobles
-platense
-polca paraguaya
-r&b brasileiro
-reggae en espanol
-reggaeton flow
-regional mexican
-romantico
-rumba catalana
-salsa cubana
-salsa peruana
-salvadoreno
-sertanejo
-sertanejo universitario
-steelpan
-tamborazo
-tejano
-tico
-timba
-tipico
-alternative
-rumba
+Afro-Cuban jazz
+Aguinaldo
+Alegrías
+Alternative Latin
+Alternative reggaeton
+Alternativo & Rock Latino
+Argentine Tango
+Axé
+Axé
+Axe
+Bachata
+Bachata
+Baithak Gana
+Baithak Gana
+Baladas y Boleros
+Banda
+Banda
+Banda Caliente
+Bolero
+Bolero
+Bolero
+Bomba
+Boogaloo
+Bossa nova
+Bossa Nova
+Bossa Nova
+Bouyon
+Brazilian
+Brazilian rock
+Brazilian Rock
+Brega
+Brega
+Brega
+Brega Funk
+Bulerías
+Bullerengue
+Cadence-lypso
+Calypso
+Cantautor
+Cantes de ida y vuelta
+Canzone Napoletana
+Caribbean
+Cha-cha-chá
+Chamame
+Champeta
+Chicano
+Chicha
+Chicha
+Chicha
+Choro
+Choro
+Choro
+Chunchaca
+Chutney
+Chutney
+Chutney parang
+Chutney soca
+Classic
+Compas
+Conjunto
+Conjunto Progressive
+Contemporary Latin
+Corrido
+Criolla
+Criolla
+Cuarteto
+Cubaton
+Cueca Chilena
+Cumbia
+Cumbia
+Cumbia Andina Mexicana
+Cumbia Boliviana
+Cumbia Chilena
+Cumbia Ecuatoriana
+Cumbia Funk
+Cumbia Paraguaya
+Cumbia Peruana
+Cumbia Ranchera
+Cumbia Salvadorena
+Cumbia Santafesina
+Cumbia Sonidera
+Cumbia Uruguaya
+Cumbia Villera
+Dancehall
+Dembow
+Dub
+Duranguense
+Electro Latino
+Fandangos
+Flamenco
+Flamenco / Spanish Flamenco
+Folclor Colombiano
+Forró
+Forró
+Forro
+Frevo
+Frevo
+Funana
+Funk carioca
+Funk Carioca
+Grupera
+Grupera
+Gruperas Inmortales
+Guajira
+Hispanic
+Hispanic rhythmic
+Huayno
+Huayno
+Joropo
+Lambada
+Lambada
+Latin
+Latin
+Latin alternative
+Latin ballad
+Latin Christian
+Latin jazz
+Latin Jazz
+Latin pop
+Latin rock
+Latin trap
+Latincore
+Lovers rock
+Mambo
+Mambo
+Mambo (Cuba)
+Música popular
+Música popular brasileira
+Música Popular Brasileira
+Música sertaneja
+Música Sertaneja
+Maracatu
+Maracatu
+Mariachi
+Mariachi
+Marimba Orquesta
+Méringue
+Martinetes
+Mento
+Merengue
+Merengue
+Merengue
+Merengue Típico
+Merengue Tipico
+Moombahton
+Moombahton
+Mozambique
+Mpb
+Murga
+Music of Brazil
+Musica Llanera
+New Mex
+Nica
+Nordeste Argentino
+Norteño
+Norteno
+Nueva ola Chilena
+Nueva ola Peruana
+Nueva Trova Chilena
+Nuevo Flamenco
+Orquesta Cubana
+Orquesta Tropical
+Pagode
+Pagode
+Paracana
+Pasodobles
+Peteneras
+Pichakaree
+Platense
+Plena
+Polca Paraguaya
+Pop Latino
+Porro
+Portuguese Fado
+Power soca
+Punta
+Punta
+Punta rock
+Punta Rock
+R&b Brasileiro
+Raíces
+Ragga
+Ragga jungle
+Raison
+Ranchera
+Ranchera
+Rasin
+Reggae
+Reggae en Espanol
+Reggae fusion
+Reggae rock
+Reggaeton
+Reggaeton
+Reggaeton Flow
+Reggaeton y Hip-Hop
+Regional Mexican
+Regional Mexican
+Regional Mexicano
+Rock en Español
+Rocksteady
+Romantico
+Roots reggae
+Rumba
+Rumba
+Rumba
+Rumba Catalana
+Salsa
+Salsa
+Salsa Cubana
+Salsa Peruana
+Salsa romántica
+Salsa y Tropical
+Salvadoreno
+Samba
+Samba
+Samba rock
+Samba Rock
+Sertanejo
+Sertanejo Universitario
+Ska
+Ska punk
+Soca
+Soca
+Soleá
+Son
+Son
+Son cubano
+Songo
+Steelpan
+Tamborazo
+Tango
+Tango
+Tecnobrega
+Tecnobrega
+Tejano
+Tejano
+Tejano
+Tex-Mex
+Tex-Mex / Tejano
+Tico
+Timba
+Timba
+Timba
+Timba
+Tipico
+Toná
+Tonás
+Tropical
+Tropicalia
+Tropicalia
+Tropipop
+Two-tone
+Twoubadou
+Twoubadou
+Urbano music
+Vallenato
+Vallenato
+Zouk
+Zouk
+Zouk-Lambada
+Zouk-Lambada

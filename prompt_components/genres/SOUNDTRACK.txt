@@ -1,19 +1,26 @@
-anime
-anime score
-broadway
-cabaret
-disney
-drama
-filmi
-gamecore
-guidance
-hollywood
-bollywood
-movie tunes
-orchestral
-poetry
-show tunes
-slow game
-soundtrack
-talent show
-theme
+Anime
+Anime Score
+Bollywood
+Broadway
+Cabaret
+Disney
+Drama
+Filmi
+Foreign Cinema
+Gamecore
+Guidance
+Hollywood
+Movie Soundtrack
+Movie Tunes
+Musicals
+Orchestral
+Original Score
+Poetry
+Show Tunes
+Slow Game
+Soundtrack
+Soundtrack
+Soundtrack
+Talent Show
+Theme
+TV Soundtrack

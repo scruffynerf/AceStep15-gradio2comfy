@@ -1,117 +1,274 @@
 __CULTURES__ pop
 __PLACES__ pop
-adult contemporary
-alt-idol
-alternative pop
-alternative pop rock
-antiviral pop
-arena pop
-art pop
-baile pop
-baroque pop
-beach music
-bedroom pop
-bow pop
-boy band
-boy pop
-brill building pop
-bubblegum pop
-c-pop
-cafe pop
-candy pop
-cantopop
-chalga
-chamber pop
-channel pop
-city pop
-country pop
-dance pop
-dancepop
-disco pop
-dream pop
-easy listening
-electro pop
-electropop
-electropowerpop
-etherpop
-europop
-eurovision
-folk pop
-folk-pop
-garage pop
-gauze pop
-girl group
-grunge pop
-hip pop
-hopebeat
-idol
-idol pop
-invasion
-iskelma
-j-division
-j-idol
-j-pop
-j-pop boy group
-j-pop girl group
-j-poprock
-jangle pop
-jewish pop
-junior eurovision
-k-pop
-k-pop boy group
-k-pop girl group
-mande pop
-mandopop
-math pop
-melodipop
-merseybeat
-metropopolis
-neo mellow
-neo-synthpop
-neon pop punk
-new wave pop
-noise pop
-operatic pop
-opm
-pop
-pop argentino
-pop catracho
-pop chileno
-pop christmas
-pop emo
-pop flamenco
-pop house
-pop nacional
-pop punk
-pop quebecois
-pop rock
-pop romantico
-popgaze
-poptimism
-power pop
-psych-pop
-regional pop
-reunion pop
-russiavision
-schlager
-sertanejo pop
-shimmer pop
-shiver pop
-soda pop
-space age pop
-stomp and flutter
-stomp pop
-sunshine pop
-swamp pop
-synthpop
-teen pop
-twee pop
-ukulele
-underground pop rap
-underground power pop
-v-pop
-vapor pop
-viral pop
-vispop
-vocal harmony group
-volkspop
+Adult contemporary
+Adult Contemporary
+Adult Contemporary
+Adult hits
+Alt-idol
+Alternative pop
+Alternative Pop
+Alternative pop Rock
+Ambient pop
+Anime song
+Antiviral Pop
+Arab Pop
+Arabic pop music
+Arena Pop
+Art pop
+Art Pop
+Austropop
+Austropop
+Avant-pop
+Baile Pop
+Balkan Pop
+Baroque
+Baroque pop
+Baroque Pop
+Beach music
+Beach Music
+Bedroom pop
+Bedroom Pop
+Boogie
+Bow Pop
+Boy Band
+Boy Pop
+Brill building
+Brill Building Pop
+Britpop
+Britpop
+Bubblegum pop
+Bubblegum Pop
+Bubblegum Pop
+C-pop
+C-pop
+Cafe Pop
+Canción
+Candy Pop
+Cantopop
+Cantopop
+Canzone
+Chalga
+Chalga
+Chamber pop
+Chamber Pop
+Chamber Pop
+Channel Pop
+Chanson
+Chanson
+Christian pop
+Christian Pop
+City pop
+City Pop
+Classic hits
+Classical crossover
+Classical Crossover
+Contemporary hit radio
+Country pop
+Country Pop
+Cringe pop
+Dance Pop
+Dance Pop
+Dance-pop
+Dance-pop
+Dancepop
+Dark pop
+Disco
+Disco Pop
+Dream Pop
+Dream Pop
+Easy Listening
+Electro Pop
+Electro Pop
+Electropop
+Electropop
+Electropowerpop
+Emo pop
+Etherpop
+Eurobeat
+Eurodisco
+Europop
+Europop
+Europop
+Eurovision
+Folk pop
+Folk Pop
+Folk-pop
+French pop
+French Pop
+French Pop
+Garage Pop
+Gauze Pop
+German Pop
+Girl Group
+Grunge Pop
+Hip Pop
+Hokkien pop
+Hopebeat
+Hyperpop
+Idol
+Idol Pop
+Indian pop
+Indie pop
+Invasion
+Iranian pop
+Iranian Pop
+Iskelma
+Italo dance
+Italo disco
+J-division
+J-idol
+J-pop
+J-pop
+J-pop boy Group
+J-pop Girl Group
+J-poprock
+Jangle pop
+Jangle Pop
+Jangle Pop
+Jazz pop
+Jewish Pop
+Junior Eurovision
+K-pop
+K-pop
+K-pop boy Group
+K-pop Girl Group
+Korean hip-hop
+Korean rock
+Laïkó
+Laïkó
+Latin ballad
+Latin Ballad
+Latin pop
+Latin Pop
+Levenslied
+Louisiana Swamp Pop
+Mande Pop
+Mandopop
+Mandopop
+Math Pop
+Melodipop
+Merseybeat
+Metropopolis
+Mexican pop
+Mexican Pop
+Motorpop
+Nederpop
+Nederpop
+Neo Mellow
+Neo-synthpop
+Neomelodic music
+Neon pop
+Neon pop Punk
+New pop
+New Romantic
+New Romanticism
+New Wave Pop
+Noise Pop
+Nordic popular music
+Oldies
+Operatic pop
+Operatic Pop
+Opm
+OPM
+Orchestral pop
+Orchestral Pop
+Palingsound
+Pinoy pop
+Pop
+Pop
+Pop Argentino
+Pop Catracho
+Pop Chileno
+Pop Christmas
+Pop Emo
+Pop Flamenco
+Pop House
+Pop Nacional
+Pop punk
+Pop Punk
+Pop Punk
+Pop Quebecois
+Pop rap
+Pop Rap
+Pop rock
+Pop Rock
+Pop Romantico
+Pop soul
+Pop/Rock
+Popera
+Popgaze
+Poptimism
+Post-Disco
+Power pop
+Power Pop
+Power Pop
+Progressive pop
+Psych-pop
+Psychedelic pop
+Psychedelic Pop
+Rebetiko
+Regional Pop
+Reunion Pop
+Rhythmic adult contemporary
+Rhythmic contemporary
+Rhythmic oldies
+Russian pop
+Russian Pop
+Russiavision
+Schlager
+Schlager
+Schlager
+Sertanejo Pop
+Shibuya-kei
+Shimmer Pop
+Shiver Pop
+Soda Pop
+Soft rock
+Soft Rock
+Sophisti-pop
+Sophisti-Pop
+Space age pop
+Space age Pop
+Space Age Pop
+Stomp and Flutter
+Stomp Pop
+Sunshine pop
+Sunshine Pop
+Sunshine Pop
+Surf pop
+Surf Pop
+Swamp pop
+Swamp Pop
+Synth-pop
+Synthpop
+Synthpop
+T'ong guitar
+Teen pop
+Teen Pop
+Teen Pop
+Traditional pop
+Traditional Pop Music
+Trot
+Turbo-folk
+Turkish pop
+Turkish Pop
+Twee pop
+Twee Pop
+Ukulele
+Underground pop Rap
+Underground Power Pop
+Urban adult contemporary
+Urban contemporary music
+V-pop
+Vapor Pop
+Viral Pop
+Vispop
+Vispop
+Vispop
+Vocal Harmony Group
+Volkspop
+Wonky pop
+Wonky Pop
+Worldbeat
+Yé-yé
+Yacht rock

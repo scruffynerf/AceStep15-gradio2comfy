@@ -1,48 +1,52 @@
-alt-indie rock
-e6fi
-emo punk
-christmas
-dream pop
-emo
-psych-rock
-rockism
-indiecoustica
-lo star
-lo-fi
-new weird america
-psych gaze
-psychill
-austindie
-k-indie
-j-indie
-oth indie
-indie pop
-indie
-indie rock
-indie folk
-twee indie pop
+__PLACES__ indie
+__PLACES__ indie
 __PLACES__ indie
 __PLACES__ indie rock
-screamo
-anthem emo
-emo
-alternative emo
-alternative rock
-alternative roots rock
-chamber psych
-madchester
-pixie
-psychobilly
-slow core
-diy emo
-emocore
-midwest emo
-north carolina emo
-beach house
-dunedin sound
-fuzzpop
-italogaze
-medway sound
-sinogaze
-swoon
-lounge
+__PLACES__ indie rock
+__PLACES__ indie rock
+Alt-indie Rock
+Alternative Emo
+Alternative Rock
+Alternative Roots Rock
+Anthem Emo
+Austindie
+Beach House
+Chamber Psych
+Christmas
+Diy Emo
+Dream Pop
+Dunedin Sound
+E6fi
+Emo
+Emo
+Emo Punk
+Emocore
+Fuzzpop
+Indie
+Indie Folk
+Indie Pop
+Indie Rock
+Indiecoustica
+Italogaze
+J-indie
+K-indie
+Lo Star
+Lo-fi
+Lounge
+Madchester
+Medway Sound
+Midwest Emo
+New Weird America
+North Carolina Emo
+Oth Indie
+Pixie
+Psych Gaze
+Psych-rock
+Psychill
+Psychobilly
+Rockism
+Screamo
+Sinogaze
+Slow Core
+Swoon
+Twee Indie Pop
