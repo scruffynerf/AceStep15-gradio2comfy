@@ -7,6 +7,7 @@ import json
 import re
 import gc
 import warnings
+import folder_paths
 from huggingface_hub import snapshot_download
 
 # Credit goes to https://github.com/jeankassio/ComfyUI-AceStep_SFT
@@ -79,6 +80,10 @@ class ScromfyAceStepMusicAnalyzer:
                 "top_k": ("INT", {"default": 0, "min": 0, "max": 200, "step": 1}),
                 "repetition_penalty": ("FLOAT", {"default": 1.5, "min": 1.0, "max": 3.0, "step": 0.05}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "model_directory": ("STRING", {
+                    "default": "LLM", 
+                    "tooltip": "Base folder within your ComfyUI models directory where analysis models are stored. Default is 'LLM'."
+                }),
             }
         }
 
@@ -89,7 +94,8 @@ class ScromfyAceStepMusicAnalyzer:
 
     def analyze(self, audio, model, get_tags, get_bpm, get_keyscale,
                 max_new_tokens=100, audio_duration=30, unload_model=True, use_flash_attn=False,
-                temperature=0.0, top_p=1.0, top_k=0, repetition_penalty=1.5, seed=0):
+                temperature=0.0, top_p=1.0, top_k=0, repetition_penalty=1.5, seed=0,
+                model_directory="LLM"):
         
         tags = ""
         detected_bpm = 0
@@ -99,7 +105,7 @@ class ScromfyAceStepMusicAnalyzer:
 
         if get_tags:
             try:
-                tags = self._extract_tags(audio, model, max_new_tokens, audio_duration, use_flash_attn, gen_kwargs)
+                tags = self._extract_tags(audio, model, max_new_tokens, audio_duration, use_flash_attn, gen_kwargs, model_directory)
                 print(f"[ScromfyAceStep] Extracted tags: {tags}")
             except Exception as e:
                 print(f"[ScromfyAceStep] Tag extraction failed: {e}")
@@ -118,7 +124,7 @@ class ScromfyAceStepMusicAnalyzer:
 
         music_infos = json.dumps({
             "tags": tags,
-            "bpm": f"{detected_bpm}bpm",
+            "bpm": f"{detected_bpm}",
             "keyscale": keyscale,
         }, ensure_ascii=False, indent=4)
 
@@ -137,8 +143,8 @@ class ScromfyAceStepMusicAnalyzer:
         torch.manual_seed(seed)
         return kwargs
 
-    def _extract_tags(self, audio_dict, model_key, max_new_tokens, audio_duration, use_flash_attn, gen_kwargs):
-        model, processor = self._load_audio_model(model_key, use_flash_attn)
+    def _extract_tags(self, audio_dict, model_key, max_new_tokens, audio_duration, use_flash_attn, gen_kwargs, model_directory="LLM"):
+        model, processor = self._load_audio_model(model_key, use_flash_attn, model_directory)
         
         if model_key.startswith("Qwen2.5-Omni") or model_key == "Ke-Omni-R-3B":
             return self._tag_qwen_omni(audio_dict, model, processor, max_new_tokens, audio_duration, gen_kwargs)
@@ -152,7 +158,7 @@ class ScromfyAceStepMusicAnalyzer:
             return self._tag_whisper_captioning(audio_dict, model, processor, max_new_tokens, audio_duration, gen_kwargs)
         return ""
 
-    def _load_audio_model(self, model_key, use_flash_attn):
+    def _load_audio_model(self, model_key, use_flash_attn, model_directory="LLM"):
         global _audio_model, _audio_processor, _audio_model_name
         if _audio_model is not None and _audio_model_name == model_key:
             return _audio_model, _audio_processor
@@ -160,7 +166,27 @@ class ScromfyAceStepMusicAnalyzer:
             self._unload_audio_model()
 
         repo_id = _ANALYSIS_MODELS[model_key]
-        model_dir = snapshot_download(repo_id)
+        
+        # --- Handle model storage ---
+        if not model_directory or model_directory.strip() == "":
+            base_models_dir = os.path.join(folder_paths.models_dir, "LLM")
+        elif os.path.isabs(model_directory):
+            base_models_dir = model_directory
+        else:
+            base_models_dir = os.path.join(folder_paths.models_dir, model_directory)
+            
+        local_dir = os.path.join(base_models_dir, repo_id)
+        
+        if not os.path.exists(local_dir):
+            print(f"[ScromfyAceStep] Model not found locally, downloading to: {local_dir}")
+            os.makedirs(local_dir, exist_ok=True)
+            snapshot_download(repo_id, local_dir=local_dir)
+        else:
+            # Still call snapshot_download to ensure integrity/updates if needed, 
+            # but it will skip if already present.
+            snapshot_download(repo_id, local_dir=local_dir)
+
+        model_dir = local_dir
         load_kwargs = dict(torch_dtype=torch.bfloat16, device_map="auto")
         if use_flash_attn: load_kwargs["attn_implementation"] = "flash_attention_2"
 

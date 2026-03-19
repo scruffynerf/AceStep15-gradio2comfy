@@ -253,16 +253,20 @@ class ScromfyAceStepSampler:
                 v_guided = apg_guidance(v_cond, v_uncond, current_guidance_scale, momentum_buffer=momentum_buf, norm_threshold=apg_norm_threshold)
             return apply_omega_scale(v_guided * sigma_r, omega_scale)
 
-        # Patch and Sample
+        # --- 6. Patch and Sample ---
         patched_model = model.clone()
         if split_guidance_active:
             patched_model.set_model_sampler_calc_cond_batch_function(calc_cond_batch_function)
         patched_model.set_model_sampler_cfg_function(guided_cfg_function, disable_cfg1_optimization=True)
 
+        pbar = comfy.utils.ProgressBar(steps)
+        def callback(step, x0, x, total_steps):
+            pbar.update_absolute(step + 1, total_steps)
+
         noise = comfy.sample.prepare_noise(latent_image["samples"], seed)
         samples = comfy.sample.sample(patched_model, noise, steps, cfg, sampler_name, scheduler,
                                       positive, negative, latent_image["samples"], denoise=denoise,
-                                      sigmas=custom_sigmas, seed=seed)
+                                      sigmas=custom_sigmas, seed=seed, callback=callback)
 
         if latent_shift != 0.0 or latent_rescale != 1.0:
             samples = samples * latent_rescale + latent_shift
