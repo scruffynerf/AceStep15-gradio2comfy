@@ -113,6 +113,7 @@ class ScromfySFTSampler:
                 ref_latent = ref_latent.repeat(math.ceil(batch_size / ref_latent.shape[0]), 1, 1)[:batch_size]
             
             is_cover = reference_as_cover
+            denoise = 1.0 # Parity: auto-set to 1.0 with reference audio
             positive = node_helpers.conditioning_set_values(positive, {
                 "refer_audio_acoustic_hidden_states_packed": ref_latent,
                 "refer_audio_order_mask": torch.arange(batch_size, device=ref_latent.device, dtype=torch.long),
@@ -232,7 +233,7 @@ class ScromfySFTSampler:
 
         noise = comfy.sample.prepare_noise(latent_image["samples"], seed)
         samples = comfy.sample.sample(patched_model, noise, steps, cfg, sampler_name, scheduler,
-                                      positive, negative, latent_image, denoise=denoise,
+                                      positive, negative, latent_image["samples"], denoise=denoise,
                                       sigmas=custom_sigmas, seed=seed)
 
         if latent_shift != 0.0 or latent_rescale != 1.0:

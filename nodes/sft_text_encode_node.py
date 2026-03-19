@@ -15,13 +15,18 @@ class ScromfySFTTextEncode:
 
     VALID_KEYSCALES = get_keyscales()
 
-    # Time signature display name → code mapping
+    # Time signature mapping
     TIMESIG_MAP = {
-        "Auto-detect": "0",
+        "auto": "0",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "6": "6",
         "2/4": "2",
         "3/4": "3",
         "4/4": "4",
         "6/8": "6",
+
     }
     VALID_TIME_SIGNATURES = list(TIMESIG_MAP.keys())
 
@@ -53,16 +58,16 @@ class ScromfySFTTextEncode:
             },
             "optional": {
                 "lyrics": ("STRING", {"multiline": True, "default": "[Instrumental]"}),
-                "bpm": ("INT", {"default": 0, "min": 0, "max": 300, "step": 1.0}),
-                "duration": ("FLOAT", {"default": 60.0, "min": 0.0, "max": 600.0, "step": 1.0}),
-                "keyscale": (cls.VALID_KEYSCALES, {"default": "C major"}),
-                "timesignature": (cls.VALID_TIME_SIGNATURES, {"default": "4/4"}),
+                "bpm": ("INT", {"default": 0, "min": 0, "max": 300}),
+                "duration": ("FLOAT", {"default": 60.0, "min": 0.0, "max": 600.0, "step": 0.1}),
+                "keyscale": (["auto"] + cls.VALID_KEYSCALES[1:], {"default": "auto"}),
+                "timesignature": (cls.VALID_TIME_SIGNATURES, {"default": "auto"}),
                 "language": (cls.VALID_LANGUAGES, {"default": "English"}),
                 "generate_audio_codes": ("BOOLEAN", {"default": True}),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffff}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "lm_cfg_scale": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 100.0, "step": 0.1}),
                 "lm_temperature": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 2.0, "step": 0.01}),
-                "lm_top_p": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "lm_top_p": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 2000.0, "step": 0.01}),
                 "lm_top_k": ("INT", {"default": 0, "min": 0, "max": 100}),
                 "lm_min_p": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
                 "lm_negative_prompt": ("STRING", {"multiline": True, "default": ""}),

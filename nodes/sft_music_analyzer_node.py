@@ -125,7 +125,7 @@ class ScromfySFTMusicAnalyzer:
         elif model_key == "AST-AudioSet":
             return self._tag_ast(audio_dict, model, processor)
         elif "audio-captioning" in model_key:
-            return self._tag_whisper_captioning(audio_dict, model, processor, audio_duration, gen_kwargs)
+            return self._tag_whisper_captioning(audio_dict, model, processor, max_new_tokens, audio_duration, gen_kwargs)
         return ""
 
     def _load_audio_model(self, model_key, use_flash_attn):
@@ -145,10 +145,10 @@ class ScromfySFTMusicAnalyzer:
             if model_key == "Ke-Omni-R-3B":
                 from transformers import Qwen2_5_OmniThinkerForConditionalGeneration as ModelClass
             else:
-                from transformers import Qwen2_5_OmniForConditionalGeneration as ModelClass
+                from transformers import Qwen2_5OmniForConditionalGeneration as ModelClass
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", message=".*Flash Attention 2.*")
-                _audio_model = ModelClass.from_trained(model_dir, **load_kwargs)
+                _audio_model = ModelClass.from_pretrained(model_dir, **load_kwargs)
             if hasattr(_audio_model, "disable_talker"): _audio_model.disable_talker()
             _audio_processor = AutoProcessor.from_pretrained(model_dir, use_fast=False)
         elif model_key == "Qwen2-Audio-7B-Instruct":
@@ -218,7 +218,7 @@ class ScromfySFTMusicAnalyzer:
         labels = model.config.id2label
         return ", ".join([labels[int(i)] for i in top_indices if probs[i] > 0.1])
 
-    def _tag_whisper_captioning(self, audio_dict, model, processor, audio_duration, gen_kwargs):
+    def _tag_whisper_captioning(self, audio_dict, model, processor, max_new_tokens, audio_duration, gen_kwargs):
         y = self._prepare_audio_mono(audio_dict, 16000, audio_duration)
         inputs = processor(y, sampling_rate=16000, return_tensors="pt").to(model.device)
         with torch.no_grad():
