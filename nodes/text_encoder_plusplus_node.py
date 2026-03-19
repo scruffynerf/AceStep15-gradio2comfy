@@ -127,8 +127,8 @@ class ScromfyAceStepTextEncoderPlusPlus:
                     "tooltip": "Beats per minute. -1 = auto decide",
                 }),
                 "duration": ("FLOAT", {
-                    "default": -1, "min": -1, "max": 600.0, "step": 0.1,
-                    "tooltip": "Duration in seconds. -1 = auto decide",
+                    "default": 120.0, "min": 10.0, "max": 600.0, "step": 0.1,
+                    "tooltip": "Duration in seconds.",
                 }),
                 "keyscale": (cls.VALID_KEYSCALES, {"default": "Auto-decide"}),
                 "timesignature": (cls.VALID_TIME_SIGNATURES, {"default": "Auto-decide"}),
@@ -155,7 +155,7 @@ class ScromfyAceStepTextEncoderPlusPlus:
     
     @classmethod
     def IS_CHANGED(cls, clip, caption="", enhanced_prompt=True, instrumental=True, lyrics="[Instrumental]", 
-                bpm=-1, duration=-1, keyscale="Auto-decide", timesignature="0", language="English", 
+                bpm=-1, duration=120.0, keyscale="Auto-decide", timesignature="Auto-decide", language="English", 
                 seed=0, cfg_scale=2.0, temperature=0.85, top_p=0.9, top_k=0, min_p=0.0, 
                 repetition_penalty=1.3, negative_prompt="", style_tags="", trigger_word="", 
                 generate_audio_codes=True):
@@ -169,7 +169,7 @@ class ScromfyAceStepTextEncoderPlusPlus:
         return m.hexdigest()
 
     def encode(self, clip, caption="", enhanced_prompt=True, instrumental=True, lyrics="[Instrumental]", 
-               bpm=-1, duration=-1, keyscale="Auto-decide", timesignature="0", language="English", 
+               bpm=-1, duration=120.0, keyscale="Auto-decide", timesignature="Auto-decide", language="English", 
                seed=0, cfg_scale=2.0, temperature=0.85, top_p=0.9, top_k=0, min_p=0.0, 
                repetition_penalty=1.3, negative_prompt="", style_tags="", trigger_word="", 
                generate_audio_codes=True):
@@ -185,26 +185,24 @@ class ScromfyAceStepTextEncoderPlusPlus:
         language_iso = self.LANGUAGE_MAP.get(language, "en")
         timesig_code = self.TIMESIG_MAP.get(timesignature, "0")
         
-        bpm_val = -1 if (bpm == -1 or bpm <= 20) else bpm
         ks_val = "" if keyscale == "Auto-decide" else keyscale
         
         # --- PATH A: ENHANCED PROMPT (SFT LOGIC) ---
         if enhanced_prompt:
             # SFT-specific auto-detection flags
-            bpm_is_auto = (bpm_val == -1)
+            bpm_is_auto = (bpm == -1 or bpm == 0)
             ts_is_auto = (timesignature == "Auto-decide" or timesignature == "0")
             ks_is_auto = (keyscale == "Auto-decide" or ks_val == "")
             
-            tok_bpm = 120 if bpm_is_auto else bpm_val
+            tok_bpm = 120 if bpm_is_auto else bpm
             tok_ts = 4 if ts_is_auto else int(timesig_code)
             tok_ks = "C major" if ks_is_auto else ks_val
 
-            duration_val = None if (duration == -1 or duration <= 0) else duration
             # 1. Initial Tokenization (Generates audio codes if requested)
             tokens = clip.tokenize(full_caption, 
                                     lyrics=actual_lyrics, 
                                     bpm=tok_bpm, 
-                                    duration=duration_val, 
+                                    duration=duration, 
                                     timesignature=tok_ts, 
                                     language=language_iso, 
                                     keyscale=tok_ks, 
@@ -216,13 +214,13 @@ class ScromfyAceStepTextEncoderPlusPlus:
                                     top_k=top_k, 
                                     min_p=min_p,
                                     caption_negative=negative_prompt)
-
+            
             # 2. SFT enrichment
             inner_tok = getattr(clip.tokenizer, "qwen3_06b", None)
             if inner_tok is not None:
                 dur_ceil = int(math.ceil(duration)) if duration > 0 else 0
                 cot_items = {}
-                if not bpm_is_auto: cot_items["bpm"] = bpm_val
+                if not bpm_is_auto: cot_items["bpm"] = bpm
                 cot_items["caption"] = full_caption
                 cot_items["duration"] = dur_ceil
                 if not ks_is_auto: cot_items["keyscale"] = ks_val
@@ -257,12 +255,10 @@ class ScromfyAceStepTextEncoderPlusPlus:
 
         # --- PATH B: STANDARD PROMPT (ACESTEP 1.5 LOGIC) ---
         else:
-            bpm_val_final = None if bpm_val == -1 else bpm_val
-            duration_val = None if (duration == -1 or duration <= 0) else duration
             tokens = clip.tokenize(full_caption, 
                                     lyrics=actual_lyrics, 
-                                    bpm=bpm_val_final, 
-                                    duration=duration_val, 
+                                    bpm=bpm, 
+                                    duration=duration, 
                                     timesignature=timesig_code, 
                                     language=language_iso, 
                                     keyscale=ks_val, 
