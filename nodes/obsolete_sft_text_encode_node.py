@@ -173,7 +173,7 @@ class ScromfyAceStepTextEncode:
     RETURN_TYPES = ("CONDITIONING",)
     RETURN_NAMES = ("conditioning",)
     FUNCTION = "encode"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
 
     def encode(self, clip, caption, instrumental=True, lyrics="[Instrumental]", bpm=0, duration=60.0, 

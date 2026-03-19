@@ -29,7 +29,7 @@ class ObsoleteAceStepInpaintSampler:
 
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "sample"
-    CATEGORY = "Scromfy/Ace-Step/Obsolete"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def sample(self, model, source_latent, mask, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise, shift=1.0):
         samples = source_latent["samples"].clone()

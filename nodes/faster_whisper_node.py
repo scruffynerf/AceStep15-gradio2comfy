@@ -94,7 +94,7 @@ class AceStepFasterWhisperTranscription:
     RETURN_TYPES = ("TRANSCRIPTIONS", "STRING", "STRING", "STRING")
     RETURN_NAMES = ("transcriptions", "srt_text", "vtt_text", "lrc_text")
     FUNCTION = "transcribe"
-    CATEGORY = "Scromfy/Ace-Step/Whisper"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
 
     def transcribe(self, 
                   model, 
@@ -234,7 +234,7 @@ class AceStepSaveSubtitleLyrics:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("filepath",)
     FUNCTION = "save"
-    CATEGORY = "Scromfy/Ace-Step/Whisper"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
     OUTPUT_NODE = True
 
     def save(self, text: str, filepath_base: str, extension: str):

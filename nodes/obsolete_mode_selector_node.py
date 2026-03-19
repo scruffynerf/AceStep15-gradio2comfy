@@ -23,7 +23,7 @@ class ObsoleteAceStepModeSelector:
     RETURN_TYPES = ("STRING", "STRING", "AUDIO", "FLOAT", "FLOAT")
     RETURN_NAMES = ("final_prompt", "final_lyrics", "active_audio", "start", "end")
     FUNCTION = "route"
-    CATEGORY = "Scromfy/Ace-Step/Obsolete"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def route(self, mode, description, prompt, lyrics, reference_audio=None, source_audio=None, repaint_start=0.0, repaint_end=-1.0):
         final_prompt = ""

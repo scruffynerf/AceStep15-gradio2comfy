@@ -17,7 +17,7 @@ class AceStepPromptFreeform:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("text",)
     FUNCTION = "resolve"
-    CATEGORY = "Scromfy/Ace-Step/prompt"
+    CATEGORY = "Scromfy/Ace-Step/Prompt"
 
     def resolve(self, text, seed):
         rng = random.Random(seed)

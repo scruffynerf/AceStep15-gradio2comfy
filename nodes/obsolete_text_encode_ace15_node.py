@@ -109,7 +109,7 @@ class ScromfyACEStep15TaskTextEncodeNode:
     RETURN_TYPES = ("CONDITIONING",)
     RETURN_NAMES = ("conditioning",)
     FUNCTION = "encode"
-    CATEGORY = "Scromfy/Ace-Step/prompt"
+    CATEGORY = "Scromfy/Ace-Step/Prompt"
 
     @classmethod
     def IS_CHANGED(s, clip, text, lyrics="", bpm=0, duration=-1.0, keyscale="C major", 

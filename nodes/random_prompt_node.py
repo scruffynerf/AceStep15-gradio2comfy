@@ -22,7 +22,7 @@ class AceStepRandomPrompt:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("prompt",)
     FUNCTION = "generate"
-    CATEGORY = "Scromfy/Ace-Step/TBD"
+    CATEGORY = "Scromfy/Ace-Step/Prompt"
 
     def generate(self, seed, template):
         """Generate random music prompt"""

@@ -112,7 +112,7 @@ class AceStepGenericModelList:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("model_list",)
     FUNCTION = "fetch"
-    CATEGORY = "Scromfy/Ace-Step/lyrics/AI"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics/AI"
 
     def fetch(self, api_url: str, api_key: str = "no-key-required"):
         # Handle base URL

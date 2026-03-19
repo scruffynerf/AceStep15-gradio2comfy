@@ -102,7 +102,7 @@ Shared logic is in `nodes/includes/`. Frontend extensions are in `web/`.
 
 ---
 
-## Obsolete Nodes (Scromfy/Ace-Step/Obsolete)
+## Obsolete Nodes (Scromfy/Ace-Step/obsolete)
 
 These are deprecated and will be removed in a future version.
 

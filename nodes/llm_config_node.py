@@ -18,7 +18,7 @@ class AceStep5HzLMConfig:
     RETURN_TYPES = ("DICT",)
     RETURN_NAMES = ("lm_config",)
     FUNCTION = "build_config"
-    CATEGORY = "Scromfy/Ace-Step/misc"
+    CATEGORY = "Scromfy/Ace-Step/LLM"
 
     def build_config(self, temperature, cfg_scale, top_k, top_p, negative_prompt):
         return ({

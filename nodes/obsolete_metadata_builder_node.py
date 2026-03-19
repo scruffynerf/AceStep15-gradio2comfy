@@ -19,7 +19,7 @@ class ObsoleteAceStepMetadataBuilder:
     RETURN_TYPES = ("DICT",)
     RETURN_NAMES = ("metadata",)
     FUNCTION = "build"
-    CATEGORY = "Scromfy/Ace-Step/Obsolete"
+    CATEGORY = "Scromfy/Ace-Step/obsolete"
 
     def build(self, bpm, duration, keyscale, timesignature, language, instrumental):
         metadata = {

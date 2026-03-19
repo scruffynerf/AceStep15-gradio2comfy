@@ -54,7 +54,7 @@ class ScromfyFlexVisualizerSettingsNode:
     RETURN_TYPES = ("VISUALIZER_SETTINGS",)
     RETURN_NAMES = ("settings",)
     FUNCTION = "get_settings"
-    CATEGORY = "Scromfy/Ace-Step/Visualizer"
+    CATEGORY = "Scromfy/Ace-Step/Visualizers"
 
     def get_settings(self, **kwargs):
         return (kwargs,)
