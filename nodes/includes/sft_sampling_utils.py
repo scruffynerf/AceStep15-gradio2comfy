@@ -106,12 +106,29 @@ def clone_conditioning(conditioning):
             return [_clone_value(v) for v in value]
         if isinstance(value, tuple):
             return tuple(_clone_value(v) for v in value)
+        if hasattr(value, "_copy_with") and hasattr(value, "cond"):
+            cond_value = _clone_value(value.cond)
+            return value._copy_with(cond_value)
         return value
 
     return [
-        [_clone_value(value) for value in cond_item]
+        (list(_clone_value(value) for value in cond_item)
+         if isinstance(cond_item, (list, tuple)) else _clone_value(cond_item))
         for cond_item in conditioning
     ]
+
+def clone_processed_conditioning(conditioning):
+    """Deep clone for pre-processed internal conditioning structures."""
+    if conditioning is None: return None
+    def _clone_inner(v):
+        if torch.is_tensor(v): return v.clone()
+        if isinstance(v, dict): return {k: _clone_inner(i) for k, i in v.items()}
+        if isinstance(v, list): return [_clone_inner(i) for i in v]
+        if isinstance(v, tuple): return tuple(_clone_inner(i) for i in v)
+        if hasattr(v, "_copy_with") and hasattr(v, "cond"):
+            return v._copy_with(_clone_inner(v.cond))
+        return v
+    return [_clone_inner(item) for item in conditioning]
 
 
 def zero_conditioning_value(value):
@@ -169,11 +186,50 @@ def build_text_only_conditioning(positive):
                 p[1]["conditioning_lyrics"] = torch.zeros_like(p[1]["conditioning_lyrics"])
     return new_positive
 
-def build_processed_text_only_conditioning(positive):
-    """Variant for use during sampling loop."""
-    new_positive = clone_conditioning(positive)
-    for p in new_positive:
-        if len(p) > 1 and isinstance(p[1], dict):
-            if "conditioning_lyrics" in p[1]:
-                p[1]["conditioning_lyrics"] = torch.zeros_like(p[1]["conditioning_lyrics"])
-    return new_positive
+def build_processed_text_only_conditioning(processed_conditioning):
+    """Variant for use during sampling loop (operates on list of dicts)."""
+    if processed_conditioning is None:
+        return None
+
+    text_only = []
+    has_lyric_branch = False
+    
+    # Processed conditioning in ComfyUI sampler is typically a list of dicts
+    for cond_item in processed_conditioning:
+        if not isinstance(cond_item, dict):
+            text_only.append(cond_item)
+            continue
+            
+        cloned = cond_item.copy()
+        model_conds = cloned.get("model_conds")
+        if model_conds is not None:
+            cloned_model_conds = model_conds.copy()
+            
+            # These are the keys used in ACE-Step 1.5's internal model_conds
+            for key in ("lyric_embed", "lyric_token_idx", "conditioning_lyrics"):
+                lyric_val = cloned_model_conds.get(key)
+                if lyric_val is not None:
+                    # Case 1: Wrapped conditioning object (has .cond)
+                    if hasattr(lyric_val, "_copy_with") and hasattr(lyric_val, "cond"):
+                        cloned_model_conds[key] = lyric_val._copy_with(
+                            torch.zeros_like(lyric_val.cond)
+                        )
+                        has_lyric_branch = True
+                    # Case 2: Direct tensor
+                    elif torch.is_tensor(lyric_val):
+                        cloned_model_conds[key] = torch.zeros_like(lyric_val)
+                        has_lyric_branch = True
+
+            # Also zero out lyrics_strength if present
+            strength = cloned_model_conds.get("lyrics_strength")
+            if strength is not None:
+                if hasattr(strength, "_copy_with"):
+                    cloned_model_conds["lyrics_strength"] = strength._copy_with(0.0)
+                else:
+                    cloned_model_conds["lyrics_strength"] = 0.0
+
+            cloned["model_conds"] = cloned_model_conds
+        
+        text_only.append(cloned)
+
+    return text_only if has_lyric_branch else None

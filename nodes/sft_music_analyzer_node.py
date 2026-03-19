@@ -39,17 +39,41 @@ class ScromfySFTMusicAnalyzer:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "audio": ("AUDIO",),
-                "model": (list(_ANALYSIS_MODELS.keys()), {"default": "Qwen2.5-Omni-3B"}),
-                "get_tags": ("BOOLEAN", {"default": True}),
-                "get_bpm": ("BOOLEAN", {"default": True}),
-                "get_keyscale": ("BOOLEAN", {"default": True}),
+                "audio": ("AUDIO", {"tooltip": "Audio to analyze for tags, BPM and key/scale."}),
+                "model": (list(_ANALYSIS_MODELS.keys()), {
+                    "default": "Qwen2.5-Omni-3B",
+                    "tooltip": "Select the AI model for audio analysis (e.g. Qwen2.5 Omni for detailed tagging).",
+                }),
+                "get_tags": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Extract descriptive tags (genre, mood, etc.).",
+                }),
+                "get_bpm": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Estimate BPM (Beats Per Minute).",
+                }),
+                "get_keyscale": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Detect the musical key and scale.",
+                }),
             },
             "optional": {
-                "max_new_tokens": ("INT", {"default": 100, "min": 50, "max": 1000, "step": 10}),
-                "audio_duration": ("INT", {"default": 30, "min": 10, "max": 120, "step": 5}),
-                "unload_model": ("BOOLEAN", {"default": True}),
-                "use_flash_attn": ("BOOLEAN", {"default": False}),
+                "max_new_tokens": ("INT", {
+                    "default": 100, "min": 50, "max": 1000, "step": 10,
+                    "tooltip": "Maximum tokens for the AI model to generate.",
+                }),
+                "audio_duration": ("INT", {
+                    "default": 30, "min": 10, "max": 120, "step": 5,
+                    "tooltip": "Duration of audio (in seconds) to pass to the model for analysis.",
+                }),
+                "unload_model": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "VRAM management: Unload the analysis model from VRAM after completion.",
+                }),
+                "use_flash_attn": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "Enable Flash Attention 2 (requires compatible GPU/drivers).",
+                }),
                 "temperature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "top_p": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05}),
                 "top_k": ("INT", {"default": 0, "min": 0, "max": 200, "step": 1}),
@@ -61,7 +85,7 @@ class ScromfySFTMusicAnalyzer:
     RETURN_TYPES = ("STRING", "INT", "STRING", "STRING")
     RETURN_NAMES = ("tags", "bpm", "keyscale", "music_infos")
     FUNCTION = "analyze"
-    CATEGORY = "Scromfy/SFT"
+    CATEGORY = "Scromfy/Ace-Step/SFT"
 
     def analyze(self, audio, model, get_tags, get_bpm, get_keyscale,
                 max_new_tokens=100, audio_duration=30, unload_model=True, use_flash_attn=False,

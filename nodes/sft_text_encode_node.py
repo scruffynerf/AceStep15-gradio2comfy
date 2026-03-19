@@ -53,34 +53,90 @@ class ScromfySFTTextEncode:
         return {
             "required": {
                 "clip": ("CLIP",),
-                "caption": ("STRING", {"multiline": True, "dynamicPrompts": True, "default": ""}),
-                "instrumental": ("BOOLEAN", {"default": True}),
+                "caption": ("STRING", {
+                    "multiline": True, 
+                    "dynamicPrompts": True, 
+                    "default": "", 
+                    "placeholder": "Describe the music: genre, mood, instruments, style...",
+                    "tooltip": "Text description of the music to generate (tags/caption).",
+                }),
+                "instrumental": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Force instrumental mode (overrides lyrics with [Instrumental]). Enabled by default because the baseline quality profile starts from instrumental generation.",
+                }),
             },
             "optional": {
-                "lyrics": ("STRING", {"multiline": True, "default": "[Instrumental]"}),
-                "bpm": ("INT", {"default": 0, "min": 0, "max": 300}),
-                "duration": ("FLOAT", {"default": 60.0, "min": 0.0, "max": 600.0, "step": 0.1}),
-                "keyscale": (["auto"] + cls.VALID_KEYSCALES[1:], {"default": "auto"}),
-                "timesignature": (cls.VALID_TIME_SIGNATURES, {"default": "auto"}),
-                "language": (cls.VALID_LANGUAGES, {"default": "English"}),
-                "generate_audio_codes": ("BOOLEAN", {"default": True}),
+                "lyrics": ("STRING", {
+                    "multiline": True, 
+                    "default": "[Instrumental]",
+                    "placeholder": "Song lyrics or [Instrumental]",
+                    "tooltip": "Lyrics for the music. Use [Instrumental] for instrumental tracks.",
+                }),
+                "bpm": ("INT", {
+                    "default": 0, "min": 0, "max": 300,
+                    "tooltip": "Beats per minute. 0 = auto (N/A, let model decide). Defaulting to auto usually gives better global musical coherence unless you need a fixed tempo.",
+                }),
+                "duration": ("FLOAT", {
+                    "default": 60.0, "min": 0.0, "max": 600.0, "step": 0.1,
+                    "tooltip": "Duration in seconds. Default 60s matches the strongest quality baseline. Set to 0 for auto duration from lyrics or source_audio.",
+                }),
+                "keyscale": (["auto"] + cls.VALID_KEYSCALES[1:], {
+                    "default": "auto",
+                    "tooltip": "Key and scale. 'auto' = let model decide (N/A). Defaulting to auto usually improves natural harmonic choices unless a fixed key is required.",
+                }),
+                "timesignature": (cls.VALID_TIME_SIGNATURES, {
+                    "default": "auto",
+                    "tooltip": "Time signature numerator. 'auto' = let model decide (N/A). Defaulting to auto avoids over-constraining the planner.",
+                }),
+                "language": (cls.VALID_LANGUAGES, {
+                    "default": "English",
+                    "tooltip": "Language tag for lyrics conditioning. English remains the safest default for broad model support and instrumental prompts.",
+                }),
+                "generate_audio_codes": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "Enable LLM audio code generation for semantic structure. Recommended to keep enabled even with reference_audio.",
+                }),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "lm_cfg_scale": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 100.0, "step": 0.1}),
-                "lm_temperature": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 2.0, "step": 0.01}),
+                "lm_cfg_scale": ("FLOAT", {
+                    "default": 2.0, "min": 0.0, "max": 100.0, "step": 0.1,
+                    "tooltip": "LLM classifier-free guidance scale.",
+                }),
+                "lm_temperature": ("FLOAT", {
+                    "default": 0.85, "min": 0.0, "max": 2.0, "step": 0.01,
+                    "tooltip": "LLM sampling temperature.",
+                }),
                 "lm_top_p": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 2000.0, "step": 0.01}),
                 "lm_top_k": ("INT", {"default": 0, "min": 0, "max": 100}),
                 "lm_min_p": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
-                "lm_negative_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "style_tags": ("STRING", {"default": "", "forceInput": True}),
-                "style_bpm": ("INT", {"default": 0, "min": 0, "max": 300, "forceInput": True}),
-                "style_keyscale": ("STRING", {"default": "", "forceInput": True}),
+                "lm_negative_prompt": ("STRING", {
+                    "multiline": True, 
+                    "default": "",
+                    "placeholder": "Negative prompt for LLM audio code generation",
+                    "tooltip": "Negative text prompt for LLM CFG.",
+                }),
+                "style_tags": ("STRING", {
+                    "default": "", 
+                    "forceInput": True,
+                    "tooltip": "Tags from the Music Analyzer node. Appended to caption when connected.",
+                }),
+                "style_bpm": ("INT", {
+                    "default": 0, "min": 0, "max": 300, 
+                    "forceInput": True,
+                    "tooltip": "BPM from the Music Analyzer node. Overrides bpm when > 0.",
+                }),
+                "style_keyscale": ("STRING", {
+                    "default": "", 
+                    "forceInput": True,
+                    "tooltip": "Key/Scale from the Music Analyzer node. Overrides keyscale when connected.",
+                }),
             }
         }
 
     RETURN_TYPES = ("CONDITIONING",)
     RETURN_NAMES = ("conditioning",)
     FUNCTION = "encode"
-    CATEGORY = "Scromfy/SFT"
+    CATEGORY = "Scromfy/Ace-Step/SFT"
+
 
     def encode(self, clip, caption, instrumental=True, lyrics="[Instrumental]", bpm=0, duration=60.0, 
                keyscale="C major", timesignature="4/4", language="English", 

@@ -34,43 +34,119 @@ class ScromfySFTSampler:
                 "negative": ("CONDITIONING",),
                 "latent_image": ("LATENT",),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
-                "steps": ("INT", {"default": 60, "min": 1, "max": 200}),
-                "cfg": ("FLOAT", {"default": 15.0, "min": 0.0, "max": 100.0, "step": 0.1}),
-                "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {"default": "euler"}),
-                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {"default": "normal"}),
-                "denoise": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "guidance_mode": (["apg", "adg", "standard_cfg"], {"default": "apg"}),
-                "guidance_interval": ("FLOAT", {"default": 0.5, "min": -1.0, "max": 1.0, "step": 0.01}),
+                "steps": ("INT", {
+                    "default": 60, "min": 1, "max": 200,
+                    "tooltip": "Diffusion inference steps. The official AceStep 1.5 quality baseline uses 60 steps.",
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 15.0, "min": 0.0, "max": 100.0, "step": 0.1,
+                    "tooltip": "Classifier-free guidance scale. The official AceStep 1.5 quality baseline uses 15.0.",
+                }),
+                "sampler_name": (comfy.samplers.KSampler.SAMPLERS, {
+                    "default": "euler",
+                    "tooltip": "Official AceStep 1.5 quality baseline uses Euler sampling.",
+                }),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS, {
+                    "default": "normal",
+                    "tooltip": "Recommended scheduler pairing for the AceStep Euler baseline in ComfyUI.",
+                }),
+                "denoise": ("FLOAT", {
+                    "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01,
+                    "tooltip": "Denoise strength. 1.0 = full generation from noise. < 1.0 requires source_audio. Auto-set to 1.0 when reference_audio is provided.",
+                }),
+                "guidance_mode": (["apg", "adg", "standard_cfg"], {
+                    "default": "apg",
+                    "tooltip": "APG = Adaptive Projected Guidance (AceStep default). ADG = Angle-based Dynamic Guidance. standard_cfg = regular CFG.",
+                }),
+                "guidance_interval": ("FLOAT", {
+                    "default": 0.5, "min": -1.0, "max": 1.0, "step": 0.01,
+                    "tooltip": "Official AceStep guidance interval width. 0.5 applies guidance in the centered middle band. Set to -1 to use legacy cfg_interval_start/end instead.",
+                }),
             },
             "optional": {
                 "vae": ("VAE",),
                 "source_audio": ("AUDIO",),
                 "reference_audio": ("AUDIO",),
-                "reference_as_cover": ("BOOLEAN", {"default": False}),
-                "audio_cover_strength": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.05}),
-                "apg_momentum": ("FLOAT", {"default": -0.75, "min": -1.0, "max": 1.0, "step": 0.05}),
-                "apg_norm_threshold": ("FLOAT", {"default": 2.5, "min": 0.0, "max": 10.0, "step": 0.1}),
-                "guidance_interval_decay": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "min_guidance_scale": ("FLOAT", {"default": 3.0, "min": 0.0, "max": 30.0, "step": 0.1}),
-                "guidance_scale_text": ("FLOAT", {"default": -1.0, "min": -1.0, "max": 30.0, "step": 0.1}),
-                "guidance_scale_lyric": ("FLOAT", {"default": -1.0, "min": -1.0, "max": 30.0, "step": 0.1}),
-                "omega_scale": ("FLOAT", {"default": 0.0, "min": -8.0, "max": 8.0, "step": 0.05}),
-                "erg_scale": ("FLOAT", {"default": 0.0, "min": -0.9, "max": 2.0, "step": 0.05}),
-                "cfg_interval_start": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.05}),
-                "cfg_interval_end": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05}),
-                "shift": ("FLOAT", {"default": 3.0, "min": 1.0, "max": 5.0, "step": 0.1}),
-                "custom_timesteps": ("STRING", {"default": ""}),
-                "latent_shift": ("FLOAT", {"default": 0.0, "min": -0.2, "max": 0.2, "step": 0.01}),
-                "latent_rescale": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 1.5, "step": 0.01}),
-                "normalize_peak": ("BOOLEAN", {"default": False}),
-                "voice_boost": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5}),
+                "reference_as_cover": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "If False (default): learn style from reference, generate completely new music. If True: use reference as base for remix/cover.",
+                }),
+                "audio_cover_strength": ("FLOAT", {
+                    "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.05,
+                    "tooltip": "Only used when reference_as_cover=True. How much reference content is preserved (0=remix, 1=exact cover).",
+                }),
+                "apg_momentum": ("FLOAT", {
+                    "default": -0.75, "min": -1.0, "max": 1.0, "step": 0.05,
+                    "tooltip": "APG momentum buffer coefficient.",
+                }),
+                "apg_norm_threshold": ("FLOAT", {
+                    "default": 2.5, "min": 0.0, "max": 10.0, "step": 0.1,
+                    "tooltip": "APG norm threshold for gradient clipping.",
+                }),
+                "guidance_interval_decay": ("FLOAT", {
+                    "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01,
+                    "tooltip": "Linearly decays guidance inside the active interval toward min_guidance_scale, matching AceStep's official control.",
+                }),
+                "min_guidance_scale": ("FLOAT", {
+                    "default": 3.0, "min": 0.0, "max": 30.0, "step": 0.1,
+                    "tooltip": "Lowest guidance scale reached when guidance_interval_decay is enabled.",
+                }),
+                "guidance_scale_text": ("FLOAT", {
+                    "default": -1.0, "min": -1.0, "max": 30.0, "step": 0.1,
+                    "tooltip": "Independent text guidance scale. -1 inherits cfg. Works by adding a text-only conditioning branch inside the node.",
+                }),
+                "guidance_scale_lyric": ("FLOAT", {
+                    "default": -1.0, "min": -1.0, "max": 30.0, "step": 0.1,
+                    "tooltip": "Independent lyric guidance scale. -1 inherits cfg. The full branch remains text+lyrics; this value controls the lyric-only delta against the text-only branch.",
+                }),
+                "omega_scale": ("FLOAT", {
+                    "default": 0.0, "min": -8.0, "max": 8.0, "step": 0.05,
+                    "tooltip": "Mean-preserving output reweighting applied inside the node to emulate AceStep's omega_scale scheduler behavior.",
+                }),
+                "erg_scale": ("FLOAT", {
+                    "default": 0.0, "min": -0.9, "max": 2.0, "step": 0.05,
+                    "tooltip": "Node-local ERG approximation. Reweights prompt and lyric conditioning energy before sampling to strengthen prompt adherence without changing ComfyUI core.",
+                }),
+                "cfg_interval_start": ("FLOAT", {
+                    "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.05,
+                    "tooltip": "Start applying CFG/APG guidance at this fraction of the schedule.",
+                }),
+                "cfg_interval_end": ("FLOAT", {
+                    "default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05,
+                    "tooltip": "Stop applying CFG/APG guidance at this fraction of the schedule.",
+                }),
+                "shift": ("FLOAT", {
+                    "default": 3.0, "min": 1.0, "max": 5.0, "step": 0.1,
+                    "tooltip": "Timestep schedule shift. Gradio default = 3.0.",
+                }),
+                "custom_timesteps": ("STRING", {
+                    "default": "",
+                    "tooltip": "Custom comma-separated timesteps (overrides steps, shift and scheduler).",
+                }),
+                "latent_shift": ("FLOAT", {
+                    "default": 0.0, "min": -0.2, "max": 0.2, "step": 0.01,
+                    "tooltip": "Additive shift on DiT latents before VAE decode (anti-clipping).",
+                }),
+                "latent_rescale": ("FLOAT", {
+                    "default": 1.0, "min": 0.5, "max": 1.5, "step": 0.01,
+                    "tooltip": "Multiplicative scale on DiT latents before VAE decode.",
+                }),
+                "normalize_peak": ("BOOLEAN", {
+                    "default": False,
+                    "tooltip": "Enable peak normalization (normalize to max amplitude). Disabled by default to preserve the model's natural dynamics and transient balance.",
+                }),
+                "voice_boost": ("FLOAT", {
+                    "default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5,
+                    "tooltip": "Voice boost in dB. Positive = louder voice (use with reference_audio). Default 0 dB.",
+                }),
             }
         }
 
     RETURN_TYPES = ("LATENT", "AUDIO")
     RETURN_NAMES = ("latent", "audio")
     FUNCTION = "sample"
-    CATEGORY = "Scromfy/SFT"
+    CATEGORY = "Scromfy/Ace-Step/SFT"
+
 
     def sample(self, model, positive, negative, latent_image, seed, steps, cfg, 
                sampler_name, scheduler, denoise, guidance_mode, guidance_interval,
