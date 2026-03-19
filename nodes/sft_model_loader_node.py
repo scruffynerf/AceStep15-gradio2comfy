@@ -8,7 +8,7 @@ import torch
 # for his all-in-one SFT node implementation, I've split it into pieces.
 # This is the model loader node.
 
-class ScromfySFTModelLoader:
+class ScromfyAceStepModelLoader:
     """Specialized loader for AceStep 1.5 SFT model triplets.
     Handles loading the Diffusion model (DiT), dual CLIP encoders (Qwen), and VAE.
     """
@@ -37,7 +37,7 @@ class ScromfySFTModelLoader:
     RETURN_TYPES = ("MODEL", "CLIP", "VAE")
     RETURN_NAMES = ("model", "clip", "vae")
     FUNCTION = "load_models"
-    CATEGORY = "Scromfy/SFT"
+    CATEGORY = "Scromfy/Ace-Step/SFT"
 
     def load_models(self, diffusion_model, text_encoder_1, text_encoder_2, vae_name, lora_stack=None):
         # 1. Load Diffusion Model
@@ -66,7 +66,7 @@ class ScromfySFTModelLoader:
                 lora_data = comfy.utils.load_torch_file(lora_path, safe_load=True)
                 model, clip = comfy.sd.load_lora_for_models(
                     model, clip, lora_data,
-                    lora_spec["strength_model"], lora_spec["strength_clip"]
+                    lora_spec["strength_model"], None
                 )
 
         # 4. Load VAE
@@ -79,9 +79,9 @@ class ScromfySFTModelLoader:
         return (model, clip, vae)
 
 NODE_CLASS_MAPPINGS = {
-    "ScromfySFTModelLoader": ScromfySFTModelLoader
+    "ScromfyAceStepModelLoader": ScromfyAceStepModelLoader
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfySFTModelLoader": "ScromfySFT Model Loader"
+    "ScromfyAceStepModelLoader": "Scromfy AceStep Model Loader"
 }

@@ -30,7 +30,7 @@ _ANALYSIS_MODELS = {
     "Whisper-tiny-audio-captioning": "MU-NLPC/whisper-tiny-audio-captioning",
 }
 
-class ScromfySFTMusicAnalyzer:
+class ScromfyAceStepMusicAnalyzer:
     """Analyzes audio to extract descriptive tags, BPM and key/scale.
     Full port of AceStepSFTMusicAnalyzer with all 9 supported models.
     """
@@ -100,18 +100,18 @@ class ScromfySFTMusicAnalyzer:
         if get_tags:
             try:
                 tags = self._extract_tags(audio, model, max_new_tokens, audio_duration, use_flash_attn, gen_kwargs)
-                print(f"[ScromfySFT] Extracted tags: {tags}")
+                print(f"[ScromfyAceStep] Extracted tags: {tags}")
             except Exception as e:
-                print(f"[ScromfySFT] Tag extraction failed: {e}")
+                print(f"[ScromfyAceStep] Tag extraction failed: {e}")
 
         if get_bpm or get_keyscale:
             try:
                 dsp = self._detect_bpm_keyscale(audio)
                 if get_bpm: detected_bpm = dsp["bpm"]
                 if get_keyscale: keyscale = dsp["keyscale"]
-                print(f"[ScromfySFT] Detected BPM: {dsp['bpm']} | Key: {dsp['keyscale']}")
+                print(f"[ScromfyAceStep] Detected BPM: {dsp['bpm']} | Key: {dsp['keyscale']}")
             except Exception as e:
-                print(f"[ScromfySFT] DSP detection failed: {e}")
+                print(f"[ScromfyAceStep] DSP detection failed: {e}")
 
         if unload_model and get_tags:
             self._unload_audio_model()
@@ -282,7 +282,13 @@ class ScromfySFTMusicAnalyzer:
         pitch_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         best_idx = np.argmax(chroma)
         is_minor = chroma[(best_idx + 3) % 12] > chroma[(best_idx + 4) % 12]
-        return {"bpm": bpm, "keyscale": f"{pitch_names[best_idx]} {'minor' if is_minor else 'major'}"}
+        # Basic theory overrides to match ACE-Step constants.py
+        keyscale = f"{pitch_names[best_idx]} {'minor' if is_minor else 'major'}"
+        if pitch_names[best_idx] == 'C#' and is_minor == False:
+            keyscale = 'C major'
+        if pitch_names[best_idx] == 'A#' and is_minor == True:
+            keyscale = 'A minor'
+        return {"bpm": bpm, "keyscale": keyscale}
 
-NODE_CLASS_MAPPINGS = {"ScromfySFTMusicAnalyzer": ScromfySFTMusicAnalyzer}
-NODE_DISPLAY_NAME_MAPPINGS = {"ScromfySFTMusicAnalyzer": "ScromfySFT Music Analyzer"}
+NODE_CLASS_MAPPINGS = {"ScromfyAceStepMusicAnalyzer": ScromfyAceStepMusicAnalyzer}
+NODE_DISPLAY_NAME_MAPPINGS = {"ScromfyAceStepMusicAnalyzer": "Scromfy AceStep Music Analyzer"}

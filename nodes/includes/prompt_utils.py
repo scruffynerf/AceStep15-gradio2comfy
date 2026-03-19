@@ -32,7 +32,6 @@ def get_keyscales():
 
 def _load_components():
     """Scan the prompt_components directory and load all txt/json files."""
-    global _HIDDEN_COMPONENTS
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     components_dir = os.path.join(base_dir, "prompt_components")
     
@@ -120,7 +119,9 @@ def _load_components():
 
     for root, dirs, files in os.walk(components_dir):
         # Skip hidden directories (like .git or __pycache__)
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        for d in list(dirs):
+            if d.startswith('.'):
+                dirs.remove(d)
         
         for filename in files:
             if filename in ("TOTALIGNORE.list", "LOADBUTNOTSHOW.list", "REPLACE.list", "WEIGHTS.json", "README.md", "FORCESHOW.list", "HIDDEN.list") or ".default." in filename:
@@ -150,8 +151,8 @@ def _load_components():
                         
                         # Visibility logic: Only files in the root of prompt_components are visible in UI,
                         # unless explicitly forced via FORCESHOW.list. HIDDEN.list overrides both.
-                        if assign_name not in hidden:
-                            if root == components_dir or assign_name in force_show:
+                        if assign_name not in (hidden or set()):
+                            if root == components_dir or assign_name in (force_show or set()):
                                 _TOP_LEVEL_COMPONENTS.add(assign_name)
                                 
                 elif ext == ".txt":
@@ -162,8 +163,8 @@ def _load_components():
                         
                         # Visibility logic: Only files in the root of prompt_components are visible in UI,
                         # unless explicitly forced via FORCESHOW.list. HIDDEN.list overrides both.
-                        if assign_name not in hidden:
-                            if root == components_dir or assign_name in force_show:
+                        if assign_name not in (hidden or set()):
+                            if root == components_dir or assign_name in (force_show or set()):
                                 _TOP_LEVEL_COMPONENTS.add(assign_name)
                                 
             except Exception as e:
