@@ -181,55 +181,52 @@ class ScromfyAceStepTextEncoderPlusPlus:
         if style_tags and style_tags.strip():
             full_caption = f"{full_caption}, {style_tags.strip()}"
         
-        # 2. Handle Auto/Defaults
         actual_lyrics = "[Instrumental]" if instrumental else lyrics
         language_iso = self.LANGUAGE_MAP.get(language, "en")
         timesig_code = self.TIMESIG_MAP.get(timesignature, "0")
         
-        bpm_val = 0 if bpm <= 20 else bpm # Align with base detection
+        bpm_val = 0 if bpm <= 20 else bpm
         ks_val = "" if keyscale == "Auto-decide" else keyscale
         
-        tok_bpm = 120 if bpm_val == 0 else bpm_val
-        tok_ts = int(timesig_code)
-        tok_ks = "C major" if ks_val == "" else ks_val
-
-        # 3. Base Tokenization
-        # If enhanced_prompt is True, we delay audio code generation until after we've enriched the prompt
-        # so that the 5Hz LM uses the CoT/YAML structure.
-        initial_gen_codes = generate_audio_codes and not enhanced_prompt
-
-        tokens = clip.tokenize(full_caption, 
-                                lyrics=actual_lyrics, 
-                                bpm=bpm_val, 
-                                duration=duration, 
-                                timesignature=timesig_code, 
-                                language=language_iso, 
-                                keyscale=ks_val, 
-                                generate_audio_codes=initial_gen_codes, 
-                                seed=seed, 
-                                cfg_scale=cfg_scale, 
-                                temperature=temperature, 
-                                top_p=top_p, 
-                                top_k=top_k, 
-                                min_p=min_p,
-                                repetition_penalty=repetition_penalty,
-                                caption_negative=negative_prompt)
-
-        # 4. Enhanced Prompting (SFT Chain-of-Thought YAML)
+        # --- PATH A: ENHANCED PROMPT (SFT LOGIC) ---
         if enhanced_prompt:
+            # SFT-specific auto-detection flags
+            bpm_is_auto = (bpm_val == 0)
+            ts_is_auto = (timesignature == "Auto-decide" or timesignature == "0")
+            ks_is_auto = (keyscale == "Auto-decide" or ks_val == "")
+            
+            tok_bpm = 120 if bpm_is_auto else bpm_val
+            tok_ts = 4 if ts_is_auto else int(timesig_code)
+            tok_ks = "C major" if ks_is_auto else ks_val
+
+            # 1. Initial Tokenization (Generates audio codes if requested)
+            tokens = clip.tokenize(full_caption, 
+                                    lyrics=actual_lyrics, 
+                                    bpm=tok_bpm, 
+                                    duration=duration, 
+                                    timesignature=tok_ts, 
+                                    language=language_iso, 
+                                    keyscale=tok_ks, 
+                                    seed=seed, 
+                                    generate_audio_codes=generate_audio_codes,
+                                    cfg_scale=cfg_scale, 
+                                    temperature=temperature, 
+                                    top_p=top_p, 
+                                    top_k=top_k, 
+                                    min_p=min_p,
+                                    caption_negative=negative_prompt)
+
+            # 2. SFT enrichment
             inner_tok = getattr(clip.tokenizer, "qwen3_06b", None)
             if inner_tok is not None:
                 dur_ceil = int(math.ceil(duration)) if duration > 0 else 0
                 cot_items = {}
-                if bpm_val != 0:
-                    cot_items["bpm"] = bpm_val
+                if not bpm_is_auto: cot_items["bpm"] = bpm_val
                 cot_items["caption"] = full_caption
                 cot_items["duration"] = dur_ceil
-                if ks_val != "":
-                    cot_items["keyscale"] = ks_val
+                if not ks_is_auto: cot_items["keyscale"] = ks_val
                 cot_items["language"] = language_iso
-                if timesig_code != "0":
-                    cot_items["timesignature"] = tok_ts
+                if not ts_is_auto: cot_items["timesignature"] = tok_ts
                     
                 cot_yaml = yaml.dump(cot_items, allow_unicode=True, sort_keys=True).strip()
                 enriched_cot = f"<think>\n{cot_yaml}\n</think>"
@@ -241,16 +238,12 @@ class ScromfyAceStepTextEncoderPlusPlus:
                     "<|im_end|>\n<|im_start|>assistant\n{}\n\n<|im_end|>\n"
                 )
                 
-                # Repopulate the lm_prompt within tokens
+                # Overwrite lm_prompt with enriched CoT
                 tokens["lm_prompt"] = inner_tok.tokenize_with_weights(
                     lm_tpl.format(full_caption, actual_lyrics.strip(), enriched_cot),
                     False,
                     disable_weights=True,
                 )
-                
-                # Ensure the generate_audio_codes flag is set for the encoder
-                # to pick up if it was delayed during the initial tokenization
-                tokens["generate_audio_codes"] = generate_audio_codes
                 
                 if negative_prompt:
                     tokens["lm_prompt_negative"] = inner_tok.tokenize_with_weights(
@@ -258,11 +251,31 @@ class ScromfyAceStepTextEncoderPlusPlus:
                         False,
                         disable_weights=True,
                     )
+            
+            conditioning = clip.encode_from_tokens_scheduled(tokens)
 
-        # 5. Final Encoding
-        conditioning = clip.encode_from_tokens_scheduled(tokens)
+        # --- PATH B: STANDARD PROMPT (ACESTEP 1.5 LOGIC) ---
+        else:
+            tokens = clip.tokenize(full_caption, 
+                                    lyrics=actual_lyrics, 
+                                    bpm=bpm_val, 
+                                    duration=duration, 
+                                    timesignature=timesig_code, 
+                                    language=language_iso, 
+                                    keyscale=ks_val, 
+                                    generate_audio_codes=generate_audio_codes, 
+                                    seed=seed, 
+                                    cfg_scale=cfg_scale, 
+                                    temperature=temperature, 
+                                    top_p=top_p, 
+                                    top_k=top_k, 
+                                    min_p=min_p,
+                                    repetition_penalty=repetition_penalty,
+                                    caption_negative=negative_prompt)
+            
+            conditioning = clip.encode_from_tokens_scheduled(tokens)
         
-        # 6. Zero-ed out conditioning
+        # 6. Shared: Zero-ed out conditioning
         zero_conditioning = zero_out(conditioning)
         
         return (conditioning, zero_conditioning)
