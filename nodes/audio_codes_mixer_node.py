@@ -42,7 +42,7 @@ class AceStepAudioCodesMixer:
     RETURN_TYPES = ("LIST",)
     RETURN_NAMES = ("audio_codes",)
     FUNCTION = "mix"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, audio_codes_A, audio_codes_B, mode, alpha, ratio, weight, eps, scale_mode, mask=None):
@@ -199,5 +199,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepAudioCodesMixer": "Audio Codes Mixer (Binary Toolbox)",
+    "AceStepAudioCodesMixer": "Audio Codes Mixer",
 }

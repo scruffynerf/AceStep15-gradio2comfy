@@ -29,7 +29,7 @@ class AceStepTensorMixer:
     
     RETURN_TYPES = ("TENSOR",)
     FUNCTION = "mix"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def mix(self, tensor_A, tensor_B, mode, alpha, ratio, weight, eps, scale_mode, mask=None):
         A = tensor_A.clone()
@@ -137,5 +137,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepTensorMixer": "Tensor Mixer (Binary Toolbox)",
+    "AceStepTensorMixer": "Tensor Conditioning Mixer",
 }

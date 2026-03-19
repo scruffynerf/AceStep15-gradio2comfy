@@ -33,7 +33,7 @@ class ScromfyAceStepVAEDecodeSettings:
     RETURN_TYPES = ("SCROMFY_VAE_SETTINGS",)
     RETURN_NAMES = ("vae_decode_settings",)
     FUNCTION = "get_settings"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def get_settings(self, **kwargs):
         return (kwargs,)

@@ -308,7 +308,7 @@ class AceStepLoRALoader:
 
     RETURN_TYPES = ("MODEL",)
     FUNCTION = "apply_lora"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Lora"
 
     def apply_lora(self, ace_model, lora_name, strength=1.0, mode="auto_clean", debug=False):
         if safetensors_load is None:
@@ -430,5 +430,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepLoRALoader": "LoRA Loader (ACE-Step)",
+    "AceStepLoRALoader": "Load Legacy AceStep LoRA",
 }

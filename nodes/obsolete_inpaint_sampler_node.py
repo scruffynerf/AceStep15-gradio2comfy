@@ -5,8 +5,8 @@ import comfy.sample
 import comfy.model_management
 from .includes.sampling_utils import apply_shift
 
-class AceStepInpaintSampler:
-    """Specialized KSampler for audio inpainting"""
+class ObsoleteAceStepInpaintSampler:
+    """Specialized KSampler for audio inpainting (OBSOLETE: Use ScromfyAceStepSampler instead)"""
     
     @classmethod
     def INPUT_TYPES(cls):
@@ -29,7 +29,7 @@ class AceStepInpaintSampler:
 
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "sample"
-    CATEGORY = "Scromfy/Ace-Step/TBD"
+    CATEGORY = "Scromfy/Ace-Step/Obsolete"
 
     def sample(self, model, source_latent, mask, positive, negative, seed, steps, cfg, sampler_name, scheduler, denoise, shift=1.0):
         samples = source_latent["samples"].clone()
@@ -69,9 +69,9 @@ class AceStepInpaintSampler:
 
 
 NODE_CLASS_MAPPINGS = {
-    "AceStepInpaintSampler": AceStepInpaintSampler,
+    "obsolete_AceStepInpaintSampler": ObsoleteAceStepInpaintSampler,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepInpaintSampler": "Inpaint Sampler (Audio)",
+    "obsolete_AceStepInpaintSampler": "Inpaint Sampler (Audio) [OBSOLETE]",
 }

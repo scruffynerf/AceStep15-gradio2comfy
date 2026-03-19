@@ -43,5 +43,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepTensorSave": "Save Conditioning Tensor",
+    "AceStepTensorSave": "Save AceStep Conditioning Tensor",
 }

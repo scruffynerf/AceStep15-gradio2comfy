@@ -25,7 +25,7 @@ class AceStepAudioCodesLoader:
     RETURN_TYPES = ("LIST", "STRING")
     RETURN_NAMES = ("audio_codes", "filename")
     FUNCTION = "load"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, audio_codes_file, seed):
@@ -67,5 +67,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepAudioCodesLoader": "Load Audio Codes",
+    "AceStepAudioCodesLoader": "Load Audio Codes (conditioning)",
 }

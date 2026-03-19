@@ -50,7 +50,7 @@ class AceStepAudioCodesUnaryOp:
     RETURN_TYPES = ("LIST", "IMAGE")
     RETURN_NAMES = ("audio_codes", "visualization")
     FUNCTION = "process"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, audio_codes, mode, visualization_type, length_pct, strength, sigma, seed, ssm_blur, mask=None):
@@ -395,5 +395,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepAudioCodesUnaryOp": "Audio Codes Unary Operations",
+    "AceStepAudioCodesUnaryOp": "Audio Codes Solo Operations",
 }

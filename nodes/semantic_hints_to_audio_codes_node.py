@@ -22,7 +22,7 @@ class AceStepSemanticHintsToAudioCodes:
     RETURN_TYPES = ("LIST",)
     RETURN_NAMES = ("audio_codes",)
     FUNCTION = "convert"
-    CATEGORY = "Scromfy/Ace-Step/advanced"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, semantic_hints, latent_scaling):
@@ -87,5 +87,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepSemanticHintsToAudioCodes": "Semantic Hints \u2192 Audio Codes (Flawed)",
+    "AceStepSemanticHintsToAudioCodes": "Semantic Hints -> Audio Codes (VERY Flawed)",
 }

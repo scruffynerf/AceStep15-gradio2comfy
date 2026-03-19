@@ -46,7 +46,7 @@ class ScromfyAceStepPromptGen:
     RETURN_NAMES = tuple(["combined_prompt"] + [f"{name.lower()}_text" for name in _comps])
     
     FUNCTION = "generate"
-    CATEGORY = "Scromfy/Ace-Step/prompt"
+    CATEGORY = "Scromfy/Ace-Step/Prompt"
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):

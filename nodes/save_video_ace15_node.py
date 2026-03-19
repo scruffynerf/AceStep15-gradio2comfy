@@ -37,7 +37,7 @@ class ScromfySaveVideo(ComfyNodeABC):
 
     OUTPUT_NODE = True
 
-    CATEGORY = "Scromfy/Ace-Step/save"
+    CATEGORY = "Scromfy/Ace-Step/Video"
     DESCRIPTION = "Saves the input video to your ComfyUI output directory and returns the absolute path."
 
     def save_video(self, video: Input.Video, filename_prefix, format, codec, remove_extension=False, prompt=None, extra_pnginfo=None):

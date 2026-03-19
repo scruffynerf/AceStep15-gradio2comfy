@@ -1,7 +1,7 @@
 """AceStepModeSelector node for ACE-Step"""
 
-class AceStepModeSelector:
-    """Convenience node to route inputs based on generation mode"""
+class ObsoleteAceStepModeSelector:
+    """Convenience node to route inputs based on generation mode (OBSOLETE)"""
     
     @classmethod
     def INPUT_TYPES(s):
@@ -23,7 +23,7 @@ class AceStepModeSelector:
     RETURN_TYPES = ("STRING", "STRING", "AUDIO", "FLOAT", "FLOAT")
     RETURN_NAMES = ("final_prompt", "final_lyrics", "active_audio", "start", "end")
     FUNCTION = "route"
-    CATEGORY = "Scromfy/Ace-Step/TBD"
+    CATEGORY = "Scromfy/Ace-Step/Obsolete"
 
     def route(self, mode, description, prompt, lyrics, reference_audio=None, source_audio=None, repaint_start=0.0, repaint_end=-1.0):
         final_prompt = ""
@@ -50,9 +50,9 @@ class AceStepModeSelector:
 
 
 NODE_CLASS_MAPPINGS = {
-    "AceStepModeSelector": AceStepModeSelector,
+    "obsolete_AceStepModeSelector": ObsoleteAceStepModeSelector,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepModeSelector": "Mode Selector",
+    "obsolete_AceStepModeSelector": "Mode Selector [OBSOLETE]",
 }

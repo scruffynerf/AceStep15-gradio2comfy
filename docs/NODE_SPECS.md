@@ -3,125 +3,114 @@
 All nodes live in `nodes/` and are auto-registered by `__init__.py`.
 Shared logic is in `nodes/includes/`. Frontend extensions are in `web/`.
 
-**64 node files total** — 48 active, 16 obsolete.
+**82 node files total** — 64 active, 18 obsolete.
 
 ---
 
-## Prompt & Encoding (Scromfy/Ace-Step/prompt)
+## Prompt (Scromfy/Ace-Step/Prompt)
 
-1. **ScromfyACEStep15TaskTextEncode** (`text_encode_ace15_node.py`): Full ACE-Step 1.5 text encoder with human-readable dropdowns for language, key signature, and time signature. Supports LLM audio code generation toggle.
-    * **Wildcards**: Supports recursive expansion of `__COMPONENT__` tokens (e.g., `__ADJECTIVES__`). It includes a fallback for pluralization (e.g., `__ADJECTIVE__` matches `ADJECTIVES.txt`).
-    * **Keyscale Support**: Includes a built-in `KEYSCALE` dropdown with "Auto-detect" and 56 musical keys, matching the Text Encoder's requirements.
-    * **Dynamic Outputs**: Provides a combined prompt plus individual cleaned strings for every active component.
-2. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompt generator.
+1. **ScromfyAceStepTextEncoderPlusPlus** (`text_encoder_plusplus_node.py`): The definitive ACE-Step 1.5 text encoder. Merges high-level SFT "Enriched CoT" formatting with granular base controls.
+2. **AceStepMetadataBuilder** (`metadata_builder_node.py`): Format music metadata dictionary (BPM, duration, key, etc.).
+3. **AceStepPromptGen** (`prompt_gen_node.py`): Dynamic multi-category prompt generator using weighted tags.
+4. **AceStepRandomPrompt** (`random_prompt_node.py`): Randomized music prompt generator.
+5. **Prompt Freeform** (`prompt_freeform_node.py`): Allows freeform text with dynamic wildcard resolution.
 
-## Metadata & Analysis (Scromfy/Ace-Step/metadata)
-
-1. **AceStepAudioAnalyzer** (`audio_analyzer_node.py`): Extract BPM, key, and duration from audio.
-2. **AceStepAudioCodesUnderstand** (`audio_codes_decode_node.py`): Generatively reconstruct metadata and lyrics from 5Hz token IDs.
-3. **AceStepConditioningExplore** (`conditioning_view_node.py`): Deep-introspection debug node — recursively explores conditioning data with circular-reference protection, MRO display, and lovely-tensors summaries.
-4. **AceStepMetadataBuilder** (`metadata_builder_node.py`): Format music metadata dictionary.
-
-## Mixers (Scromfy/Ace-Step/mixers)
+## Conditioning (Scromfy/Ace-Step/Conditioning)
 
 1. **AceStepAudioCodesMixer** (`audio_codes_mixer_node.py`): Binary toolbox for mixing two sets of audio codes in 6D FSQ space.
 2. **AceStepAudioCodesUnaryOp** (`audio_codes_unary_op_node.py`): Unary operations on audio codes with length scaling and optional masking.
 3. **AceStepConditioningCombine** (`conditioning_combine_node.py`): Assemble individual tensors and codes into a full conditioning object.
 4. **AceStepConditioningMixer** (`conditioning_dual_mixer_node.py`): Selectively mix components from two conditioning sources.
-5. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Inverse of the Combiner — decompose conditioning into components.
-6. **AceStepAudioMask** (`audio_mask_node.py`): Time-based mask generator (maps seconds to latent steps).
-7. **AceStepTensorMaskGenerator** (`tensor_mask_node.py`): Generates `[1, N, 1]` masks using various modes (all, none, fraction, range, ramp, window).
-8. **AceStepTensorMixer** (`tensor_mixer_node.py`): Binary toolbox for mixing two tensors with optional masking and scaling.
-9. **AceStepTensorUnaryOp** (`tensor_unary_op_node.py`): Transforms a single tensor with optional mask and length scaling.
+5. **AceStepConditioningSplitter** (`conditioning_split_node.py`): Decompose conditioning into components.
+6. **AceStepAudioCodesToSemanticHints** (`audio_codes_to_semantic_hints_node.py`): Convert 5Hz audio codes to 25Hz semantic hints.
+7. **AceStepSemanticHintsToAudioCodes** (`semantic_hints_to_audio_codes_node.py`): Convert 25Hz semantic hints back to 5Hz audio codes.
+8. **AceStepConditioningZeroOut** (`conditioning_zero_out_node.py`): Zero out conditioning for negative/unconditional input.
+9. **AceStepAudioCodesUnderstand** (`audio_codes_decode_node.py`): Reconstruct metadata and lyrics from 5Hz token IDs.
+10. **AceStepConditioningExplore** (`conditioning_view_node.py`): Deep introspection and debugging of conditioning data.
+11. **AceStepAudioCodesLoader** (`load_audio_codes_node.py`): Load 5Hz audio code tensors from disk.
+12. **AceStepConditioningLoad** (`load_conditioning_node.py`): Load saved conditioning components.
+13. **AceStepLyricsTensorLoader** (`load_lyrics_tensor_node.py`): Load lyrics conditioning tensors.
+14. **AceStepConditioningMixerLoader** (`load_mixed_conditioning_node.py`): Mix saved components during load.
+15. **AceStepTimbreTensorLoader** (`load_timbre_tensor_node.py`): Load timbre conditioning tensors.
+16. **AceStepAudioMask** (`audio_mask_node.py`): Time-to-step mask generator.
+17. **AceStepTensorMaskGenerator** (`tensor_mask_node.py`): Primitive mask generator (fraction, range, window).
+18. **AceStepTensorMixer** (`tensor_mixer_node.py`): Mix two tensors with masking.
+19. **AceStepTensorUnaryOp** (`tensor_unary_op_node.py`): Transform single tensors.
 
-## Advanced & Semantic (Scromfy/Ace-Step/advanced)
+## Sampler (Scromfy/Ace-Step/Sampler)
 
-1. **AceStepAudioCodesToSemanticHints** (`audio_codes_to_semantic_hints_node.py`): Convert 5Hz audio codes to 25Hz semantic hints for DiT conditioning.
-2. **AceStepSemanticHintsToAudioCodes** (`semantic_hints_to_audio_codes_node.py`): Convert 25Hz semantic hints back to 5Hz audio codes (lossy).
+1. **ScromfyAceStepSampler** (`sft_sampler_node.py`): The primary SFT sampler with APG/ADG guidance and native mask-based inpainting.
 
-## Audio & Effects (Scromfy/Ace-Step/audio)
+## Audio (Scromfy/Ace-Step/Audio)
 
-1. **AceStepPostProcess** (`audio_post_process_node.py`): De-esser and spectral smoothing for generated audio.
+1. **Audio Analyzer (No LLM)** (`audio_analyzer_node.py`): DSP-based BPM, key, and duration extraction.
+2. **ScromfyAceStepMusicAnalyzer** (`sft_music_analyzer_node.py`): AI-powered analyzer (Whisper/Qwen) for tags and theory.
+3. **AceStepPostProcess** (`audio_post_process_node.py`): Audio enhancement (de-esser, smoothing).
+4. **Scromfy Audio VAE Decode PLUSPLUS** (`audio_vae_decode_plusplus_node.py`): Advanced VAE decoder with local logic overrides.
+5. **Scromfy Save Audio** (`save_audio_node.py`): High-fidelity multi-format audio saver.
+6. **AceStepLoadAudio** (`load_audio_node.py`): Audio loader with auto-resampling.
 
-## Essential (Scromfy/Ace-Step/essential)
+## Lyrics (Scromfy/Ace-Step/Lyrics)
 
-1. **AceStepConditioningZeroOut** (`conditioning_zero_out_node.py`): Zero out conditioning for negative/unconditional input.
+1. **AceStepLyricsFormatter** (`lyrics_formatter_node.py`): Structure lyrics with required tags.
+2. **AceStepGeniusLyricsSearch** (`lyrics_genius_search_node.py`): Fetch lyrics from Genius.
+3. **AceStepRandomLyrics** (`lyrics_genius_random_node.py`): Fetch random Genius lyrics.
+4. **AceStepLyricsBPMCalculator** (`lyrics_duration_node.py`): BPM/Duration estimation for lyrics.
+5. **AceStepClaudeLyrics** (`lyrics_claude_node.py`): Anthropic Claude integration.
+6. **AceStepGeminiLyrics** (`lyrics_gemini_node.py`): Google Gemini integration.
+7. **AceStepGroqLyrics** (`lyrics_groq_node.py`): Groq API integration.
+8. **AceStepOpenAILyrics** (`lyrics_openai_node.py`): OpenAI API integration.
+9. **AceStepPerplexityLyrics** (`lyrics_perplexity_node.py`): Perplexity API integration.
+10. **AceStepGenericAILyrics** (`lyrics_generic_ai_node.py`): OpenAI-compatible local/remote LLMs.
 
-## Load (Scromfy/Ace-Step/load)
+## Visualizers (Scromfy/Ace-Step/Visualizers)
 
-1. **AceStepAudioCodesLoader** (`load_audio_codes_node.py`): Load audio codes from disk.
-2. **AceStepConditioningLoad** (`load_conditioning_node.py`): Load and reconstruct conditioning from saved component files.
-3. **AceStepLLMLoader** (`load_llm_node.py`): Specialized loader for the 5Hz LLM.
-4. **AceStepLoRALoader** (`load_lora_node.py`): Specialized LoRA loader for ACE-Step 1.5.
-5. **AceStepLyricsTensorLoader** (`load_lyrics_tensor_node.py`): Load a lyrics conditioning tensor from disk.
-6. **AceStepConditioningMixerLoader** (`load_mixed_conditioning_node.py`): Granularly mix saved components from different files.
-7. **AceStepTimbreTensorLoader** (`load_timbre_tensor_node.py`): Load a timbre conditioning tensor from disk.
+1. **ScromfyFlexAudioVisualizerCircular** (`flex_audio_visualizer_circular_node.py`): Circular wave/spectrum.
+2. **ScromfyFlexAudioVisualizerContour** (`flex_audio_visualizer_contour_node.py`): Mask-filling contours.
+3. **ScromfyFlexAudioVisualizerLine** (`flex_audio_visualizer_line_node.py`): Linear wave/spectrum.
+4. **ScromfyFlexLyrics** (`flex_lyrics_node.py`): Timed lyrics overlay.
+5. **ScromfyEmojiSpinnerVisualizer** (`emoji_spinner_visualizer_node.py`): Visualizer for icon strips.
+6. **Lyric Settings** (`lyric_settings_node.py`): Visualizer specific lyric formatting.
 
-## Lyrics (Scromfy/Ace-Step/lyrics)
+## Radio (Scromfy/Ace-Step/Radio)
 
-1. **AceStepLyricsFormatter** (`lyrics_formatter_node.py`): Auto-format lyrics with required section tags.
-2. **AceStepGeniusLyricsSearch** (`lyrics_genius_search_node.py`): Fetch lyrics by artist + title from Genius.com.
-3. **AceStepRandomLyrics** (`lyrics_genius_random_node.py`): Pick a random Genius song and fetch its lyrics.
-4. **AceStepLyricsBPMCalculator** (`lyrics_duration_node.py`): Estimate duration and suggested BPM ranges (Low/Mid/High) based on line count and word count. Filter [tags] automatically.
+1. **AceStepWebAmpRadio** (`webamp_node.py`): Full Winamp integration.
+2. **RadioPlayer** (`radio_node.py`): Lightweight in-UI player.
 
-### AI-Powered Lyrics (Scromfy/Ace-Step/lyrics/AI)
+## Lora (Scromfy/Ace-Step/Lora)
 
-API keys stored in `keys/*.txt` — see [keys/README.md](../keys/README.md).
-User instructions stored in `AIinstructions/`.
+1. **AceStepLoRALoader** (`load_lora_node.py`): Standard ACE-Step 1.5 LoRA loader.
+2. **Scromfy AceStep Lora Stack** (`sft_lora_loader_node.py`): Advanced multi-LoRA stacking.
 
-1. **AceStepClaudeLyrics** (`lyrics_claude_node.py`): Anthropic Claude API.
-2. **AceStepGeminiLyrics** (`lyrics_gemini_node.py`): Google Gemini API.
-3. **AceStepGroqLyrics** (`lyrics_groq_node.py`): Groq API (uses official `groq` library).
-4. **AceStepOpenAILyrics** (`lyrics_openai_node.py`): OpenAI API.
-5. **AceStepPerplexityLyrics** (`lyrics_perplexity_node.py`): Perplexity API.
-6. **AceStepGenericAILyrics** (`lyrics_generic_ai_node.py`): OpenAI-compatible API (Ollama, LM Studio, etc.) with custom `api_url`.
-7. **AceStepGenericModelList** (`lyrics_generic_ai_node.py`): Fetch available model IDs from an OpenAI-compatible `/v1/models` endpoint.
-    * **Features**: Automated `<think>` block removal for reasoning models (DeepSeek R1, etc.).
-    * **Overrides**: Supports hierarchy: `systemprompt.txt` (User) -> `systemprompt.default.txt` (System).
+## Whisper (Scromfy/Ace-Step/Whisper)
 
-## Persistence / Save (Scromfy/Ace-Step/save)
+1. **Faster Whisper Loader** (`faster_whisper_node.py`): Model loader.
+2. **Faster Whisper Transcribe** (`faster_whisper_node.py`): VAD-enabled transcription.
+3. **Save Subtitle/Lyrics** (`faster_whisper_node.py`): SRT/VTT/LRC generation.
 
-1. **Scromfy Save Audio** (`save_audio_node.py`): High-fidelity FLAC/WAV/MP3/Opus saver.
-    * **Output**: Returns the absolute `filepath` (without extension) for downstream syncing.
-2. **AceStepConditioningSave** (`save_conditioning_node.py`): Save conditioning components to separate files.
-3. **AceStepTensorSave** (`save_tensor_node.py`): Save a raw tensor to disk.
+## Misc (Scromfy/Ace-Step/Misc)
 
-## WebAmp & Radio (Scromfy/Ace-Step/radio)
+1. **AceStep5HzLMConfig** (`lm_config_node.py`): 5Hz LM parameters.
+2. **WikipediaRandomNode** (`wikipedia_node.py`): Random page content.
+3. **ScromfyEmojiSpinner** (`emoji_spinner_node.py`): Iconify/SVG rendering.
+4. **ScromfyMaskPicker** (`mask_picker_node.py`): Recursive mask browser.
 
-1. **AceStepWebAmpRadio** (`webamp_node.py`): Classic Winamp UI with playlist, skins (`.wsz`), and full Milkdrop visualizer support.
-    * **Visualizer Control**: Features a dedicated control bar for Next/Prev, Shuffle, Cycle, and List overlay.
-    * **Large Libraries**: Optimized to load 500+ local visualizers instantly using Redux injection.
-    * **Local Assets**: Uses local `webamp.butterchurn.mjs` and `butterchurn.v3.js` for stability.
-2. **RadioPlayer** (`radio_node.py`): Lightweight in-UI audio player with polling and LRC support.
+## Persistence (Scromfy/Ace-Step/Save)
 
-## Transcription (Scromfy/Ace-Step/Whisper)
-
-1. **Faster Whisper Loader** (`faster_whisper_node.py`): Load Systran's optimized Whisper models. Supports CPU/GPU and precision settings.
-2. **Faster Whisper Transcribe** (`faster_whisper_node.py`): High-speed transcription with VAD and word-timestamps (AUDIO-only input, auto-resampled to 16kHz).
-    * **Advanced Options**: Full support for `log_prob_threshold`, `temperature`, `patience`, `hotwords`, etc.
-3. **Save Subtitle/Lyrics** (`faster_whisper_node.py`): Specialized saver that matches filenames with your audio saves. Converts transcription to `.srt`, `.vtt`, or `.lrc`.
-
-## Misc (Scromfy/Ace-Step/misc)
-
-1. **AceStep5HzLMConfig** (`lm_config_node.py`): Configuration for the 5Hz LM parameters.
-2. **WikipediaRandomNode** (`wikipedia_node.py`): Fetches a random Wikipedia page with filters.
-3. **Prompt Freeform** (`prompt_freeform_node.py`): Allows freeform text with dynamic wildcard resolution.
-4. **AceStepInpaintSampler** (`inpaint_sampler_node.py`): Specialized sampler for audio inpainting.
-5. **AceStepLoadAudio** (`load_audio_node.py`): Load audio files with auto-resampling.
-6. **AceStepModeSelector** (`mode_selector_node.py`): 4-in-1 mode routing.
-7. **ScromfyEmojiSpinner** (`emoji_spinner_node.py`): Slot machine animation + Iconify integration.
-    * **Refinements**: Standardized 1024px rendering (configurable) with cleans cache paths (no size suffix). Supports white-on-black mask conversion.
-    * **New Inputs**: `render_size` (default 1024), `slot_icon_size` (default 128), `reel_padding` (default 10), and `convert_to_bw` (default True).
-8. **ScromfyMaskPicker** (`mask_picker_node.py`): Standalone node to select and output any image/mask from the `masks/` directory. Supports recursive search for organized subdirectories.
+1. **AceStepConditioningSave** (`save_conditioning_node.py`): Component saver.
+2. **AceStepTensorSave** (`save_tensor_node.py`): Raw tensor saver.
 
 ---
 
-## Obsolete Nodes (Scromfy/Ace-Step/obsolete)
+## Obsolete Nodes (Scromfy/Ace-Step/Obsolete)
 
 These are deprecated and will be removed in a future version.
 
 | Class | File |
-|-------|------|
+| --- | --- |
+| ObsoleteAceStepInpaintSampler | `obsolete_inpaint_sampler_node.py` |
+| ObsoleteAceStepMetadataBuilder | `obsolete_metadata_builder_node.py` |
+| ObsoleteAceStepModeSelector | `obsolete_mode_selector_node.py` |
 | ObsoleteAceStepAudioCodesToSemanticHints | `obsolete_audio_codes_to_latent_node.py` |
 | ObsoleteAceStepAudioToCodec | `obsolete_audio_to_codec_node.py` |
 | ObsoleteAceStepCLIPTextEncode | `obsolete_clip_text_encode_node.py` |
@@ -136,6 +125,8 @@ These are deprecated and will be removed in a future version.
 | ObsoleteSaveText | `obsolete_save_text_node.py` |
 | ObsoleteVAEDecodeAudio | `obsolete_vae_decode_audio_node.py` |
 | ObsoleteVAEEncodeAudio | `obsolete_vae_encode_audio_node.py` |
+| ScromfyAceStepTextEncode (SFT) | `obsolete_sft_text_encode_node.py` |
+| ScromfyACEStep15TaskTextEncode (Base) | `obsolete_text_encode_ace15_node.py` |
 
 ---
 

@@ -14,7 +14,7 @@ class AceStepZeroOutConditioning:
 
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "zero_out"
-    CATEGORY = "Scromfy/Ace-Step/essential"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def zero_out(self, conditioning):
         c = []
@@ -35,5 +35,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepZeroOutConditioning": "Zero Out Conditioning (ACE-Step)",
+    "AceStepZeroOutConditioning": "True Zero Out Conditioning",
 }

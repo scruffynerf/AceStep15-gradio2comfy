@@ -30,7 +30,7 @@ class ScromfyAceStepLoraLoader:
     RETURN_TYPES = ("ACESTEP_LORA",)
     RETURN_NAMES = ("lora_stack",)
     FUNCTION = "load_lora"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Lora"
 
     def load_lora(self, lora_name, strength_model, lora_stack=None):
         stack = list(lora_stack) if lora_stack is not None else []
@@ -41,4 +41,4 @@ class ScromfyAceStepLoraLoader:
         return (stack,)
 
 NODE_CLASS_MAPPINGS = {"ScromfyAceStepLoraLoader": ScromfyAceStepLoraLoader}
-NODE_DISPLAY_NAME_MAPPINGS = {"ScromfyAceStepLoraLoader": "Scromfy AceStep Lora Loader"}
+NODE_DISPLAY_NAME_MAPPINGS = {"ScromfyAceStepLoraLoader": "Scromfy AceStep Lora Stack"}

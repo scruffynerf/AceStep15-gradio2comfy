@@ -204,7 +204,7 @@ class WikipediaRandomNode:
     RETURN_TYPES = ("STRING", "STRING", "STRING")
     RETURN_NAMES = ("title", "content", "url")
     FUNCTION = "fetch"
-    CATEGORY = "Scromfy/Ace-Step/misc"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics/misc"
 
     def fetch(self, mode, category, search_keyword, language, user_agent, seed, clean_content=True):
         rng = random.Random(seed)

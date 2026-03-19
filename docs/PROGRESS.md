@@ -2,115 +2,102 @@
 
 ## Node Implementation Status
 
-All nodes are implemented and refactored. **63 node files** — 47 active, 16 obsolete.
-
-### ✅ Refactored Structure Summary
-- **Nodes**: Each node is in its own `nodes/*_node.py` file.
-- **Shared Logic**: Isolated in `nodes/includes/` (audio, lyrics, prompts, sampling, analysis, FSQ, whisper).
-- **Frontend**: 
-    - `web/radio_player.js` for the RadioPlayer widget.
-    - `web/webamp_player.js` for the WebAmpRadio widget.
-    - `web/lyricer.js` for synced lyrics display.
-- **Registration**: Dynamic loading via `__init__.py` scanner + `WEB_DIRECTORY`.
+All nodes are implemented and refactored. **82 node files** — 64 active, 18 obsolete.
 
 ---
 
 ### ✅ Implementation Breakdown
 
-#### Prompt & Encoding
-- [x] `ScromfyACEStep15TaskTextEncode` — `text_encode_ace15_node.py`
-- [x] `AceStepPromptGen` — `prompt_gen_node.py` (Dynamic wildcard generator)
-- [x] `AceStepRandomPrompt` — `random_prompt_node.py`
-
-#### Metadata & Analysis
-- [x] `AceStepAudioAnalyzer` — `audio_analyzer_node.py`
-- [x] `AceStepAudioCodesUnderstand` — `audio_codes_decode_node.py`
-- [x] `AceStepConditioningExplore` — `conditioning_view_node.py`
+#### Prompt (Scromfy/Ace-Step/Prompt)
+- [x] `ScromfyAceStepTextEncoderPlusPlus` — `text_encoder_plusplus_node.py`
 - [x] `AceStepMetadataBuilder` — `metadata_builder_node.py`
+- [x] `AceStepPromptGen` — `prompt_gen_node.py`
+- [x] `AceStepRandomPrompt` — `random_prompt_node.py`
+- [x] `AceStepPromptFreeform` — `prompt_freeform_node.py`
 
-#### Mixers
+#### Conditioning (Scromfy/Ace-Step/Conditioning)
 - [x] `AceStepAudioCodesMixer` — `audio_codes_mixer_node.py`
 - [x] `AceStepAudioCodesUnaryOp` — `audio_codes_unary_op_node.py`
 - [x] `AceStepConditioningCombine` — `conditioning_combine_node.py`
 - [x] `AceStepConditioningMixer` — `conditioning_dual_mixer_node.py`
 - [x] `AceStepConditioningSplitter` — `conditioning_split_node.py`
+- [x] `AceStepAudioCodesToSemanticHints` — `audio_codes_to_semantic_hints_node.py`
+- [x] `AceStepSemanticHintsToAudioCodes` — `semantic_hints_to_audio_codes_node.py`
+- [x] `AceStepConditioningZeroOut` — `conditioning_zero_out_node.py`
+- [x] `AceStepAudioCodesUnderstand` — `audio_codes_decode_node.py`
+- [x] `AceStepConditioningExplore` — `conditioning_view_node.py`
+- [x] `AceStepAudioCodesLoader` — `load_audio_codes_node.py`
+- [x] `AceStepConditioningLoad` — `load_conditioning_node.py`
+- [x] `AceStepLyricsTensorLoader` — `load_lyrics_tensor_node.py`
+- [x] `AceStepConditioningMixerLoader` — `load_mixed_conditioning_node.py`
+- [x] `AceStepTimbreTensorLoader` — `load_timbre_tensor_node.py`
 - [x] `AceStepAudioMask` — `audio_mask_node.py`
 - [x] `AceStepTensorMaskGenerator` — `tensor_mask_node.py`
 - [x] `AceStepTensorMixer` — `tensor_mixer_node.py`
 - [x] `AceStepTensorUnaryOp` — `tensor_unary_op_node.py`
 
-#### Advanced & Semantic
-- [x] `AceStepAudioCodesToSemanticHints` — `audio_codes_to_semantic_hints_node.py`
-- [x] `AceStepSemanticHintsToAudioCodes` — `semantic_hints_to_audio_codes_node.py`
+#### Sampler (Scromfy/Ace-Step/Sampler)
+- [x] `ScromfyAceStepSampler` — `sft_sampler_node.py`
 
-#### Audio & Effects
+#### Audio (Scromfy/Ace-Step/Audio)
+- [x] `Audio Analyzer (No LLM)` — `audio_analyzer_node.py`
+- [x] `ScromfyAceStepMusicAnalyzer` — `sft_music_analyzer_node.py`
 - [x] `AceStepPostProcess` — `audio_post_process_node.py`
+- [x] `Scromfy Audio VAE Decode PLUSPLUS` — `audio_vae_decode_plusplus_node.py`
+- [x] `Scromfy Save Audio` — `save_audio_node.py`
+- [x] `AceStepLoadAudio` — `load_audio_node.py`
 
-#### Essential
-- [x] `AceStepConditioningZeroOut` — `conditioning_zero_out_node.py`
-
-#### Load
-- [x] `AceStepAudioCodesLoader` — `load_audio_codes_node.py`
-- [x] `AceStepConditioningLoad` — `load_conditioning_node.py`
-- [x] `AceStepLLMLoader` — `load_llm_node.py`
-- [x] `ObsoleteAceStepLoRAStatus` — `obsolete_lora_status_node.py`
-- [x] `ObsoleteEmptyLatentAudio` — `obsolete_empty_latent_audio_node.py`
-- [x] [REMOVED] `ObsoleteFlacPreviewAudio` — `obsolete_preview_audio_node.py`
-- [x] `AceStepConditioningMixerLoader` — `load_mixed_conditioning_node.py`
-- [x] `AceStepTimbreTensorLoader` — `load_timbre_tensor_node.py`
-- [x] `ScromfyMaskPicker` — `mask_picker_node.py` (Recursive image/mask selector)
-
-#### Lyrics
+#### Lyrics (Scromfy/Ace-Step/Lyrics)
 - [x] `AceStepLyricsFormatter` — `lyrics_formatter_node.py`
 - [x] `AceStepGeniusLyricsSearch` — `lyrics_genius_search_node.py`
 - [x] `AceStepRandomLyrics` — `lyrics_genius_random_node.py`
 - [x] `AceStepLyricsBPMCalculator` — `lyrics_duration_node.py`
-
-##### AI-Powered (Keys in `keys/*.txt`)
 - [x] `AceStepClaudeLyrics` — `lyrics_claude_node.py`
 - [x] `AceStepGeminiLyrics` — `lyrics_gemini_node.py`
 - [x] `AceStepGroqLyrics` — `lyrics_groq_node.py`
 - [x] `AceStepOpenAILyrics` — `lyrics_openai_node.py`
 - [x] `AceStepPerplexityLyrics` — `lyrics_perplexity_node.py`
-- [x] `AceStepGenericAILyrics` — `lyrics_generic_ai_node.py` (Ollama/R1 support)
+- [x] `AceStepGenericAILyrics` — `lyrics_generic_ai_node.py`
 
-#### Persistence (Save)
-- [x] `Scromfy Save Audio` (MP3, Opus, FLAC) — `save_audio_node.py`
-- [x] `AceStepConditioningSave` — `save_conditioning_node.py`
-- [x] `AceStepTensorSave` — `save_tensor_node.py`
+#### Visualizers (Scromfy/Ace-Step/Visualizers)
+- [x] `ScromfyFlexAudioVisualizerCircular` — `flex_audio_visualizer_circular_node.py`
+- [x] `ScromfyFlexAudioVisualizerContour` — `flex_audio_visualizer_contour_node.py`
+- [x] `ScromfyFlexAudioVisualizerLine` — `flex_audio_visualizer_line_node.py`
+- [x] `ScromfyFlexLyrics` — `flex_lyrics_node.py`
+- [x] `ScromfyEmojiSpinnerVisualizer` — `emoji_spinner_visualizer_node.py`
+- [x] `Lyric Settings` — `lyric_settings_node.py`
 
-#### Radio & Visualizers
-- [x] `RadioPlayer` — `radio_node.py`
-- [x] `ScromfyEmojiSpinner` — `emoji_spinner_node.py` (Slot machine animation + Iconify integration)
-    - [x] Integrated `pyconify` for dynamic emoji fetching (25 icons per wheel)
-    - [x] Integrated `svglib` for SVG-to-Mask rendering (Standardized 1024px quality)
-    - [x] Supports 4 render modes: `color`, `white_solid`, `white_outline`, `white_solid_black_outline`
-    - [x] Supports combined result mask for Contour Visualizer
-    - [x] Configurable `slot_icon_size`, `reel_padding`, `render_mode`, and `bw_stroke_width`
+#### Radio (Scromfy/Ace-Step/Radio)
 - [x] `AceStepWebAmpRadio` — `webamp_node.py`
-    - [x] Large library optimization (500+ presets)
-    - [x] Hot-swapping skins & visualizers
-    - [x] In-node control bar (Next/Prev/Shuffle/Cycle/Overlay/Info)
-    - [x] Integrated Butterchurn v3 beta engine
+- [x] `RadioPlayer` — `radio_node.py`
 
-#### Transcription (Whisper)
-- [x] `AceStepLoadFasterWhisperModel` — `faster_whisper_node.py`
-- [x] `AceStepFasterWhisperTranscription` — `faster_whisper_node.py`
-- [x] `AceStepSaveSubtitleLyrics` — `faster_whisper_node.py` (.lrc support)
+#### Lora (Scromfy/Ace-Step/Lora)
+- [x] `AceStepLoRALoader` — `load_lora_node.py`
+- [x] `Scromfy AceStep Lora Stack` — `sft_lora_loader_node.py`
 
-#### Misc
+#### Whisper (Scromfy/Ace-Step/Whisper)
+- [x] `Faster Whisper Loader` — `faster_whisper_node.py`
+- [x] `Faster Whisper Transcribe` — `faster_whisper_node.py`
+- [x] `Save Subtitle/Lyrics` — `faster_whisper_node.py`
+
+#### Misc (Scromfy/Ace-Step/Misc)
 - [x] `AceStep5HzLMConfig` — `lm_config_node.py`
 - [x] `WikipediaRandomNode` — `wikipedia_node.py`
-- [x] `AceStepPromptFreeform` — `prompt_freeform_node.py`
-- [x] `AceStepInpaintSampler` — `inpaint_sampler_node.py`
-- [x] `AceStepLoadAudio` — `load_audio_node.py`
-- [x] `AceStepModeSelector` — `mode_selector_node.py`
+- [x] `ScromfyEmojiSpinner` — `emoji_spinner_node.py`
+- [x] `ScromfyMaskPicker` — `mask_picker_node.py`
+
+#### Persistence (Scromfy/Ace-Step/Save)
+- [x] `AceStepConditioningSave` — `save_conditioning_node.py`
+- [x] `AceStepTensorSave` — `save_tensor_node.py`
 
 ---
 
 ## Progress Statistics
 
-- **Total Nodes: 65/65 complete (100%)** ✅
+- **Total Nodes: 82/82 complete (100%)** ✅
+- **Active Nodes: 64** ✅
+- **Obsolete Nodes: 18** (deprecated, to be removed)
+al Nodes: 65/65 complete (100%)** ✅
 - **Active Nodes: 49** ✅
 - **Obsolete Nodes: 16** (deprecated, to be removed)
 - **Refactoring: Complete** ✅

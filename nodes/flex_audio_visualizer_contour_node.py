@@ -75,6 +75,8 @@ class ScromfyFlexAudioVisualizerContourNode(FlexAudioVisualizerBase):
 
     RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK", "IMAGE")
     RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK", "LAYER_MAP")
+    FUNCTION = "apply_effect"
+    CATEGORY = "Scromfy/Ace-Step/Visualizers"
 
     @staticmethod
     def filter_contours_by_hierarchy(contours, hierarchy, target_layers="0"):
@@ -612,5 +614,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfyFlexAudioVisualizerContour": "Flex Audio Visualizer Contour (Scromfy)",
+    "ScromfyFlexAudioVisualizerContour": "Contour Audio Visualizer (Scromfy)",
 }

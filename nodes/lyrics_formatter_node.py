@@ -14,7 +14,7 @@ class AceStepLyricsFormatter:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("formatted_lyrics",)
     FUNCTION = "format"
-    CATEGORY = "Scromfy/Ace-Step/lyrics"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
 
     def format(self, lyrics):
         lines = lyrics.strip().split('\n')

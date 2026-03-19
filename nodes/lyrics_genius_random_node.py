@@ -25,7 +25,7 @@ class AceStepRandomLyrics:
     RETURN_TYPES = ("STRING", "STRING", "STRING",)
     RETURN_NAMES = ("lyrics", "title", "artist",)
     FUNCTION = "fetch_random"
-    CATEGORY = "Scromfy/Ace-Step/lyrics"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
 
     @classmethod
     def IS_CHANGED(cls, seed, max_retries=20):

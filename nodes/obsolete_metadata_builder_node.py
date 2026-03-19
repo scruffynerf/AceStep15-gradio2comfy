@@ -1,7 +1,7 @@
 """AceStepMetadataBuilder node for ACE-Step"""
 
-class AceStepMetadataBuilder:
-    """Format music metadata for ACE-Step conditioning"""
+class ObsoleteAceStepMetadataBuilder:
+    """Format music metadata for ACE-Step conditioning (OBSOLETE)"""
     
     @classmethod
     def INPUT_TYPES(s):
@@ -10,7 +10,7 @@ class AceStepMetadataBuilder:
                 "bpm": ("INT", {"default": 0, "min": 0, "max": 300, "step": 1}),
                 "duration": ("FLOAT", {"default": -1.0, "min": -1.0, "max": 1000.0, "step": 0.1}),
                 "keyscale": ("STRING", {"default": ""}),
-                "timesignature": ("INT", {"default": 4, "min": 0, "max": 6}),
+                "timesignature": ("INT", {"default": 4, "min": 2, "max": 4}),
                 "language": (["en", "zh", "ja", "ko", "auto"], {"default": "en"}),
                 "instrumental": ("BOOLEAN", {"default": False}),
             }
@@ -19,7 +19,7 @@ class AceStepMetadataBuilder:
     RETURN_TYPES = ("DICT",)
     RETURN_NAMES = ("metadata",)
     FUNCTION = "build"
-    CATEGORY = "Scromfy/Ace-Step/Prompt"
+    CATEGORY = "Scromfy/Ace-Step/Obsolete"
 
     def build(self, bpm, duration, keyscale, timesignature, language, instrumental):
         metadata = {
@@ -36,9 +36,9 @@ class AceStepMetadataBuilder:
 
 
 NODE_CLASS_MAPPINGS = {
-    "AceStepMetadataBuilder": AceStepMetadataBuilder,
+    "obsolete_AceStepMetadataBuilder": ObsoleteAceStepMetadataBuilder,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepMetadataBuilder": "Metadata Builder",
+    "obsolete_AceStepMetadataBuilder": "Metadata Builder [OBSOLETE]",
 }

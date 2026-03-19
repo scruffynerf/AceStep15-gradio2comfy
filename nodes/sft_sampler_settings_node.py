@@ -65,7 +65,7 @@ class ScromfyAceStepSamplerSettings:
     RETURN_TYPES = ("SCROMFY_SAMPLER_SETTINGS",)
     RETURN_NAMES = ("sampler_settings",)
     FUNCTION = "get_settings"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Sampler"
 
     def get_settings(self, **kwargs):
         return (kwargs,)

@@ -18,7 +18,7 @@ class AceStepGeniusLyricsSearch:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("lyrics",)
     FUNCTION = "get_lyrics"
-    CATEGORY = "Scromfy/Ace-Step/lyrics"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
 
     def get_lyrics(self, artist_name, song_title):
         # Resolve path to the keys file

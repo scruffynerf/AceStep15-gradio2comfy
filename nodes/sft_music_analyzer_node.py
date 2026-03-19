@@ -87,10 +87,10 @@ class ScromfyAceStepMusicAnalyzer:
             }
         }
 
-    RETURN_TYPES = ("STRING", "INT", "STRING", "STRING")
-    RETURN_NAMES = ("tags", "bpm", "keyscale", "music_infos")
+    RETURN_TYPES = ("STRING", "INT", "STRING", "FLOAT", "STRING")
+    RETURN_NAMES = ("tags", "bpm", "keyscale", "duration", "music_infos")
     FUNCTION = "analyze"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def analyze(self, audio, model, get_tags, get_bpm, get_keyscale,
                 max_new_tokens=100, audio_duration=30, unload_model=True, use_flash_attn=False,
@@ -100,8 +100,14 @@ class ScromfyAceStepMusicAnalyzer:
         tags = ""
         detected_bpm = 0
         keyscale = ""
+        duration = 0.0
         
         gen_kwargs = self._build_gen_kwargs(temperature, top_p, top_k, repetition_penalty, seed)
+
+        # 0. Get Duration
+        waveform = audio["waveform"]
+        sr = audio["sample_rate"]
+        duration = float(waveform.shape[-1]) / float(sr)
 
         if get_tags:
             try:
@@ -126,9 +132,10 @@ class ScromfyAceStepMusicAnalyzer:
             "tags": tags,
             "bpm": f"{detected_bpm}",
             "keyscale": keyscale,
+            "duration": f"{duration}",
         }, ensure_ascii=False, indent=4)
 
-        return (tags, detected_bpm, keyscale, music_infos)
+        return (tags, detected_bpm, keyscale, duration, music_infos)
 
     def _build_gen_kwargs(self, temperature, top_p, top_k, repetition_penalty, seed):
         kwargs = {}
@@ -317,4 +324,4 @@ class ScromfyAceStepMusicAnalyzer:
         return {"bpm": bpm, "keyscale": keyscale}
 
 NODE_CLASS_MAPPINGS = {"ScromfyAceStepMusicAnalyzer": ScromfyAceStepMusicAnalyzer}
-NODE_DISPLAY_NAME_MAPPINGS = {"ScromfyAceStepMusicAnalyzer": "Scromfy AceStep Music Analyzer"}
+NODE_DISPLAY_NAME_MAPPINGS = {"ScromfyAceStepMusicAnalyzer": "Scromfy AceStep Music Analyzer (LLM)"}

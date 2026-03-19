@@ -131,7 +131,7 @@ class ScromfySaveAudio:
     RETURN_NAMES = ("filepath",)
     FUNCTION = "save"
     OUTPUT_NODE = True
-    CATEGORY = "Scromfy/Ace-Step/save"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def save(self, audio, filename_prefix="audio/ACE-Step", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "flac", prompt, extra_pnginfo)
@@ -156,7 +156,7 @@ class ScromfySaveAudioMP3:
     RETURN_NAMES = ("filepath",)
     FUNCTION = "save"
     OUTPUT_NODE = True
-    CATEGORY = "Scromfy/Ace-Step/save"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def save(self, audio, filename_prefix="audio/ACE-Step", quality="V0", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "mp3", prompt, extra_pnginfo, quality)
@@ -181,7 +181,7 @@ class ScromfySaveAudioOpus:
     RETURN_NAMES = ("filepath",)
     FUNCTION = "save"
     OUTPUT_NODE = True
-    CATEGORY = "Scromfy/Ace-Step/save"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def save(self, audio, filename_prefix="audio/ACE-Step", quality="128k", prompt=None, extra_pnginfo=None):
         res = scromfy_save_audio(self, audio, filename_prefix, "opus", prompt, extra_pnginfo, quality)

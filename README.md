@@ -5,7 +5,7 @@ Advanced ACE-Step 1.5 music generation nodes for ComfyUI.
 This repository allows you to use the powerful ACE-Step 1.5 music generation models directly within ComfyUI, providing full control over lyrics, styles, reference audio, and advanced sampling parameters.
 
 ## Features
-- **60 Specialized Nodes**: Comprehensive support for the ACE-Step 1.5 workflow (46 active + 14 obsolete/deprecated).
+- **82 Specialized Nodes**: Comprehensive support for the ACE-Step 1.5 workflow (64 active + 18 obsolete/deprecated).
 - **Full Text Encoder**: Human-readable dropdowns for language, key signature, and time signature with LLM audio code generation toggle.
 - **Multi-Category Prompt Generator**: 8 independent category dropdowns (style, mood, adjective, culture, genre, vocal, performer, instrument) with random/random2 options.
 - **Multi-API Lyrics Generation**: Integrated nodes for Genius search, random Genius lyrics, plus AI generation via Gemini, Groq, OpenAI, Claude, and Perplexity.

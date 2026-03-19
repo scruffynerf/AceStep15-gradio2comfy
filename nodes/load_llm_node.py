@@ -31,7 +31,7 @@ class AceStepLLMLoader:
     RETURN_TYPES = ("ACE_LLM",)
     RETURN_NAMES = ("llm",)
     FUNCTION = "load"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/LLM"
 
     def load(self, model_name, device, precision):
         if not folder_paths:
@@ -82,5 +82,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepLLMLoader": "LLM Loader (ACE-Step)",
+    "AceStepLLMLoader": "Load LM (Scromfy)",
 }

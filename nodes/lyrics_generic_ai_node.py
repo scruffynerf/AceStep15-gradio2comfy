@@ -37,7 +37,7 @@ class AceStepGenericAILyrics:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("lyrics",)
     FUNCTION = "generate"
-    CATEGORY = "Scromfy/Ace-Step/lyrics/AI"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics/AI"
 
     def generate(self, api_url: str, style: str, theme: str, model: str, max_tokens: int, seed: int, api_key: str = "no-key-required"):
         # Automatically append /v1/chat/completions if missing

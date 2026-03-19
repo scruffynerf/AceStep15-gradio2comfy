@@ -37,7 +37,7 @@ class ScromfyAceStepModelLoader:
     RETURN_TYPES = ("MODEL", "CLIP", "VAE")
     RETURN_NAMES = ("model", "clip", "vae")
     FUNCTION = "load_models"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Loader"
 
     def load_models(self, diffusion_model, text_encoder_1, text_encoder_2, vae_name, lora_stack=None):
         # 1. Load Diffusion Model
@@ -83,5 +83,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfyAceStepModelLoader": "Scromfy AceStep Model Loader"
+    "ScromfyAceStepModelLoader": "Scromfy AceStep All-in-One Loader"
 }

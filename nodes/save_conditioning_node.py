@@ -20,7 +20,7 @@ class AceStepConditioningSave:
     RETURN_TYPES = ()
     OUTPUT_NODE = True
     FUNCTION = "save"
-    CATEGORY = "Scromfy/Ace-Step/save"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def save(self, conditioning, save_path, filename_prefix):
         os.makedirs(save_path, exist_ok=True)
@@ -85,5 +85,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepConditioningSave": "Save Conditioning Elements",
+    "AceStepConditioningSave": "Save AceStep Conditioning Elements",
 }

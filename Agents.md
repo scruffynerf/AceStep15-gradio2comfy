@@ -63,27 +63,31 @@ A user can:
 - ✅ Prioritized into Core/UX/Optional tiers
 
 ### Phase 3: Node Development (COMPLETE)
-54 nodes implemented across these categories:
+82 nodes implemented across these categories:
 
-**Metadata & Analysis** (4 nodes): `AceStepAudioAnalyzer`, `AceStepAudioCodesUnderstand`, `AceStepConditioningExplore`, `AceStepMetadataBuilder`
+**Conditioning** (19 nodes): `AceStepAudioCodesMixer`, `AceStepAudioCodesUnaryOp`, `AceStepConditioningCombine`, `AceStepConditioningMixer`, `AceStepConditioningSplitter`, `AceStepAudioCodesToSemanticHints`, `AceStepSemanticHintsToAudioCodes`, `AceStepConditioningZeroOut`, `AceStepAudioCodesUnderstand`, `AceStepConditioningExplore`, `AceStepAudioCodesLoader`, `AceStepConditioningLoad`, `AceStepLyricsTensorLoader`, `AceStepConditioningMixerLoader`, `AceStepTimbreTensorLoader`, `AceStepAudioMask`, `AceStepTensorMaskGenerator`, `AceStepTensorMixer`, `AceStepTensorUnaryOp`
 
-**Mixers** (9 nodes): `AceStepAudioCodesMixer`, `AceStepAudioCodesUnaryOp`, `AceStepConditioningCombine`, `AceStepConditioningMixer`, `AceStepConditioningSplitter`, `AceStepAudioMask`, `AceStepTensorMaskGenerator`, `AceStepTensorMixer`, `AceStepTensorUnaryOp`
+**Sampler** (1 node): `ScromfyAceStepSampler`
 
-**Advanced & Semantic** (2 nodes): `AceStepAudioCodesToSemanticHints`, `AceStepSemanticHintsToAudioCodes`
+**Audio** (6 nodes): `Audio Analyzer (No LLM)`, `ScromfyAceStepMusicAnalyzer`, `AceStepPostProcess`, `Scromfy Audio VAE Decode PLUSPLUS`, `Scromfy Save Audio`, `AceStepLoadAudio`
 
-**Audio & Effects** (1 node): `AceStepPostProcess`
+**Lyrics** (10 nodes): `AceStepLyricsFormatter`, `AceStepGeniusLyricsSearch`, `AceStepRandomLyrics`, `AceStepLyricsBPMCalculator`, `AceStepClaudeLyrics`, `AceStepGeminiLyrics`, `AceStepGroqLyrics`, `AceStepOpenAILyrics`, `AceStepPerplexityLyrics`, `AceStepGenericAILyrics`
 
-**Load** (7 nodes): `AceStepAudioCodesLoader`, `AceStepConditioningLoad`, `AceStepLLMLoader`, `AceStepLyricsTensorLoader`, `AceStepConditioningMixerLoader`, `AceStepTimbreTensorLoader`, `AceStepLoRALoader`
+**Visualizers** (6 nodes): `ScromfyFlexAudioVisualizerCircular`, `ScromfyFlexAudioVisualizerContour`, `ScromfyFlexAudioVisualizerLine`, `ScromfyFlexLyrics`, `ScromfyEmojiSpinnerVisualizer`, `Lyric Settings`
 
-**Lyrics** (7 nodes): `AceStepLyricsFormatter`, `AceStepGeniusLyricsSearch`, `AceStepClaudeLyrics`, `AceStepGeminiLyrics`, `AceStepGroqLyrics`, `AceStepOpenAILyrics`, `AceStepPerplexityLyrics`
+**Radio** (2 nodes): `AceStepWebAmpRadio`, `RadioPlayer`
+
+**Lora** (2 nodes): `AceStepLoRALoader`, `Scromfy AceStep Lora Stack`
+
+**Whisper** (3 nodes): `Faster Whisper Loader`, `Faster Whisper Transcribe`, `Save Subtitle/Lyrics`
+
+**Prompt** (5 nodes): `ScromfyAceStepTextEncoderPlusPlus`, `AceStepMetadataBuilder`, `AceStepPromptGen`, `AceStepRandomPrompt`, `Prompt Freeform`
+
+**Misc** (4 nodes): `AceStep5HzLMConfig`, `WikipediaRandomNode`, `ScromfyEmojiSpinner`, `ScromfyMaskPicker`
 
 **Persistence** (2 nodes): `AceStepConditioningSave`, `AceStepTensorSave`
 
-**Misc & Essential** (1 node): `AceStep5HzLMConfig`
-
-**TBD / Uncategorized** (12 nodes): `AceStepInpaintSampler`, `LoadAudio`, `AceStepLoRALoader`, `AceStepLoRAStatus`, `AceStepModeSelector`, `PreviewAudio`, `AceStepPromptGen`, `AceStepRandomPrompt`, `SaveAudio`, `SaveText`, `VAEDecodeAudio`, `VAEEncodeAudio`
-
-**Obsolete** (16 nodes): All prefixed with `obsolete_` in filename.
+**Obsolete** (18 nodes): All prefixed with `obsolete_` in filename.
 
 ### Phase 4: Documentation & Examples
 - Create 4 example workflows (one per mode)
@@ -298,7 +302,7 @@ scromfyUI-AceStep/
 │   │   ├── lyrics_utils.py
 │   │   ├── prompt_utils.py
 │   │   └── sampling_utils.py
-│   ├── *_node.py         # 54 individual node files
+│   ├── *_node.py         # 82 individual node files
 ├── keys/                 # API key files (git-ignored)
 ├── workflows/            # Example workflows (.json)
 ├── docs/                 # Documentation

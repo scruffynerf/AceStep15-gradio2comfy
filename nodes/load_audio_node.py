@@ -5,7 +5,7 @@ import folder_paths
 import hashlib
 from comfy.comfy_types import FileLocator
 
-class LoadAudio:
+class ScromfyLoadAudio:
     """Load audio files (mp3, flac, wav, ogg)"""
     
     @classmethod
@@ -21,7 +21,7 @@ class LoadAudio:
             }
         }
 
-    CATEGORY = "Scromfy/Ace-Step/TBD"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "load"
 
@@ -82,9 +82,9 @@ class LoadAudio:
 
 
 NODE_CLASS_MAPPINGS = {
-    "LoadAudio": LoadAudio,
+    "ScromfyLoadAudio": ScromfyLoadAudio,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "LoadAudio": "Load Audio",
+    "ScromfyLoadAudio": "Scromfy Load Audio",
 }

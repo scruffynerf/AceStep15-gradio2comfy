@@ -22,7 +22,7 @@ class AceStepPostProcess:
     RETURN_TYPES = ("AUDIO",)
     RETURN_NAMES = ("audio",)
     FUNCTION = "process"
-    CATEGORY = "Scromfy/Ace-Step/audio"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def process(self, audio, de_esser_strength=0.12, spectral_smoothing=0.08):
         try:
@@ -87,5 +87,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepPostProcess": "Post Process",
+    "AceStepPostProcess": "Scromfy Audio Post Process",
 }

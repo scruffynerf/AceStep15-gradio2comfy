@@ -22,7 +22,7 @@ class AceStepConditioningCombine:
     
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "combine"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def combine(self, empty_mode, seed, timbre_tensor=None, pooled_output=None, lyrics_tensor=None, audio_codes=None):
         # If both are missing, we use length 1

@@ -36,7 +36,7 @@ class AceStepConditioningMixerLoader:
     RETURN_TYPES = ("CONDITIONING", "STRING")
     RETURN_NAMES = ("conditioning", "conditioning_info")
     FUNCTION = "load_and_mix"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, timbre_tensor_file, lyrics_file, audio_codes_file, empty_mode, seed):
@@ -178,5 +178,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepConditioningMixerLoader": "Conditioning Mixer Loader",
+    "AceStepConditioningMixerLoader": "Conditioning Mixer Loader (timbre/lyrics/codes)",
 }

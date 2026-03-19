@@ -47,8 +47,10 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
                 "amplitude_scale", "base_radius", "position_x", "position_y", 
                 "color_shift", "saturation", "brightness", "bar_length_mode", "None"]
 
-    RETURN_TYPES = ("IMAGE", "MASK", "STRING")
-    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
+    FUNCTION = "apply_effect"
+    CATEGORY = "Scromfy/Ace-Step/Visualizers"
 
     def apply_effect(self, audio, frame_rate, screen_width, screen_height, strength, feature_param,
                      feature_mode, feature_threshold, mask=None, opt_feature=None, **kwargs):
@@ -74,14 +76,14 @@ class ScromfyFlexAudioVisualizerCircularNode(FlexAudioVisualizerBase):
             kwargs["base_radius"] = s_rng.uniform(min_dim * 0.1, min_dim * 0.4)
             kwargs["radius"] = kwargs["base_radius"]
 
-        # images, masks, settings, _ (source_mask ignored)
-        images, masks, settings, _ = super().apply_effect(
+        # images, masks, settings, source_mask
+        images, masks, settings, source_mask = super().apply_effect(
             audio, frame_rate, screen_width, screen_height,
             strength, feature_param, feature_mode, feature_threshold,
             opt_feature, source_mask=mask, **kwargs
         )
         
-        return (images, masks, settings)
+        return (images, masks, settings, source_mask)
 
     def get_audio_data(self, processor: BaseAudioProcessor, frame_index, **kwargs):
         visualization_feature = kwargs.get('visualization_feature', 'frequency')
@@ -275,5 +277,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfyFlexAudioVisualizerCircular": "Flex Audio Visualizer Circular (Scromfy)",
+    "ScromfyFlexAudioVisualizerCircular": "Circular Audio Visualizer (Scromfy)",
 }

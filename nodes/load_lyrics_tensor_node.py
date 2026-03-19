@@ -25,7 +25,7 @@ class AceStepLyricsTensorLoader:
     RETURN_TYPES = ("TENSOR", "STRING")
     RETURN_NAMES = ("lyrics_tensor", "filename")
     FUNCTION = "load"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, lyrics_file, seed):
@@ -65,5 +65,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepLyricsTensorLoader": "Load Lyrics Tensor",
+    "AceStepLyricsTensorLoader": "Load Lyrics Tensor (conditioning)",
 }

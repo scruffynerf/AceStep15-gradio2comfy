@@ -77,20 +77,21 @@ class ScromfyAceStepSampler:
                 }),
                 "sampler_settings": ("SCROMFY_SAMPLER_SETTINGS",),
                 "vae_decode_settings": ("SCROMFY_VAE_SETTINGS",),
+                "mask": ("MASK",),
             }
         }
 
     RETURN_TYPES = ("LATENT", "AUDIO")
     RETURN_NAMES = ("latent", "audio")
     FUNCTION = "sample"
-    CATEGORY = "Scromfy/Ace-Step/SFT"
+    CATEGORY = "Scromfy/Ace-Step/Sampler"
 
 
     def sample(self, model, positive, negative, latent_image, seed, steps, cfg, 
                sampler_name, scheduler, denoise, shift=3.0, custom_timesteps="",
                vae=None, source_audio=None, reference_audio=None, 
                reference_as_cover=False, audio_cover_strength=0.0,
-               sampler_settings=None, vae_decode_settings=None):
+               sampler_settings=None, vae_decode_settings=None, mask=None):
         
         # --- 0. Advanced Settings Extraction ---
         ss = sampler_settings or {}
@@ -270,6 +271,27 @@ class ScromfyAceStepSampler:
 
         if latent_shift != 0.0 or latent_rescale != 1.0:
             samples = samples * latent_rescale + latent_shift
+
+        # --- 7. Forced Inpainting Blending ---
+        # If a mask is provided, we ensure unmasked regions are bit-identical to the source
+        if mask is not None:
+            # mask is likely [batch, height, width] - for audio it's [batch, 1, samples]
+            # samples is [batch, channels, length]
+            m = mask.to(samples.device)
+            # Expand mask to match samples shape if needed
+            if m.dim() == 2:
+                # [B, T] -> [B, 1, T]
+                m = m.unsqueeze(1)
+            
+            # Ensure mask matches sample channels and length
+            if m.shape[1] != samples.shape[1]:
+                m = m.expand(-1, samples.shape[1], -1)
+            if m.shape[2] != samples.shape[2]:
+                m = torch.nn.functional.interpolate(m, size=(samples.shape[2],), mode='nearest')
+            
+            # Apply blending formula: final = original * (1 - mask) + generated * mask
+            original_latent = latent_image["samples"].to(samples.device)
+            samples = original_latent * (1.0 - m) + samples * m
 
         out_latent = {"samples": samples, "type": "audio"}
         audio_output = None

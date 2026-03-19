@@ -22,7 +22,7 @@ class AceStepTensorUnaryOp:
     
     RETURN_TYPES = ("TENSOR",)
     FUNCTION = "process"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def process(self, tensor_A, mode, length_pct, strength, sigma, seed, mask=None):
         A = tensor_A.clone()
@@ -91,5 +91,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepTensorUnaryOp": "Tensor Unary Operations",
+    "AceStepTensorUnaryOp": "Tensor Conditioning Solo Operation",
 }

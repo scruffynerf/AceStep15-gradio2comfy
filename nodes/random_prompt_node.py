@@ -50,5 +50,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepRandomPrompt": "Random Prompt",
+    "AceStepRandomPrompt": "Random Prompt (Scromfy)",
 }

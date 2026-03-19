@@ -15,7 +15,7 @@ class AceStepConditioningSplitter:
     RETURN_TYPES = ("TENSOR", "TENSOR", "TENSOR", "LIST")
     RETURN_NAMES = ("timbre_tensor", "pooled_output", "lyrics_tensor", "audio_codes")
     FUNCTION = "split"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def split(self, conditioning):
         if not conditioning or len(conditioning) == 0:

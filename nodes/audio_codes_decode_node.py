@@ -26,7 +26,7 @@ class AceStepAudioCodesUnderstand:
     RETURN_TYPES = ("STRING", "STRING", "DICT")
     RETURN_NAMES = ("full_output", "lyrics", "metadata")
     FUNCTION = "understand"
-    CATEGORY = "Scromfy/Ace-Step/metadata"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def understand(self, audio_codes, temperature, top_k, top_p, max_new_tokens, llm=None, clip=None):
         if llm is None and clip is not None:

@@ -20,7 +20,7 @@ class AceStepConditioningMixer:
     
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "mix"
-    CATEGORY = "Scromfy/Ace-Step/mixers"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     def mix(self, conditioning_A, conditioning_B, timbre_tensor_source, pooled_output_source, lyrics_source, audio_codes_source):
         result = []

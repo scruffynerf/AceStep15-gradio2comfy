@@ -39,7 +39,7 @@ class AceStepLyricsBPMCalculator:
     RETURN_TYPES = ("FLOAT", "INT", "INT", "INT", "INT", "INT",)
     RETURN_NAMES = ("duration", "bpm_low", "bpm_mid", "bpm_high", "word_count", "line_count",)
     FUNCTION = "calculate"
-    CATEGORY = "Scromfy/Ace-Step/lyrics"
+    CATEGORY = "Scromfy/Ace-Step/Lyrics"
 
     def calculate(self, lyrics: str, timesignature: str, wpm: int, line2bar: float):
         # 1. Clean lyrics: ignore [tags] and empty lines

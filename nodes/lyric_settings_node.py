@@ -41,7 +41,7 @@ class ScromfyLyricSettingsNode:
     RETURN_TYPES = ("LYRIC_SETTINGS",)
     RETURN_NAMES = ("lyric_settings",)
     FUNCTION = "create_settings"
-    CATEGORY = "Scromfy/Ace-Step/Visualizers/Settings"
+    CATEGORY = "Scromfy/Ace-Step/Visualizers"
 
     def create_settings(self, **kwargs):
         # We prefix keys with "lyric_" to match the expected keys in the visualizer backend
@@ -52,5 +52,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfyLyricSettings": "Lyric Settings (Scromfy)",
+    "ScromfyLyricSettings": "Lyric Visualizer Settings (Scromfy)",
 }

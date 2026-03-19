@@ -29,7 +29,7 @@ class AceStepLoadFasterWhisperModel:
     RETURN_TYPES = ("FASTER_WHISPER_MODEL",)
     RETURN_NAMES = ("model",)
     FUNCTION = "load_model"
-    CATEGORY = "Scromfy/Ace-Step/Whisper"
+    CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def load_model(self, model: str, device: str, compute_type: str):
         from .includes.whisper_utils import faster_whisper_model_dir

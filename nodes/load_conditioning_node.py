@@ -18,7 +18,7 @@ class AceStepConditioningLoad:
     
     RETURN_TYPES = ("CONDITIONING",)
     FUNCTION = "load"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, load_path, filename_prefix):
@@ -57,5 +57,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepConditioningLoad": "Load Conditioning Elements",
+    "AceStepConditioningLoad": "Load AceStep Conditioning",
 }

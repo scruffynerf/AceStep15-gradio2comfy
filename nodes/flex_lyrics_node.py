@@ -38,6 +38,11 @@ class ScromfyFlexLyricsNode(FlexAudioVisualizerBase):
             "optional": cleaned_optional
         }
 
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK", "SETTINGS", "SOURCE_MASK")
+    FUNCTION = "apply_effect"
+    CATEGORY = "Scromfy/Ace-Step/Visualizers"
+
     @classmethod
     def get_modifiable_params(cls):
         return []
@@ -58,5 +63,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ScromfyFlexLyricsNode": "Flex Lyrics (Overlay)"
+    "ScromfyFlexLyricsNode": "Lyrics Overlay (Scromfy)"
 }

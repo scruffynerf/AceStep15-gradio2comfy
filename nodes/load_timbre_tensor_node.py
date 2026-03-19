@@ -25,7 +25,7 @@ class AceStepTimbreTensorLoader:
     RETURN_TYPES = ("TENSOR", "STRING")
     RETURN_NAMES = ("timbre_tensor", "filename")
     FUNCTION = "load"
-    CATEGORY = "Scromfy/Ace-Step/load"
+    CATEGORY = "Scromfy/Ace-Step/Conditioning"
 
     @classmethod
     def IS_CHANGED(s, timbre_tensor_file, seed):
@@ -65,5 +65,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AceStepTimbreTensorLoader": "Load Timbre Tensor",
+    "AceStepTimbreTensorLoader": "Load Timbre Tensor (conditioning)",
 }
