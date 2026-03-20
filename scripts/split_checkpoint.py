@@ -7,7 +7,7 @@ import argparse
 def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
     """
     Splits a consolidated ACE-Step 1.5 safetensors checkpoint into its components.
-    Specifically targets the dual CLIP encoders.
+    Specifically targets the dual CLIP encoders with robust prefix stripping.
     """
     if not os.path.exists(checkpoint_path):
         print(f"Error: Checkpoint not found at {checkpoint_path}")
@@ -58,12 +58,6 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
             groups["diffusion"].append(key)
         elif key.startswith("vae"):
             groups["vae"].append(key)
-        else:
-            # Check for generic qwen3 if others missing
-            if key.startswith("text_encoders.qwen3_"):
-                # Figure out which one it is by shape/count if needed
-                # For now, just skip if not matched above
-                pass
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -77,35 +71,24 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
         print(f"Saving {len(keys)} tensors to {output_path}...")
         
         out_tensors = {}
-        prefix_to_strip = ""
         
-        # Determine prefix to strip if requested
-        if group_name == "qwen_0.6b":
-            if any(k.startswith("text_encoders.qwen3_06b") for k in keys):
-                prefix_to_strip = "text_encoders.qwen3_06b."
-            else:
-                prefix_to_strip = "text_encoders.qwen3_6b."
-        elif group_name == "qwen_2b":
-            prefix_to_strip = "text_encoders.qwen3_2b."
-        elif group_name == "diffusion":
-            prefix_to_strip = "model.diffusion_model."
-        elif group_name == "vae":
-            # ACE-Step usually has 'vae.decoder' etc.
-            if any(k.startswith("vae.") for k in keys):
-                prefix_to_strip = "vae."
-            else:
-                prefix_to_strip = "vae"
-
-        # NOTE: For ACE-Step dual loads, we usually NEED the prefixes to avoid key collisions.
-        # But for VAE/Diffusion, they are often used in standalone loaders that expect no prefix.
-        should_strip = strip
-        if group_name in ["diffusion", "vae"] and strip is False:
-            # Maybe auto-strip these? No, stay predictable.
-            pass
+        # Automatic prefix detection for stripping
+        # We want the keys to start with "model." (and specifically "model.layers.0" for CLIP detection)
+        prefix_to_strip = ""
+        if strip:
+            detect_key = "model.layers.0" if group_name.startswith("qwen") else "decoder.layers" if group_name == "vae" else "diffusion_model"
+            
+            ref_keys = [k for k in keys if detect_key in k]
+            if ref_keys:
+                ref_key = ref_keys[0]
+                idx = ref_key.find(detect_key)
+                if idx > 0:
+                    prefix_to_strip = ref_key[:idx]
+                    print(f"  Detecting prefix to strip for {group_name}: '{prefix_to_strip}'")
 
         for k in keys:
             new_key = k
-            if should_strip and prefix_to_strip and k.startswith(prefix_to_strip):
+            if strip and prefix_to_strip and k.startswith(prefix_to_strip):
                 new_key = k[len(prefix_to_strip):]
             out_tensors[new_key] = tensors[k]
 
@@ -117,12 +100,15 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
 
     print("\nSplitting complete!")
     print(f"Outputs are in: {os.path.abspath(output_dir)}")
+    if not strip:
+        print("\nWARNING: Splitting without --strip keeps consolidated prefixes.")
+        print("For ACE-Step standalone loaders, you likely MUST use --strip to remove wrappers.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split ACE-Step 1.5 consolidated checkpoints.")
     parser.add_argument("checkpoint", type=str, help="Path to the source .safetensors file.")
     parser.add_argument("--out_dir", type=str, default="split_models", help="Directory to save pieces.")
-    parser.add_argument("--strip", action="store_true", help="Strip prefixes from keys (not recommended for ACE-Step dual loads).")
+    parser.add_argument("--strip", action="store_true", help="Strip prefixes from keys (recommended for splitting into standalone files).")
     parser.add_argument("--list", action="store_true", help="Just list prefixes and keys, do not split.")
 
     args = parser.parse_args()
