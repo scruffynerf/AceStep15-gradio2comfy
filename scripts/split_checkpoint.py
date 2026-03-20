@@ -7,7 +7,7 @@ import argparse
 def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
     """
     Splits a consolidated ACE-Step 1.5 safetensors checkpoint into its components.
-    Targeted for Dual CLIP (Qwen), Diffusion, and VAE.
+    Specifically targets the dual CLIP encoders.
     """
     if not os.path.exists(checkpoint_path):
         print(f"Error: Checkpoint not found at {checkpoint_path}")
@@ -22,13 +22,12 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
 
     if list_keys:
         print("\n--- Key Audit (First 20 keys) ---")
-        keys = list(tensors.keys())
-        for i, key in enumerate(keys[:20]):
+        for i, key in enumerate(list(tensors.keys())[:20]):
             print(f"{i+1}: {key} - {tensors[key].shape}")
         
         # Analyze prefixes
         prefixes = set()
-        for key in keys:
+        for key in tensors.keys():
             parts = key.split('.')
             if len(parts) > 1:
                 prefixes.add(".".join(parts[:2]))
@@ -37,11 +36,11 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
         
         print("\n--- Detected Prefixes ---")
         for p in sorted(list(prefixes)):
-            count = sum(1 for k in keys if k.startswith(p))
+            count = sum(1 for k in tensors.keys() if k.startswith(p))
             print(f"{p} ({count} keys)")
         return
 
-    # Grouping logic
+    # Grouping logic based on user feedback
     groups = {
         "qwen_0.6b": [],
         "qwen_2b": [],
@@ -65,6 +64,7 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
 
     for group_name, keys in groups.items():
         if not keys:
+            print(f"No tensors found for {group_name}. Skipping.")
             continue
 
         output_path = os.path.join(output_dir, f"{group_name}.safetensors")
@@ -72,51 +72,41 @@ def split_checkpoint(checkpoint_path, output_dir, strip=False, list_keys=False):
         
         out_tensors = {}
         
-        # Determine the base prefix for this group
-        group_prefix = ""
-        if group_name == "qwen_0.6b":
-            group_prefix = "text_encoders.qwen3_06b." if any(k.startswith("text_encoders.qwen3_06b.") for k in keys) else "text_encoders.qwen3_6b."
-        elif group_name == "qwen_2b":
-            group_prefix = "text_encoders.qwen3_2b."
-        elif group_name == "diffusion":
-            group_prefix = "model.diffusion_model."
-        elif group_name == "vae":
-            group_prefix = "vae." if any(k.startswith("vae.") for k in keys) else "vae"
+        # Automatic prefix detection for stripping
+        prefix_to_strip = ""
+        if strip:
+            detect_key = "model.layers.0" if group_name.startswith("qwen") else "decoder.layers" if group_name == "vae" else "diffusion_model"
+            
+            ref_keys = [k for k in keys if detect_key in k]
+            if ref_keys:
+                ref_key = ref_keys[0]
+                idx = ref_key.find(detect_key)
+                if idx > 0:
+                    prefix_to_strip = ref_key[:idx]
+                    print(f"  Detecting prefix to strip for {group_name}: '{prefix_to_strip}'")
 
         for k in keys:
             new_key = k
-            if strip:
-                # 1. Strip the group-level "path" prefix
-                if group_prefix and k.startswith(group_prefix):
-                    new_key = k[len(group_prefix):]
-                
-                # 2. Strip redundant 'transformer.' wrapper if present after group strip
-                if new_key.startswith("transformer."):
-                    new_key = new_key[len("transformer."):]
-                
-                # 3. Clean up leading dots just in case
-                if new_key.startswith("."):
-                    new_key = new_key[1:]
-            
+            if strip and prefix_to_strip and k.startswith(prefix_to_strip):
+                new_key = k[len(prefix_to_strip):]
             out_tensors[new_key] = tensors[k]
 
         try:
             save_file(out_tensors, output_path)
-            print(f"  Saved {group_name} component.")
+            print(f"Successfully saved {group_name}.")
         except Exception as e:
-            print(f"  Error saving {group_name}: {e}")
+            print(f"Error saving {group_name}: {e}")
 
     print("\nSplitting complete!")
     print(f"Outputs are in: {os.path.abspath(output_dir)}")
     if not strip:
         print("\nWARNING: Splitting without --strip keeps consolidated prefixes.")
-        print("For ACE-Step standalone loaders, you likely MUST use --strip.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split ACE-Step 1.5 consolidated checkpoints.")
     parser.add_argument("checkpoint", type=str, help="Path to the source .safetensors file.")
     parser.add_argument("--out_dir", type=str, default="split_models", help="Directory to save pieces.")
-    parser.add_argument("--strip", action="store_true", help="Strip prefixes from keys (strongly recommended).")
+    parser.add_argument("--strip", action="store_true", help="Strip prefixes from keys (recommended for splitting into standalone files).")
     parser.add_argument("--list", action="store_true", help="Just list prefixes and keys, do not split.")
 
     args = parser.parse_args()
