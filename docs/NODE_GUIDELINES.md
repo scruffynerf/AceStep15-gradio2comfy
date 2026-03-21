@@ -86,7 +86,7 @@ class AceStepNodeName:
     RETURN_TYPES = ("TYPE1", "TYPE2")
     RETURN_NAMES = ("output1", "output2")
     FUNCTION = "execute"
-    CATEGORY = "ACE-Step"
+    CATEGORY = "Scromfy/Ace-Step/"
     
     def execute(self, param, optional_param=None):
         # Implementation
