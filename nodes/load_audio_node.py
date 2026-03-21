@@ -1,6 +1,7 @@
 """LoadAudio node for ACE-Step"""
 import torchaudio
 import torch
+import os
 import folder_paths
 import hashlib
 from comfy.comfy_types import FileLocator
@@ -11,8 +12,13 @@ class ScromfyLoadAudio:
     @classmethod
     def INPUT_TYPES(s):
         input_dir = folder_paths.get_input_directory()
+        
+        # Ensure the directory exists to avoid FileNotFoundError
+        if not os.path.exists(input_dir):
+            os.makedirs(input_dir, exist_ok=True)
+            
         files = folder_paths.filter_files_content_types(
-            folder_paths.listdir(input_dir), 
+            os.listdir(input_dir), 
             ["audio", "video"]
         )
         return {
