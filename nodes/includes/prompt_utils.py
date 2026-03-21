@@ -212,7 +212,7 @@ def expand_wildcards(text, rng, max_depth=5):
     if not isinstance(text, str) or "__" not in text:
         return text
 
-    pattern = r"__([a-zA-Z0-9_&.\-\s]+)__"
+    pattern = r"__([a-zA-Z0-9_&.\-]+)__"
 
     def replace(match):
         comp_name = match.group(1).upper() # Normalize to uppercase for lookup
