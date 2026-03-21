@@ -7,7 +7,7 @@
 **NEVER** create new code when existing ComfyUI infrastructure can be reused. Always:
 
 1. **Check existing nodes first**
-2. **Check ComfyUI core** some files in referencecode
+2. **Check ComfyUI core** files in referencecode
 3. **Ask if unsure** - Don't assume you need to build from scratch
 4. **Extend, don't replace** - Wrap or extend existing functionality
 
@@ -60,6 +60,7 @@ Detailed background information has been separated into subject-specific documen
 - [Node Development Guidelines](docs/NODE_GUIDELINES.md): Input/output types, metadata formatting, code style, and node templates.
 - [Project Strategy & Status](docs/BUILD_STRATEGY.md): Project focus, phased build strategy, what we are not building, and current status.
 - [Node Specs](docs/NODE_SPECS.md): Technical reference and authoritative node list.
+- [Node Documentation](docs/nodes/): Deep-dive reference guides for the specific inputs, outputs, and behaviors of every custom node in each category.
 - [Progress Tracker](docs/PROGRESS.md): Implementation tracker.
 
 **Directory Structure Overview**:
@@ -76,7 +77,7 @@ scromfyUI-AceStep/
 │   ├── NODE_GUIDELINES.md# Development guidelines and style
 │   ├── NODE_SPECS.md     # Technical reference (authoritative node list)
 │   ├── PROGRESS.md       # Implementation tracker
-│   └── Visualizers.md    # Visualizer documentation
+│   └── nodes/            # Detailed I/O documentation for each node category
 ├── fonts/                # Local font files for visualizers
 ├── keys/                 # API key files (git-ignored)
 ├── lyrics/               # Output or parsed lyrics

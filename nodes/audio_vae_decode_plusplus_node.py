@@ -75,7 +75,6 @@ class ScromfyAceStepAudioVAEDecodePlusPlus:
         # 4. VAE decode
         # Oobleck .decode returns a tensor [B, 2, T] after movedim if we follow sampler pattern
         # Actually sampler does: audio = vae.decode(samples).movedim(-1, 1)
-        # Obsolete node did: result = vae.decode(samples["samples"]); audio = result.sample if hasattr(result, "sample") else result
         
         # Following ScromfyAceStepSampler logic for exact parity:
         audio = vae.decode(latent_samples).movedim(-1, 1)

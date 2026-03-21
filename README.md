@@ -6,7 +6,7 @@ This repository allows you to use the powerful ACE-Step 1.5 music generation mod
 
 ## Features
 
-- **82 Specialized Nodes**: Comprehensive support for the ACE-Step 1.5 workflow (64 active + 18 obsolete/deprecated).
+- **Specialized Nodes**: Comprehensive support for the ACE-Step 1.5 workflow.
 - **Full Text Encoder**: Human-readable dropdowns for language, key signature, and time signature with LLM audio code generation toggle.
 - **Multi-Category Prompt Generator**: 8 independent category dropdowns (style, mood, adjective, culture, genre, vocal, performer, instrument) with random/random2 options.
 - **Multi-API Lyrics Generation**: Integrated nodes for Genius search, random Genius lyrics, plus AI generation via Gemini, Groq, OpenAI, Claude, and Perplexity.
@@ -37,10 +37,20 @@ Several lyrics nodes require API keys. See [keys/README.md](keys/README.md) for 
 
 Look for nodes under the `Scromfy/Ace-Step` category in the ComfyUI node menu. The repository uses a dynamic scanning system that automatically loads all nodes from the `nodes/` directory.
 
-## Progress & Specs
+## Documentation & Specs
 
+- [Detailed Node Guides](docs/nodes/) — In-depth reference for each node category:
+  - [Audio Nodes](docs/nodes/Audio.md)
+  - [Conditioning Nodes](docs/nodes/Conditioning.md)
+  - [Lyrics Nodes](docs/nodes/Lyrics.md)
+  - [Prompt Nodes](docs/nodes/Prompt.md)
+  - [Sampler Nodes](docs/nodes/Sampler.md)
+  - [Radio System](docs/nodes/Radio.md)
+  - [LoRA Nodes](docs/nodes/Lora.md)
+  - [Whisper Nodes](docs/nodes/Whisper.md)
+  - [Misc Nodes](docs/nodes/Misc.md)
+- [NODE_SPECS.md](docs/NODE_SPECS.md) — Master node list and categorization.
 - [PROGRESS.md](docs/PROGRESS.md) — Current implementation status.
-- [NODE_SPECS.md](docs/NODE_SPECS.md) — Detailed node documentation.
 
 ## Credits
 

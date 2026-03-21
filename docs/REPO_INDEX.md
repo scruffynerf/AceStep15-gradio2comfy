@@ -15,7 +15,7 @@ Welcome to the central index for the **ScromfyUI-AceStep** project. This documen
 - Save with proper metadata ✅
 
 ## Project Status
-- **Node Implementation:** 100% Complete (64 active nodes, 18 obsolete).
+- **Node Implementation:** 100% Complete.
 - **Native Support:** Confirmed ComfyUI native ACE-Step support. Checkpoint loaders work out-of-the-box.
 - **Frontend Extensions:** Available for WebAmp, Radio, and custom lyric syncing.
 
@@ -96,16 +96,20 @@ In-UI playback experiences for Comfy.
 - `mask_picker_node.py` — **ScromfyMaskPicker**: Recursive mask directory browser.
 
 
-### Visualizers ([Detailed Specs ➡](../Visualizers.md))
-*Note: Located outside the new nodes directory as they have historically extensive docs!*
+### Visualizers ([Detailed Specs ➡](nodes/Visualizers.md))
 - `flex_audio_visualizer_circular_node.py`, `flex_audio_visualizer_contour_node.py`, `flex_audio_visualizer_line_node.py`, `flex_lyrics_node.py`, `emoji_spinner_visualizer_node.py`, `lyric_settings_node.py`, `visualizer_settings_node.py`
 
 ### Shared Utility Modules (`nodes/includes/`)
 - `analysis_utils.py`: FSQ quantization logic and dependency checks.
+- `audio_save_utils.py`: Centralized audio saving, resampling, and format transcoding math.
 - `audio_utils.py`: FLAC metadata block generation.
 - `emoji_utils.py`: Iconify fetching, SVG-to-Mask conversion (svglib), and caching.
+- `flex_utils.py`: Dynamic layout parsing and styling logic for visualizers.
 - `fsq_utils.py`: Low-level FSQ encoding/decoding math.
+- `icon_collections.py`: Static categorization lists for icons mapping to genres/moods.
 - `lyrics_utils.py`: Prompt builders and markdown cleaning.
+- `mapping_utils.py`: Shared dictionaries (languages, time signatures) and dropdown wrappers.
 - `prompt_utils.py`: Dynamic wildcard expansion and UI-weight sorting.
 - `sampling_utils.py`: Noise schedule shift formulas.
+- `visualizer_utils.py`: Core rendering mechanics, font-loading, and mathematical plotting for visualizers.
 - `whisper_utils.py`: Model discovery, language mappings, and subtitle/LRC formatting logic.
