@@ -56,7 +56,7 @@ def get_lyrics_messages(style: str, seed: int, theme: str = "Love Song") -> list
 def build_simple_prompt(style: str, seed: int, theme: str = "Love Song") -> str:
     """User-focused prompt for basic lyrics generation (no system instructions)"""
     base_style = style.strip() or "Generic song"
-    return f"Style: {base_style}. Song Theme: {theme}. Seed: {seed}."
+    return f"Style: {base_style}. Song Theme: {theme}."
 
 
 def clean_markdown_formatting(text: str) -> str:
