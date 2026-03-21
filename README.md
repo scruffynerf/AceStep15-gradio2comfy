@@ -57,4 +57,4 @@ Look for nodes under the `Scromfy/Ace-Step` category in the ComfyUI node menu. T
 - [ACE-Step-v1.5 lora loader](https://github.com/Neyroslav/ComfyUI-ACE-Step-1.5_LoRA_Loader) — adapted his code with his blessing
 - [Jean Kassio](https://github.com/jeankassio) — adapted some code from his repos
    <https://github.com/jeankassio/JK-AceStep-Nodes>
-<https://github.com/jeankassio/ComfyUI-AceStep_SFT>
+   <https://github.com/jeankassio/ComfyUI-AceStep_SFT>
