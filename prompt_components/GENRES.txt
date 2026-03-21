@@ -14,7 +14,7 @@ __R&B__
 __RAP__
 __REGGAE__
 __RELIGIOUS__
-__ROCK
+__ROCK__
 __SOUNDTRACK__
 __WORLD__
 __ALTERNATIVE__
