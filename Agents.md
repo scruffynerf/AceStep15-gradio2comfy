@@ -58,10 +58,8 @@ Detailed background information has been separated into subject-specific documen
 
 - [Technical Architecture](docs/ARCHITECTURE.md): Details on text encoding flow, model loading, and integration patterns.
 - [Node Development Guidelines](docs/NODE_GUIDELINES.md): Input/output types, metadata formatting, code style, and node templates.
-- [Project Strategy & Status](docs/BUILD_STRATEGY.md): Project focus, phased build strategy, what we are not building, and current status.
-- [Node Specs](docs/NODE_SPECS.md): Technical reference and authoritative node list.
+- [Repository Index & Strategy](docs/REPO_INDEX.md): Canonical file index, project focus, and node category map.
 - [Node Documentation](docs/nodes/): Deep-dive reference guides for the specific inputs, outputs, and behaviors of every custom node in each category.
-- [Progress Tracker](docs/PROGRESS.md): Implementation tracker.
 
 **Directory Structure Overview**:
 

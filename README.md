@@ -49,12 +49,15 @@ Look for nodes under the `Scromfy/Ace-Step` category in the ComfyUI node menu. T
   - [LoRA Nodes](docs/nodes/Lora.md)
   - [Whisper Nodes](docs/nodes/Whisper.md)
   - [Misc Nodes](docs/nodes/Misc.md)
-- [NODE_SPECS.md](docs/NODE_SPECS.md) — Master node list and categorization.
-- [PROGRESS.md](docs/PROGRESS.md) — Current implementation status.
+- [Repository Index & Strategy](docs/REPO_INDEX.md) — Canonical file index and project focus.
+- [Node Development Guidelines](docs/NODE_GUIDELINES.md) — Standards and templates for new nodes.
+- [Technical Architecture](docs/ARCHITECTURE.md) — Under-the-hood details on conditioning and VAE flows.
 
 ## Credits
 
 - [ACE-Step-v1.5 lora loader](https://github.com/Neyroslav/ComfyUI-ACE-Step-1.5_LoRA_Loader) — adapted his code with his blessing
 - [Jean Kassio](https://github.com/jeankassio) — adapted some code from his repos
-   <https://github.com/jeankassio/JK-AceStep-Nodes>
-   <https://github.com/jeankassio/ComfyUI-AceStep_SFT>
+- <https://github.com/jeankassio/JK-AceStep-Nodes>
+- <https://github.com/jeankassio/ComfyUI-AceStep_SFT>
+- [Matchering Library](https://github.com/sergree/matchering) — Created by Sergree (Sergey Grishakov), GPLv3.
+- [ComfyUI-Matchering](https://github.com/MuziekMagie/ComfyUI-Matchering) — Original ComfyUI node adaptation by MuziekMagie.

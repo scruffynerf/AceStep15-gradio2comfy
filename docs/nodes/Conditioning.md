@@ -184,6 +184,15 @@ Reverses the initial LM logic, parsing existing 5Hz token IDs back into readable
 - **Options**: `temperature`, `top_k`, `top_p`, `max_new_tokens`.
 - **Outputs**: `full_output` (`STRING`), `lyrics` (`STRING`), `metadata` (`DICT`).
 
+### 20. AceStepConditioningInspector
+
+*File: `nodes/acestep_conditioning_inspector_node.py`*
+
+A more advanced version of the standard view node that provides a detailed, formatted dump of all tensors and metadata keys within an ACE-Step conditioning object.
+
+- **Inputs**: `conditioning` (`CONDITIONING`), `label` (`STRING`).
+- **Outputs**: `conditioning` (`CONDITIONING`) (Passthrough).
+
 ---
 
 ## Part 7: Persistence
@@ -207,3 +216,37 @@ Saves an isolated raw tensor object to `.safetensors` format. Useful when interc
 
 - **Inputs**: `tensor` (`TENSOR`).
 - **Outputs**: None.
+
+---
+
+## Part 8: Harmonic Injection (Chords)
+
+Built-in support for injecting explicit chord progressions into the ACE-Step generation process.
+
+### 22. AceStepChordConditioner
+
+*File: `nodes/acestep_chord_conditioner_node.py`*
+
+The main harmonic injection node. It synthesizes a reference polyphonic audio stream from a chord map, encodes it through the VAE and FSQ quantizer, and injects the resulting 5Hz tokens into the conditioning object.
+
+- **Inputs**: `conditioning`, `vae`, `model`, `chord_map` (`STRING`), `lyrics` (`STRING`), `bpm` (`INT`), `beats_per_chord` (`FLOAT`), `duration` (`FLOAT`), `synth_type` (`piano`, `organ`, `pad`).
+- **Options**: `velocity`.
+- **Outputs**: `conditioning` (`CONDITIONING`).
+
+### 23. AceStepChordPreview
+
+*File: `nodes/acestep_chord_preview_node.py`*
+
+Renders the section-aware chord audio without running the full generation, allowing you to hear the harmonic structure first.
+
+- **Inputs**: `chord_map`, `lyrics`, `bpm`, `beats_per_chord`, `duration`, `synth_type`.
+- **Outputs**: `chord_audio` (`AUDIO`).
+
+### 24. AceStepSourceReader
+
+*File: `nodes/acestep_source_reader_node.py`*
+
+An advanced developer tool that inspects the internal `ace_step15.py` source code and tests direct latent injection paths.
+
+- **Inputs**: `conditioning`, `vae`, `model`.
+- **Outputs**: `conditioning` (`CONDITIONING`).

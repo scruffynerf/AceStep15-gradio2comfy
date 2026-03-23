@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import folder_paths
-from .includes.audio_save_utils import scromfy_save_audio
+from .includes.audio_utils import scromfy_save_audio
 
 class ScromfySaveAudioOpus:
     def __init__(self):

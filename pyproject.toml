@@ -17,7 +17,8 @@ dependencies = [
     "pyconify",
     "svglib",
     "reportlab",
-    "Pillow"
+    "Pillow",
+    "matchering"
 ]
 readme = "README.md"
 keywords = ["comfyui", "custom-nodes", "music-generation", "ace-step"]

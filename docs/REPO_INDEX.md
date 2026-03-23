@@ -63,6 +63,10 @@ Raw tensor manipulation, 5Hz audio code editing, splitting, combining, and custo
 - `tensor_unary_op_node.py` — **AceStepTensorUnaryOp**: Transform single tensors.
 - `save_conditioning_node.py` — **AceStepConditioningSave**: Component saver.
 - `save_tensor_node.py` — **AceStepTensorSave**: Raw tensor saver.
+- `acestep_conditioning_inspector_node.py` — **AceStepConditioningInspector**: Deep introspection and debugging of conditioning data.
+- `acestep_chord_conditioner_node.py` — **AceStepChordConditioner**: Synthesize and inject chord progressions into conditioning.
+- `acestep_chord_preview_node.py` — **AceStepChordPreview**: Preview chord audio before generation.
+- `acestep_source_reader_node.py` — **AceStepSourceReader**: Developer tool for source inspection and latent injection testing.
 
 ### Audio & Post-Processing ([Detailed Specs ➡](nodes/Audio.md))
 
@@ -74,6 +78,9 @@ Decoding latents with extended VAE features, analyzing external audio, and post-
 - `audio_vae_decode_plusplus_node.py` — **Scromfy Audio VAE Decode PLUSPLUS**: Advanced VAE decoder with local logic overrides.
 - `save_audio_node.py` — **Scromfy Save Audio**: High-fidelity multi-format audio saver (handles metadata).
 - `load_audio_node.py` — **AceStepLoadAudio**: Audio loader with auto-resampling.
+- `matchering_node.py` — **Matchering**: Simple two-input matching/mastering.
+- `matchering_advanced_node.py` — **Matchering (Advanced)**: Full parameter control for matching.
+- `matchering_limiter_config_node.py` — **Matchering Limiter Config**: Detail configuration for the brickwall limiter.
 
 ### Samplers ([Detailed Specs ➡](nodes/Sampler.md))
 
@@ -120,8 +127,7 @@ In-UI playback experiences for Comfy.
 ### Shared Utility Modules (`nodes/includes/`)
 
 - `analysis_utils.py`: FSQ quantization logic and dependency checks.
-- `audio_save_utils.py`: Centralized audio saving, resampling, and format transcoding math.
-- `audio_utils.py`: FLAC metadata block generation.
+- `audio_utils.py`: FLAC metadata block generation, multi-format audio saving (`scromfy_save_audio`), and PCM format conversion. *(Merged from `audio_save_utils.py`)*
 - `emoji_utils.py`: Iconify fetching, SVG-to-Mask conversion (svglib), and caching.
 - `flex_utils.py`: Dynamic layout parsing and styling logic for visualizers.
 - `fsq_utils.py`: Low-level FSQ encoding/decoding math.
@@ -132,3 +138,5 @@ In-UI playback experiences for Comfy.
 - `sampling_utils.py`: Noise schedule shift formulas.
 - `visualizer_utils.py`: Core rendering mechanics, font-loading, and mathematical plotting for visualizers.
 - `whisper_utils.py`: Model discovery, language mappings, and subtitle/LRC formatting logic.
+- `chord_utils.py`: Music theory, polyphonic chord synthesis, and ACE-Step conditioning injection logic.
+- `matchering_utils.py`: Adapter bridging ComfyUI AUDIO dicts and the file-path-based pip matchering API.

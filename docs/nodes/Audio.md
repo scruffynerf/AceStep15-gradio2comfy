@@ -122,3 +122,27 @@ High-fidelity multi-format export nodes. Crucially, these nodes natively embed y
 *File: `nodes/load_audio_node.py`*
 
 Ingests local audio files and safely resamples them to the expected sample rate geometry for ComfyUI.
+
+---
+
+## 7. Matchering (Audio Matching & Mastering)
+
+*Files: `nodes/matchering_node.py`, `nodes/matchering_advanced_node.py`, `nodes/matchering_limiter_config_node.py`*
+
+A powerful audio matching and mastering tool. It 'masters' a target audio track by matching its RMS, frequency response, and peak levels to a reference track.
+
+**Credits:**
+- **Matchering Library:** Created by [Sergree (Sergey Grishakov)](https://github.com/sergree/matchering) (GPLv3).
+- **ComfyUI Adaptation:** Originally developed by [MuziekMagie](https://github.com/MuziekMagie/ComfyUI-Matchering).
+
+### Nodes Available
+
+- **`Matchering`**: Simple two-input node (Target + Reference).
+- **`Matchering (Advanced)`**: Full control over FFT size, RMS correction steps, LOWESS smoothing, etc.
+- **`Matchering Limiter Config`**: Detailed configuration for the brickwall limiter (attack, hold, release, filters).
+
+### Outputs
+
+- **`Result`**: Mastered audio with limiter and normalization.
+- **`Result (no limiter)`**: Raw matched audio before the final limiter stage.
+- **`Result (no limiter, normalized)`**: Matched audio with peak normalization but no compression/limiting.
