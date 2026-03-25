@@ -1,5 +1,5 @@
 import pytest
-from nodes.sft_music_analyzer_node import ScromfyAceStepMusicAnalyzer
+from nodes.llm_music_analyzer_node import ScromfyAceStepMusicAnalyzer
 
 @pytest.fixture
 def analyzer():
