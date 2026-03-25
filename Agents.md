@@ -65,7 +65,7 @@ Detailed background information has been separated into subject-specific documen
 
 ```text
 scromfyUI-AceStep/
-├── AIinstructions/       # Additional AI prompts and context
+├── AI_instructions/       # Additional AI prompts and context
 ├── Agents.md             # This file (Agent capabilities and rules)
 ├── __init__.py           # Dynamic node scanner
 ├── color_schemas/        # Color definitions for visualizers

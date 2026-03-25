@@ -22,9 +22,9 @@ def load_api_key(service_name: str) -> str:
 _SYSTEM_PROMPT_CACHE = None
 
 def load_system_prompt() -> str:
-    """Load the system prompt from AIinstructions/systemprompt.txt (user) or systemprompt.default.txt (fallback)"""
+    """Load the system prompt from AI_instructions/systemprompt.txt (user) or systemprompt.default.txt (fallback)"""
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    ai_instr_dir = os.path.join(base_dir, "AIinstructions")
+    ai_instr_dir = os.path.join(base_dir, "AI_instructions")
     
     user_prompt_path = os.path.join(ai_instr_dir, "systemprompt.txt")
     default_prompt_path = os.path.join(ai_instr_dir, "systemprompt.default.txt")
