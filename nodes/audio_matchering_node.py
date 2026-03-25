@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-nodes/matchering_node.py  —  AceStep Matchering (Simple)
+nodes/audio_matchering_node.py  —  AceStep Matchering (Simple)
 
 Ports the simple Matchering node originally created by MuziekMagie:
   https://github.com/MuziekMagie/ComfyUI-Matchering  (archived)

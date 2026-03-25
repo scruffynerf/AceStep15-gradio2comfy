@@ -1,5 +1,5 @@
 from pathlib import Path
-from .radio_node import RadioPlayerNode, _SKINS_DIR, _VISUALIZERS_DIR
+from .audio_player_radio_node import RadioPlayerNode, _SKINS_DIR, _VISUALIZERS_DIR
 
 class AceStepWebAmpRadio(RadioPlayerNode):
     """Winamp-style radio player using WebAmp ⚡"""

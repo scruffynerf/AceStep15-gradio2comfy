@@ -69,6 +69,12 @@ LANGUAGE_MAP = {
 }
 VALID_LANGUAGES = list(LANGUAGE_MAP.keys())
 
+# ACE-Step 1.5 Base track types for separation/stem extraction/completion
+TRACK_NAMES = [
+    "woodwinds", "brass", "fx", "synth", "strings", "percussion",
+    "keyboard", "guitar", "bass", "drums", "backing_vocals", "vocals"
+]
+
 def get_choices_for(items):
     """Build the dropdown list: none, random, random2, then all items (deduplicated and friendly formatting)."""
     if not items:

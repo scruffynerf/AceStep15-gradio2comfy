@@ -111,6 +111,8 @@ class ScromfyAceStepSampler:
                 "sampler_settings": ("SCROMFY_SAMPLER_SETTINGS",),
                 "vae_decode_settings": ("SCROMFY_VAE_SETTINGS",),
                 "mask": ("MASK",),
+                "context_latents": ("LATENT", {"tooltip": "Concatenated [src_latent, chunk_mask] for task-specific conditioning (Extract/Lego/Complete)."}),
+                "repaint_mask": ("MASK", {"tooltip": "Optional mask for step-level repaint injection (Inpainting)."}),
             }
         }
 
@@ -123,7 +125,8 @@ class ScromfyAceStepSampler:
                    sampler_name, scheduler, denoise, shift=3.0, custom_timesteps="",
                    vae=None, source_audio=None, reference_audio=None, 
                    reference_as_cover=False, audio_cover_strength=0.0,
-                   sampler_settings=None, vae_decode_settings=None, mask=None):
+                   sampler_settings=None, vae_decode_settings=None, mask=None,
+                   context_latents=None, repaint_mask=None):
         import hashlib
         m = hashlib.sha256()
         # Hash all numeric/text inputs that affect the output
@@ -144,8 +147,16 @@ class ScromfyAceStepSampler:
                sampler_name, scheduler, denoise, shift=3.0, custom_timesteps="",
                vae=None, source_audio=None, reference_audio=None, 
                reference_as_cover=False, audio_cover_strength=0.0,
-               sampler_settings=None, vae_decode_settings=None, mask=None):
-        
+               sampler_settings=None, vae_decode_settings=None, mask=None,
+               context_latents=None, repaint_mask=None):
+
+        # --- 0a. Context Latent Injection (Kaola tasks: Extract/Lego/Complete) ---
+        # When context_latents is provided it carries the VAE-encoded source audio.
+        # We use it as the starting latent, preserving latent_image for any additional
+        # mask-based blending requested by the caller.
+        if context_latents is not None:
+            latent_image = {**latent_image, "samples": context_latents["samples"]}
+
         # --- 0. Advanced Settings Extraction ---
         ss = sampler_settings or {}
         guidance_mode = ss.get("guidance_mode", "apg")
@@ -345,6 +356,18 @@ class ScromfyAceStepSampler:
             # Apply blending formula: final = original * (1 - mask) + generated * mask
             original_latent = latent_image["samples"].to(samples.device)
             samples = original_latent * (1.0 - m) + samples * m
+
+        # --- 7b. Repaint Mask Blending (Kaola inpainting / region mask from Lego) ---
+        if repaint_mask is not None:
+            rm = repaint_mask.to(samples.device)
+            if rm.dim() == 2:
+                rm = rm.unsqueeze(1)
+            if rm.shape[1] != samples.shape[1]:
+                rm = rm.expand(-1, samples.shape[1], -1)
+            if rm.shape[2] != samples.shape[2]:
+                rm = torch.nn.functional.interpolate(rm, size=(samples.shape[2],), mode='nearest')
+            original_latent = latent_image["samples"].to(samples.device)
+            samples = original_latent * (1.0 - rm) + samples * rm
 
         out_latent = {"samples": samples, "type": "audio"}
         audio_output = None

@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import torch
 import torchaudio.transforms as T
-from .flex_audio_visualizer_contour_node import ScromfyFlexAudioVisualizerContourNode
+from .visualizer_contour_node import ScromfyFlexAudioVisualizerContourNode
 
 class ScromfyEmojiSpinnerVisualizerNode(ScromfyFlexAudioVisualizerContourNode):
     """A hybrid visualizer that prepends an animated emoji sequence before dropping into a Contour Visualizer.

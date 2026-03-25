@@ -2,7 +2,7 @@
 import os
 import torch
 import logging
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoProcessor
 
 try:
     import folder_paths
@@ -81,7 +81,18 @@ class AceStepLLMLoader:
                 local_files_only=True
             ).to(device)
             
-            return ({"model": model, "tokenizer": tokenizer, "device": device},)
+            # Try to load processor (required for audio-capable models like Qwen2.5-Omni)
+            processor = None
+            try:
+                processor = AutoProcessor.from_pretrained(
+                    model_dir,
+                    trust_remote_code=True,
+                    local_files_only=True
+                )
+            except Exception:
+                logger.debug(f"No AutoProcessor found for {model_dir}, skipping.")
+
+            return ({"model": model, "tokenizer": tokenizer, "processor": processor, "device": device, "path": model_dir},)
         except Exception as e:
             logger.error(f"Failed to load LLM: {e}")
             raise e

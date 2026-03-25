@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-nodes/matchering_advanced_node.py  —  AceStep Matchering (Advanced)
+nodes/audio_matchering_advanced_node.py  —  AceStep Matchering (Advanced)
 
 Ports the MatcheringAdvanced node originally created by MuziekMagie:
   https://github.com/MuziekMagie/ComfyUI-Matchering

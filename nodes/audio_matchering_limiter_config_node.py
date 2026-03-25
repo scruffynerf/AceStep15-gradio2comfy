@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-nodes/matchering_limiter_config_node.py  —  AceStep Matchering Limiter Config
+nodes/audio_matchering_limiter_config_node.py  —  AceStep Matchering Limiter Config
 
 Ports the MatcheringLimiterConfig node from MuziekMagie:
   https://github.com/MuziekMagie/ComfyUI-Matchering
