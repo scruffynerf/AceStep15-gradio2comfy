@@ -11,4 +11,4 @@ svglib
 reportlab
 Pillow
 matchering
-
+xxhash
