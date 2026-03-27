@@ -180,7 +180,7 @@ class ScromfyAceStepSampler:
 
         batch_size = latent_image["samples"].shape[0]
         latent_length = latent_image["samples"].shape[-1]
-        vae_sr = 44100 # Default for AceStep VAE
+        vae_sr = 48000 # Default for AceStep VAE
 
         # --- 1. Audio Conditioning (Source & Reference) ---
         if reference_audio is not None and vae is not None:

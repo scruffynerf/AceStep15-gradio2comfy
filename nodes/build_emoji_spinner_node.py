@@ -46,7 +46,7 @@ class ScromfyEmojiSpinnerNode:
                 "reel_top_padding": ("INT", {"default": 15, "min": 0, "max": 100, "step": 2}),
                 "render_mode": (["color", "white_solid", "white_outline", "white_solid_black_outline"], {"default": "white_outline"}),
                 "bw_stroke_width": ("FLOAT", {"default": 0.3, "min": 0.1, "max": 2.0, "step": 0.1}),
-                "sample_rate": ("INT", {"default": 44100, "min": 8000, "max": 192000, "step": 100}),
+                "sample_rate": ("INT", {"default": 48000, "min": 8000, "max": 192000, "step": 100}),
                 "sound": (["silence"], {"default": "silence"}),
             }
         }

@@ -66,7 +66,7 @@ class ScromfyAceStepAudioVAEDecodePlusPlus:
 
         # 2. Extract latent tensor
         latent_samples = samples["samples"]
-        vae_sr = 44100 # Standard AceStep VAE sample rate
+        vae_sr = 48000 # Standard AceStep VAE sample rate
 
         # 3. Apply latent shift and rescale
         if l_shift != 0.0 or l_rescale != 1.0:
