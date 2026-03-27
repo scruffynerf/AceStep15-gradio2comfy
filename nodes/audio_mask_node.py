@@ -41,11 +41,11 @@ class AceStepAudioMask:
 
     def create_mask(self, audio, mode, start_seconds, end_seconds, fraction, ramp_seconds, reverse):
         waveform = audio["waveform"]
-        sample_rate = audio.get("sample_rate", 44100)
+        sample_rate = audio.get("sample_rate", 48000)
         total_seconds = waveform.shape[2] / sample_rate
         
-        # ACE-Step latent downsampling: 44100 Hz / 2048 hop / 2 downscale = ~10.76 Hz latent rate
-        latent_length = round((total_seconds * 44100 / 2048) / 2) * 2
+        # ACE-Step 1.5 latent downsampling: 48000 Hz / 1920 hop = 25 Hz latent rate
+        latent_length = round(total_seconds * 25)
         device = waveform.device
         mask = torch.zeros(latent_length, device=device)
         

@@ -64,7 +64,7 @@ class AceStepPostProcess:
                     phase = torch.angle(stft)
                     
                     # Apply de-esser: reduce energy above 6kHz proportionally
-                    sr = audio.get('sample_rate', 44100) if isinstance(audio, dict) else 44100
+                    sr = audio.get('sample_rate', 48000) if isinstance(audio, dict) else 48000
                     freqs = torch.fft.rfftfreq(n_fft, 1.0/sr).to(x.device)
                     mask = (freqs > 6000).float().view(1, -1)
                     mag = mag * (1.0 - (de_esser_strength * mask))

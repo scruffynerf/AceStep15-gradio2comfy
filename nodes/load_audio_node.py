@@ -9,7 +9,7 @@ from comfy.comfy_types import FileLocator
 class ScromfyLoadAudio:
     """Load audio files (mp3, flac, wav, ogg) from the ComfyUI input directory.
     
-    Automatically resamples to the expected 44.1kHz stereo geometry required by ACE-Step.
+    Automatically resamples to the expected 48kHz stereo geometry required by ACE-Step.
     
     Inputs:
         audio (STRING): Dropdown of audio files located in the ComfyUI input directory.
@@ -62,10 +62,10 @@ class ScromfyLoadAudio:
         elif waveform.shape[0] > 2:
             waveform = waveform[:2, :]
             
-        # Normalize to stereo, 44.1kHz
-        if sample_rate != 44100:
-            waveform = torchaudio.functional.resample(waveform, sample_rate, 44100)
-            sample_rate = 44100
+        # Normalize to stereo, 48kHz
+        if sample_rate != 48000:
+            waveform = torchaudio.functional.resample(waveform, sample_rate, 48000)
+            sample_rate = 48000
 
         audio = {"waveform": waveform.unsqueeze(0), "sample_rate": sample_rate}
         return (audio,)

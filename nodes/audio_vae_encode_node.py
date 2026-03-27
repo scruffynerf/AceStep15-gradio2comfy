@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class ScromfyAceStepVAEEncode:
     """Encodes standard audio into ACE-Step 1.5 latents using the VAE.
-    Automatically handles resampling to 44.1kHz and ensuring stereo channels.
+    Automatically handles resampling to 48kHz and ensuring stereo channels.
     """
 
     @classmethod
@@ -24,7 +24,7 @@ class ScromfyAceStepVAEEncode:
     CATEGORY = "Scromfy/Ace-Step/Audio"
 
     def encode(self, vae, audio):
-        vae_sr = 44100
+        vae_sr = 48000
 
         # Extract waveform and sample rate
         waveform = audio["waveform"]  # [B, C, T]
